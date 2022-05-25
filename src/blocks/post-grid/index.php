@@ -36,7 +36,8 @@ class BlockPostGrid
         ob_start(); ?>
 
         <div class="update-me-by-front-end-technologies">
-            <h1>asda sasd Hello from asdasd1 Gutenberg Editor!!! <?php echo $attributes['dummyName']; ?></h1>
+            <h1>asda sasd Hello from asdasd1 Gutenberg Editor!!! </h1>
+            <code><?php echo serialize($attributes); ?></code>
         </div>
 
 <?php return ob_get_clean();
