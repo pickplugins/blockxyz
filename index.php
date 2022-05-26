@@ -49,6 +49,14 @@ class BlockXyz
             false,
             'all'
         );
+        wp_enqueue_style(
+            'prefix-custom',
+            PREFIX_PLUGIN_URL . '/dist/custom.css',
+            [],
+            false,
+            'all'
+        );
+
 
         wp_enqueue_script(
             'prefix-block-para',

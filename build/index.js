@@ -838,7 +838,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _wordpress_blocks__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_wordpress_blocks__WEBPACK_IMPORTED_MODULE_0__);
 /* harmony import */ var _wordpress_i18n__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @wordpress/i18n */ "@wordpress/i18n");
 /* harmony import */ var _wordpress_i18n__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_wordpress_i18n__WEBPACK_IMPORTED_MODULE_1__);
-/* harmony import */ var styled_components__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! styled-components */ "./node_modules/styled-components/dist/styled-components.browser.esm.js");
+/* harmony import */ var styled_components__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! styled-components */ "./node_modules/styled-components/dist/styled-components.browser.esm.js");
 /* harmony import */ var _wordpress_element__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @wordpress/element */ "@wordpress/element");
 /* harmony import */ var _wordpress_element__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(_wordpress_element__WEBPACK_IMPORTED_MODULE_2__);
 /* harmony import */ var _wordpress_components__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @wordpress/components */ "@wordpress/components");
@@ -852,6 +852,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _wordpress_core_data__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! @wordpress/core-data */ "@wordpress/core-data");
 /* harmony import */ var _wordpress_core_data__WEBPACK_IMPORTED_MODULE_7___default = /*#__PURE__*/__webpack_require__.n(_wordpress_core_data__WEBPACK_IMPORTED_MODULE_7__);
 /* harmony import */ var _breakpoints__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ../../breakpoints */ "./src/breakpoints.js");
+/* harmony import */ var _queryprams__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ../../queryprams */ "./src/queryprams.js");
 
 
 
@@ -864,19 +865,28 @@ __webpack_require__.r(__webpack_exports__);
 
 
 const ALLOWED_MEDIA_TYPES = ['image']; //var el = element.createElement;
+//console.log(breakPoints);
 
-console.log(_breakpoints__WEBPACK_IMPORTED_MODULE_8__["default"]);
 
-const CustomCss = styled_components__WEBPACK_IMPORTED_MODULE_9__["default"].div`
+
+const CustomCss = styled_components__WEBPACK_IMPORTED_MODULE_10__["default"].div`
 display: grid;
 grid-template-columns: ${props => {
-  return props.cssData.grid.columnCount;
+  return props.cssData.grid.gridTemplateColumns.map(item => {
+    return item.val + item.unit + ' ';
+  });
 }};
 grid-template-rows: ${props => {
-  return props.cssData.grid.rowCount;
+  return props.cssData.grid.gridTemplateRows.map(item => {
+    return item.val + item.unit + ' ';
+  });
 }};
-
- 
+column-gap: ${props => {
+  return props.cssData.grid.colGap.val + props.cssData.grid.colGap.unit;
+}};
+row-gap: ${props => {
+  return props.cssData.grid.rowGap.val + props.cssData.grid.rowGap.unit;
+}};
 
 `;
 (0,_wordpress_blocks__WEBPACK_IMPORTED_MODULE_0__.registerBlockType)("prefix-blocks/post-grid", {
@@ -953,17 +963,44 @@ grid-template-rows: ${props => {
     grid: {
       type: 'object',
       default: {
-        columnCount: '1fr 1fr 1fr',
-        rowCount: '1fr 1fr 1fr',
-        colGap: '',
-        rowGap: '',
-        padding: ''
+        gridTemplateColumns: [{
+          val: 1,
+          unit: 'fr'
+        }, {
+          val: 2,
+          unit: 'fr'
+        }, {
+          val: 3,
+          unit: 'fr'
+        }],
+        gridTemplateRows: [{
+          val: 1,
+          unit: 'fr'
+        }, {
+          val: 2,
+          unit: 'fr'
+        }],
+        colGap: {
+          val: 1,
+          unit: 'em'
+        },
+        rowGap: {
+          val: 1,
+          unit: 'em'
+        },
+        padding: {
+          val: 1,
+          unit: 'em'
+        }
       }
     },
     layout: {
       type: 'object',
       default: {
-        id: ''
+        id: '',
+        keyword: '',
+        category: '',
+        categories: []
       }
     },
     masonry: {
@@ -979,7 +1016,8 @@ grid-template-rows: ${props => {
         css: ''
       }
     },
-    queryArgs: {
+    queryArgs: [{}],
+    queryArgsx: {
       type: 'object',
       default: {
         postType: 'Load More',
@@ -1074,6 +1112,7 @@ grid-template-rows: ${props => {
     var masonry = attributes.masonry;
     var search = attributes.search;
     var grid = attributes.grid;
+    var layout = attributes.layout;
     const colors = [{
       name: 'red',
       color: '#f00'
@@ -1118,6 +1157,78 @@ grid-template-rows: ${props => {
     function updateName(content) {
       setAttributes({
         dummyName: content
+      });
+    }
+
+    function addGridColumn() {
+      var gridTemplateColumns = grid.gridTemplateColumns.concat([{
+        val: 1,
+        unit: 'fr'
+      }]);
+      setAttributes({
+        grid: {
+          gridTemplateColumns: gridTemplateColumns,
+          gridTemplateRows: grid.gridTemplateRows,
+          colGap: grid.colGap,
+          rowGap: grid.rowGap,
+          padding: grid.padding
+        }
+      });
+    }
+
+    function selectLayout() {
+      var post_content = `<!-- wp:paragraph -->
+    <p>Hello</p>
+    <!-- /wp:paragraph -->
+    <!-- wp:list -->
+    <ul>
+    <li>hello 1</li>
+    <li>hello 2</li>
+    <li> </li>
+    </ul>
+    <!-- /wp:list -->`;
+      wp.data.dispatch('core/editor').insertBlocks(wp.blocks.parse(post_content));
+    }
+
+    function addGridRow() {
+      var gridTemplateRows = grid.gridTemplateRows.concat([{
+        val: 1,
+        unit: 'fr'
+      }]);
+      setAttributes({
+        grid: {
+          gridTemplateColumns: grid.gridTemplateColumns,
+          gridTemplateRows: gridTemplateRows,
+          colGap: grid.colGap,
+          rowGap: grid.rowGap,
+          padding: grid.padding
+        }
+      });
+    }
+
+    function deleteGridColumn(i) {
+      grid.gridTemplateColumns.splice(i, 1);
+      setAttributes({
+        grid: {
+          gridTemplateColumns: grid.gridTemplateColumns,
+          gridTemplateRows: grid.gridTemplateRows,
+          colGap: grid.colGap,
+          rowGap: grid.rowGap,
+          padding: grid.padding
+        }
+      });
+    }
+
+    function deleteGridRow(i) {
+      grid.gridTemplateRows.splice(i, 1);
+      setAttributes({
+        grid: {
+          gridTemplateColumns: grid.gridTemplateColumns,
+          gridTemplateRows: grid.gridTemplateRows,
+          colGap: grid.colGap,
+          rowGap: grid.rowGap,
+          padding: grid.padding
+        }
       });
     }
 
@@ -1271,33 +1382,267 @@ grid-template-rows: ${props => {
     }), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_3__.PanelBody, {
       title: "Layouts",
       initialOpen: false
-    }), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_3__.PanelBody, {
+    }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_3__.PanelRow, null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_3__.__experimentalInputControl, {
+      value: layout.keyword,
+      type: "text",
+      placeholder: "Search Here...",
+      onChange: newVal => setAttributes({
+        layout: {
+          id: layout.id,
+          keyword: newVal,
+          category: layout.category,
+          categories: layout.categories
+        }
+      })
+    }), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_3__.SelectControl, {
+      style: {
+        margin: 0
+      },
+      label: "",
+      value: layout.category,
+      options: [{
+        label: 'fr',
+        value: 'fr'
+      }, {
+        label: 'px',
+        value: 'px'
+      }, {
+        label: '%',
+        value: '%'
+      }, {
+        label: 'em',
+        value: 'em'
+      }],
+      onChange: newVal => setAttributes({
+        layout: {
+          id: layout.id,
+          keyword: layout.keyword,
+          category: newVal,
+          categories: layout.categories
+        }
+      })
+    })), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_3__.Button, {
+      className: "mb-3",
+      variant: "secondary",
+      onClick: selectLayout
+    }, "Select layout")), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_3__.PanelBody, {
       title: "Grid Settings",
       initialOpen: false,
       className: viewType == 'grid' || viewType == 'filterable' || viewType == 'glossary' ? '' : 'hidden'
-    }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_3__.__experimentalInputControl, {
-      label: "Column Count",
-      value: grid.columnCount,
+    }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_3__.Button, {
+      className: "mb-3",
+      variant: "secondary",
+      onClick: addGridColumn
+    }, "Add Column"), grid.gridTemplateColumns.map((item, index) => {
+      //console.log(item);
+      //console.log(index);
+      return (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_3__.PanelRow, null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_3__.__experimentalInputControl, {
+        value: item.val,
+        type: "number",
+        onChange: newVal => setAttributes({
+          grid: {
+            gridTemplateColumns: grid.gridTemplateColumns.map((x, i) => {
+              return index == i ? {
+                val: newVal,
+                unit: x.unit
+              } : x;
+            }),
+            gridTemplateRows: grid.gridTemplateRows,
+            colGap: grid.colGap,
+            rowGap: grid.rowGap,
+            padding: grid.padding
+          }
+        })
+      }), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_3__.SelectControl, {
+        style: {
+          margin: 0
+        },
+        label: "",
+        value: item.unit,
+        options: [{
+          label: 'fr',
+          value: 'fr'
+        }, {
+          label: 'px',
+          value: 'px'
+        }, {
+          label: '%',
+          value: '%'
+        }, {
+          label: 'em',
+          value: 'em'
+        }],
+        onChange: newVal => setAttributes({
+          grid: {
+            gridTemplateColumns: grid.gridTemplateColumns.map((x, i) => {
+              return index == i ? {
+                val: x.val,
+                unit: newVal
+              } : x;
+            }),
+            gridTemplateRows: grid.gridTemplateRows,
+            colGap: grid.colGap,
+            rowGap: grid.rowGap,
+            padding: grid.padding
+          }
+        })
+      }), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_3__.Button, {
+        icon: "no-alt",
+        onClick: ev => {
+          deleteGridColumn(index);
+        }
+      }));
+    }), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_3__.Button, {
+      onClick: addGridRow,
+      className: "my-3",
+      variant: "secondary"
+    }, "Add Row"), grid.gridTemplateRows.map((item, index) => {
+      //console.log(item);
+      //console.log(index);
+      return (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_3__.PanelRow, null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_3__.__experimentalInputControl, {
+        value: item.val,
+        type: "number",
+        onChange: newVal => setAttributes({
+          grid: {
+            gridTemplateRows: grid.gridTemplateRows.map((x, i) => {
+              return index == i ? {
+                val: newVal,
+                unit: x.unit
+              } : x;
+            }),
+            gridTemplateColumns: grid.gridTemplateColumns,
+            colGap: grid.colGap,
+            rowGap: grid.rowGap,
+            padding: grid.padding
+          }
+        })
+      }), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_3__.SelectControl, {
+        className: "mb-0",
+        value: item.unit,
+        options: [{
+          label: 'fr',
+          value: 'fr'
+        }, {
+          label: 'px',
+          value: 'px'
+        }, {
+          label: '%',
+          value: '%'
+        }, {
+          label: 'em',
+          value: 'em'
+        }],
+        onChange: newVal => setAttributes({
+          grid: {
+            gridTemplateRows: grid.gridTemplateRows.map((x, i) => {
+              return index == i ? {
+                val: x.val,
+                unit: newVal
+              } : x;
+            }),
+            gridTemplateColumns: grid.gridTemplateColumns,
+            colGap: grid.colGap,
+            rowGap: grid.rowGap,
+            padding: grid.padding
+          }
+        })
+      }), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_3__.Button, {
+        icon: "no-alt",
+        onClick: ev => {
+          deleteGridRow(index);
+        }
+      }));
+    }), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.createElement)("label", {
+      for: ""
+    }, "Column Gap"), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_3__.PanelRow, null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_3__.__experimentalInputControl, {
+      value: grid.colGap.val,
+      type: "number",
       onChange: newVal => setAttributes({
         grid: {
-          columnCount: newVal,
-          rowCount: grid.rowCount,
-          colGap: grid.colGap,
-          rowGap: grid.rowGap
+          gridTemplateRows: grid.gridTemplateRows,
+          gridTemplateColumns: grid.gridTemplateColumns,
+          colGap: {
+            val: newVal,
+            unit: grid.colGap.unit
+          },
+          rowGap: grid.rowGap,
+          padding: grid.padding
         }
       })
-    }), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_3__.__experimentalInputControl, {
-      label: "Row Count",
-      value: grid.rowCount,
+    }), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_3__.SelectControl, {
+      className: "mb-0",
+      value: grid.colGap.unit,
+      options: [{
+        label: 'fr',
+        value: 'fr'
+      }, {
+        label: 'px',
+        value: 'px'
+      }, {
+        label: '%',
+        value: '%'
+      }, {
+        label: 'em',
+        value: 'em'
+      }],
       onChange: newVal => setAttributes({
         grid: {
-          columnCount: grid.columnCount,
-          rowCount: newVal,
-          colGap: grid.colGap,
-          rowGap: grid.rowGap
+          gridTemplateRows: grid.gridTemplateRows,
+          gridTemplateColumns: grid.gridTemplateColumns,
+          colGap: {
+            val: grid.colGap.val,
+            unit: newVal
+          },
+          rowGap: grid.rowGap,
+          padding: grid.padding
         }
       })
-    })), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_3__.PanelBody, {
+    })), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.createElement)("label", {
+      for: ""
+    }, "Row Gap"), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_3__.PanelRow, null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_3__.__experimentalInputControl, {
+      value: grid.rowGap.val,
+      type: "number",
+      onChange: newVal => setAttributes({
+        grid: {
+          gridTemplateRows: grid.gridTemplateRows,
+          gridTemplateColumns: grid.gridTemplateColumns,
+          rowGap: {
+            val: newVal,
+            unit: grid.rowGap.unit
+          },
+          colGap: grid.colGap,
+          padding: grid.padding
+        }
+      })
+    }), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_3__.SelectControl, {
+      className: "mb-0",
+      value: grid.rowGap.unit,
+      options: [{
+        label: 'fr',
+        value: 'fr'
+      }, {
+        label: 'px',
+        value: 'px'
+      }, {
+        label: '%',
+        value: '%'
+      }, {
+        label: 'em',
+        value: 'em'
+      }],
+      onChange: newVal => setAttributes({
+        grid: {
+          gridTemplateRows: grid.gridTemplateRows,
+          gridTemplateColumns: grid.gridTemplateColumns,
+          rowGap: {
+            val: grid.rowGap.val,
+            unit: newVal
+          },
+          colGap: grid.colGap,
+          padding: grid.padding
+        }
+      })
+    }))), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_3__.PanelBody, {
       title: "Pagination",
       initialOpen: false,
       className: viewType == 'carousel' ? 'hidden' : ''
@@ -1634,9 +1979,57 @@ grid-template-rows: ${props => {
       initialOpen: false
     })))), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.createElement)("div", {
       className: "my-custom-block"
-    }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.createElement)("h1", null, "Hello from asdasd Gutenberg Editor!!! ", dummyName), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.createElement)(CustomCss, {
+    }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.createElement)(CustomCss, {
       cssData: props.attributes
-    }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.createElement)("div", null, "1"), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.createElement)("div", null, "2"), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.createElement)("div", null, "3"), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.createElement)("div", null, "4"), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.createElement)("div", null, "5"), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.createElement)("div", null, "6"), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.createElement)("div", null, "7"), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.createElement)("div", null, "8"), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.createElement)("div", null, "9"), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.createElement)("div", null, "10"), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.createElement)("div", null, "11"), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.createElement)("div", null, "12"), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.createElement)("div", null, "1"), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.createElement)("div", null, "2"), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.createElement)("div", null, "3"), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.createElement)("div", null, "4"), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.createElement)("div", null, "5"), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.createElement)("div", null, "6"), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.createElement)("div", null, "7"), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.createElement)("div", null, "8"), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.createElement)("div", null, "9"), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.createElement)("div", null, "10"), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.createElement)("div", null, "11"), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.createElement)("div", null, "12")), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.createElement)("code", null, viewType, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.createElement)("br", null), JSON.stringify(grid)))];
+    }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.createElement)("div", {
+      className: "bg-gray-400 p-3 "
+    }, "1"), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.createElement)("div", {
+      className: "bg-gray-400 p-3"
+    }, "2"), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.createElement)("div", {
+      className: "bg-gray-400 p-3"
+    }, "3"), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.createElement)("div", {
+      className: "bg-gray-400 p-3"
+    }, "4"), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.createElement)("div", {
+      className: "bg-gray-400 p-3"
+    }, "5"), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.createElement)("div", {
+      className: "bg-gray-400 p-3"
+    }, "6"), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.createElement)("div", {
+      className: "bg-gray-400 p-3"
+    }, "7"), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.createElement)("div", {
+      className: "bg-gray-400 p-3"
+    }, "8"), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.createElement)("div", {
+      className: "bg-gray-400 p-3"
+    }, "9"), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.createElement)("div", {
+      className: "bg-gray-400 p-3"
+    }, "10"), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.createElement)("div", {
+      className: "bg-gray-400 p-3"
+    }, "11"), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.createElement)("div", {
+      className: "bg-gray-400 p-3"
+    }, "12"), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.createElement)("div", {
+      className: "bg-gray-400 p-3"
+    }, "1"), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.createElement)("div", {
+      className: "bg-gray-400 p-3"
+    }, "2"), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.createElement)("div", {
+      className: "bg-gray-400 p-3"
+    }, "3"), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.createElement)("div", {
+      className: "bg-gray-400 p-3"
+    }, "4"), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.createElement)("div", {
+      className: "bg-gray-400 p-3"
+    }, "5"), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.createElement)("div", {
+      className: "bg-gray-400 p-3"
+    }, "6"), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.createElement)("div", {
+      className: "bg-gray-400 p-3"
+    }, "7"), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.createElement)("div", {
+      className: "bg-gray-400 p-3"
+    }, "8"), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.createElement)("div", {
+      className: "bg-gray-400 p-3"
+    }, "9"), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.createElement)("div", {
+      className: "bg-gray-400 p-3"
+    }, "10"), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.createElement)("div", {
+      className: "bg-gray-400 p-3"
+    }, "11"), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.createElement)("div", {
+      className: "bg-gray-400 p-3"
+    }, "12")), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.createElement)("code", null, viewType, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.createElement)("br", null), JSON.stringify(layout)))];
   },
   save: function (props) {
     // to make a truly dynamic block, we're handling front end by render_callback under index.php file
@@ -1768,6 +2161,268 @@ const breakPoints = [{
   max: 1536
 }];
 /* harmony default export */ __webpack_exports__["default"] = (breakPoints);
+
+/***/ }),
+
+/***/ "./src/queryprams.js":
+/*!***************************!*\
+  !*** ./src/queryprams.js ***!
+  \***************************/
+/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+const queryPrams = {
+  postType: {
+    name: 'Post Types',
+    description: "Select Post Types to Query"
+  },
+  taxQuery: {
+    name: 'Tax Query',
+    description: "Taxonomies query arguments"
+  },
+  metaQuery: {
+    name: 'Meta Query',
+    description: "Meta field query"
+  },
+  s: {
+    name: 'keyword',
+    description: "Search keyword paramater"
+  },
+  postStatus: {
+    name: 'post status',
+    description: "Query post by post status"
+  },
+  order: {
+    name: 'order',
+    description: "Post query order"
+  },
+  orderby: {
+    name: 'orderby',
+    description: "Post query orderby"
+  },
+  metaKey: {
+    name: 'meta fields key',
+    description: "Post query by meta fields key"
+  },
+  // Date Parameters
+  dateQuery: {
+    name: 'date',
+    description: "Post query by date"
+  },
+  year: {
+    name: 'year',
+    description: "Post query by year"
+  },
+  monthnum: {
+    name: 'month',
+    description: "Post query by month"
+  },
+  w: {
+    name: 'week',
+    description: "Post query by week"
+  },
+  day: {
+    name: 'day',
+    description: "Post query by day"
+  },
+  hour: {
+    name: 'hour',
+    description: "Post query by hour"
+  },
+  minute: {
+    name: 'miniute',
+    description: "Post query by miniute"
+  },
+  second: {
+    name: 'Post Types',
+    description: "Post query by second"
+  },
+  m: {
+    name: 'Post Types',
+    description: "Post query by month"
+  },
+  // Author Parameters
+  author: {
+    name: 'Author',
+    description: "Post query by Author ID"
+  },
+  authorName: {
+    name: 'Author Name',
+    description: "Post query by Author Name"
+  },
+  authorIn: {
+    name: 'Author In',
+    description: "Post query by Author IDs"
+  },
+  authorNotIn: {
+    name: 'Author Not In',
+    description: ""
+  },
+  // Category Parameters
+  cat: {
+    name: 'Post Types',
+    description: ""
+  },
+  categoryName: {
+    name: 'Category Name',
+    description: ""
+  },
+  categoryAnd: {
+    name: 'CategoryAnd',
+    description: ""
+  },
+  categoryIn: {
+    name: 'categoryIn',
+    description: ""
+  },
+  categoryNotIn: {
+    name: 'categoryNotIn',
+    description: ""
+  },
+  // Tag Parameters
+  tag: {
+    name: 'tag',
+    description: ""
+  },
+  tagId: {
+    name: 'tagId',
+    description: ""
+  },
+  tagAnd: {
+    name: 'tagAnd',
+    description: ""
+  },
+  tagIn: {
+    name: 'tagIn',
+    description: ""
+  },
+  tagNotIn: {
+    name: 'tagNotIn',
+    description: ""
+  },
+  tagSlugAnd: {
+    name: 'tagSlugAnd',
+    description: ""
+  },
+  tagSlugIn: {
+    name: 'tagSlugIn',
+    description: ""
+  },
+  p: {
+    name: 'Post id',
+    description: ""
+  },
+  name: {
+    name: 'Post Types',
+    description: ""
+  },
+  pageId: {
+    name: 'Post Types',
+    description: ""
+  },
+  pagename: {
+    name: 'Post Types',
+    description: ""
+  },
+  postParent: {
+    name: 'Post Types',
+    description: ""
+  },
+  postParentIn: {
+    name: 'Post Types',
+    description: ""
+  },
+  postParentPotIn: {
+    name: 'Post Types',
+    description: ""
+  },
+  postIn: {
+    name: 'Post Types',
+    description: ""
+  },
+  postNotIn: {
+    name: 'Post Types',
+    description: ""
+  },
+  postNameIn: {
+    name: 'Post Types',
+    description: ""
+  },
+  hasPassword: {
+    name: 'Post Types',
+    description: ""
+  },
+  commentCount: {
+    name: 'Post Types',
+    description: ""
+  },
+  nopaging: {
+    name: 'Post Types',
+    description: ""
+  },
+  postsPerPage: {
+    name: 'Post Types',
+    description: ""
+  },
+  paged: {
+    name: 'Post Types',
+    description: ""
+  },
+  offset: {
+    name: 'Post Types',
+    description: ""
+  },
+  postsPerArchivePage: {
+    name: 'Post Types',
+    description: ""
+  },
+  ignoreStickyPosts: {
+    name: 'Post Types',
+    description: ""
+  },
+  metaKey: {
+    name: 'Post Types',
+    description: ""
+  },
+  metaValue: {
+    name: 'Post Types',
+    description: ""
+  },
+  metaValueNum: {
+    name: 'Post Types',
+    description: ""
+  },
+  metaCompare: {
+    name: 'Post Types',
+    description: ""
+  },
+  metaQuery: {
+    name: 'Post Types',
+    description: ""
+  },
+  perm: {
+    name: 'Post Types',
+    description: ""
+  },
+  postMimeType: {
+    name: 'Post Types',
+    description: ""
+  },
+  cache_results: {
+    name: 'Post Types',
+    description: ""
+  },
+  update_post_meta_cache: {
+    name: 'Post Types',
+    description: ""
+  },
+  update_post_term_cache: {
+    name: 'Post Types',
+    description: ""
+  }
+};
+/* harmony default export */ __webpack_exports__["default"] = (queryPrams);
 
 /***/ }),
 

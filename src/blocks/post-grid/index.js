@@ -5,9 +5,10 @@ import styled from 'styled-components'
 
 
 import { createElement } from '@wordpress/element'
-import { PanelBody, RangeControl, Button, Panel, PanelRow, Dropdown, DropdownMenu, SelectControl, ColorPicker, ColorPalette } from '@wordpress/components'
+import { PanelBody, RangeControl, Button, Panel, PanelRow, Dropdown, DropdownMenu, SelectControl, ColorPicker, ColorPalette, ToolsPanelItem } from '@wordpress/components'
 import { InspectorControls, BlockControls, AlignmentToolbar, RichText } from '@wordpress/block-editor'
 import { __experimentalInputControl as InputControl } from '@wordpress/components';
+
 import { useState } from '@wordpress/compose';
 import { MediaUpload, MediaUploadCheck } from '@wordpress/block-editor';
 
@@ -18,18 +19,20 @@ const ALLOWED_MEDIA_TYPES = ['image'];
 
 //var el = element.createElement;
 
-console.log(breakPoints);
+//console.log(breakPoints);
 
 import breakPoints from '../../breakpoints'
+import queryPrams from '../../queryprams'
+
 
 
 
 const CustomCss = styled.div`
 display: grid;
-grid-template-columns: ${(props) => { return props.cssData.grid.columnCount }};
-grid-template-rows: ${(props) => { return props.cssData.grid.rowCount }};
-
- 
+grid-template-columns: ${(props) => { return props.cssData.grid.gridTemplateColumns.map((item) => { return item.val + item.unit + ' ' }) }};
+grid-template-rows: ${(props) => { return props.cssData.grid.gridTemplateRows.map((item) => { return item.val + item.unit + ' ' }) }};
+column-gap: ${(props) => { return props.cssData.grid.colGap.val + props.cssData.grid.colGap.unit }};
+row-gap: ${(props) => { return props.cssData.grid.rowGap.val + props.cssData.grid.rowGap.unit }};
 
 `;
 
@@ -65,13 +68,13 @@ registerBlockType("prefix-blocks/post-grid", {
         },
         grid: {
             type: 'object',
-            default: { columnCount: '1fr 1fr 1fr', rowCount: '1fr 1fr 1fr', colGap: '', rowGap: '', padding: '', },
+            default: { gridTemplateColumns: [{ val: 1, unit: 'fr' }, { val: 2, unit: 'fr' }, { val: 3, unit: 'fr' }], gridTemplateRows: [{ val: 1, unit: 'fr' }, { val: 2, unit: 'fr' }], colGap: { val: 1, unit: 'em' }, rowGap: { val: 1, unit: 'em' }, padding: { val: 1, unit: 'em' }, },
         },
 
 
         layout: {
             type: 'object',
-            default: { id: '' },
+            default: { id: '', keyword: '', category: '', categories: [] },
         },
         masonry: {
             type: 'object',
@@ -82,7 +85,10 @@ registerBlockType("prefix-blocks/post-grid", {
             default: { js: '', css: '' },
         },
 
-        queryArgs: {
+        queryArgs: [
+            {}
+        ],
+        queryArgsx: {
             type: 'object',
             default: {
                 postType: 'Load More',
@@ -198,6 +204,7 @@ registerBlockType("prefix-blocks/post-grid", {
         var masonry = attributes.masonry;
         var search = attributes.search;
         var grid = attributes.grid;
+        var layout = attributes.layout;
 
 
         const colors = [
@@ -238,6 +245,71 @@ registerBlockType("prefix-blocks/post-grid", {
 
         }
 
+
+        function addGridColumn() {
+
+            var gridTemplateColumns = grid.gridTemplateColumns.concat([{ val: 1, unit: 'fr' }])
+
+            setAttributes({ grid: { gridTemplateColumns: gridTemplateColumns, gridTemplateRows: grid.gridTemplateRows, colGap: grid.colGap, rowGap: grid.rowGap, padding: grid.padding } });
+
+
+
+
+
+
+
+        }
+
+        function selectLayout() {
+
+            var post_content = `<!-- wp:paragraph -->
+    <p>Hello</p>
+    <!-- /wp:paragraph -->
+    <!-- wp:list -->
+    <ul>
+    <li>hello 1</li>
+    <li>hello 2</li>
+    <li> </li>
+    </ul>
+    <!-- /wp:list -->`;
+
+
+
+            wp.data.dispatch('core/editor').insertBlocks(wp.blocks.parse(post_content));
+
+
+
+
+        }
+
+
+        function addGridRow() {
+
+            var gridTemplateRows = grid.gridTemplateRows.concat([{ val: 1, unit: 'fr' }])
+
+            setAttributes({ grid: { gridTemplateColumns: grid.gridTemplateColumns, gridTemplateRows: gridTemplateRows, colGap: grid.colGap, rowGap: grid.rowGap, padding: grid.padding } });
+
+        }
+
+
+
+        function deleteGridColumn(i) {
+
+
+            grid.gridTemplateColumns.splice(i, 1)
+
+            setAttributes({ grid: { gridTemplateColumns: grid.gridTemplateColumns, gridTemplateRows: grid.gridTemplateRows, colGap: grid.colGap, rowGap: grid.rowGap, padding: grid.padding, } })
+
+        }
+
+        function deleteGridRow(i) {
+
+
+            grid.gridTemplateRows.splice(i, 1)
+
+            setAttributes({ grid: { gridTemplateColumns: grid.gridTemplateColumns, gridTemplateRows: grid.gridTemplateRows, colGap: grid.colGap, rowGap: grid.rowGap, padding: grid.padding, } })
+
+        }
 
 
 
@@ -396,21 +468,197 @@ registerBlockType("prefix-blocks/post-grid", {
 
 
                             <PanelBody title="Query Post" initialOpen={false}></PanelBody>
-                            <PanelBody title="Layouts" initialOpen={false}></PanelBody>
+                            <PanelBody title="Layouts" initialOpen={false}>
+
+
+
+                                <PanelRow>
+                                    <InputControl
+                                        value={layout.keyword}
+                                        type="text"
+                                        placeholder="Search Here..."
+                                        onChange={(newVal) => setAttributes({ layout: { id: layout.id, keyword: newVal, category: layout.category, categories: layout.categories } })}
+
+                                    />
+                                    <SelectControl
+                                        style={{ margin: 0 }}
+                                        label=""
+                                        value={layout.category}
+                                        options={[
+                                            { label: 'fr', value: 'fr' },
+                                            { label: 'px', value: 'px' },
+                                            { label: '%', value: '%' },
+                                            { label: 'em', value: 'em' },
+
+
+
+
+                                        ]}
+                                        onChange={(newVal) => setAttributes({ layout: { id: layout.id, keyword: layout.keyword, category: newVal, categories: layout.categories } })}
+                                    />
+
+
+
+
+
+                                </PanelRow>
+
+                                <Button className='mb-3' variant="secondary" onClick={selectLayout} >Select layout</Button>
+
+
+                            </PanelBody>
                             <PanelBody title="Grid Settings" initialOpen={false} className={(viewType == 'grid' || viewType == 'filterable' || viewType == 'glossary') ? '' : 'hidden'}>
 
-                                <InputControl
-                                    label="Column Count"
-                                    value={grid.columnCount}
-                                    onChange={(newVal) => setAttributes({ grid: { columnCount: newVal, rowCount: grid.rowCount, colGap: grid.colGap, rowGap: grid.rowGap } })}
-                                />
+
+                                <Button className='mb-3' variant="secondary" onClick={addGridColumn} >Add Column</Button>
 
 
-                                <InputControl
-                                    label="Row Count"
-                                    value={grid.rowCount}
-                                    onChange={(newVal) => setAttributes({ grid: { columnCount: grid.columnCount, rowCount: newVal, colGap: grid.colGap, rowGap: grid.rowGap } })}
-                                />
+
+                                {grid.gridTemplateColumns.map((item, index) => {
+                                    //console.log(item);
+                                    //console.log(index);
+
+                                    return (
+
+
+                                        <PanelRow>
+                                            <InputControl
+                                                value={item.val}
+                                                type="number"
+                                                onChange={(newVal) => setAttributes({ grid: { gridTemplateColumns: grid.gridTemplateColumns.map((x, i) => { return (index == i) ? { val: newVal, unit: x.unit } : x }), gridTemplateRows: grid.gridTemplateRows, colGap: grid.colGap, rowGap: grid.rowGap, padding: grid.padding, } })}
+
+                                            />
+                                            <SelectControl
+                                                style={{ margin: 0 }}
+                                                label=""
+                                                value={item.unit}
+                                                options={[
+                                                    { label: 'fr', value: 'fr' },
+                                                    { label: 'px', value: 'px' },
+                                                    { label: '%', value: '%' },
+                                                    { label: 'em', value: 'em' },
+
+
+
+
+                                                ]}
+                                                onChange={(newVal) => setAttributes({ grid: { gridTemplateColumns: grid.gridTemplateColumns.map((x, i) => { return (index == i) ? { val: x.val, unit: newVal } : x }), gridTemplateRows: grid.gridTemplateRows, colGap: grid.colGap, rowGap: grid.rowGap, padding: grid.padding, } })}
+                                            />
+
+
+
+                                            <Button icon="no-alt"
+                                                onClick={(ev) => { deleteGridColumn(index) }}
+
+                                            ></Button>
+
+                                        </PanelRow>
+
+
+                                    )
+                                })}
+
+
+
+
+                                <Button onClick={addGridRow} className='my-3' variant="secondary" >Add Row</Button>
+
+
+                                {grid.gridTemplateRows.map((item, index) => {
+                                    //console.log(item);
+                                    //console.log(index);
+
+                                    return (
+
+
+                                        <PanelRow>
+                                            <InputControl
+                                                value={item.val}
+                                                type="number"
+                                                onChange={(newVal) => setAttributes({ grid: { gridTemplateRows: grid.gridTemplateRows.map((x, i) => { return (index == i) ? { val: newVal, unit: x.unit } : x }), gridTemplateColumns: grid.gridTemplateColumns, colGap: grid.colGap, rowGap: grid.rowGap, padding: grid.padding, } })}
+
+                                            />
+                                            <SelectControl className='mb-0'
+                                                value={item.unit}
+                                                options={[
+                                                    { label: 'fr', value: 'fr' },
+                                                    { label: 'px', value: 'px' },
+                                                    { label: '%', value: '%' },
+                                                    { label: 'em', value: 'em' },
+
+
+
+
+                                                ]}
+                                                onChange={(newVal) => setAttributes({ grid: { gridTemplateRows: grid.gridTemplateRows.map((x, i) => { return (index == i) ? { val: x.val, unit: newVal } : x }), gridTemplateColumns: grid.gridTemplateColumns, colGap: grid.colGap, rowGap: grid.rowGap, padding: grid.padding, } })}
+                                            />
+                                            <Button icon="no-alt"
+                                                onClick={(ev) => { deleteGridRow(index) }}
+
+                                            ></Button>
+
+                                        </PanelRow>
+
+
+                                    )
+                                })}
+
+
+                                <label for="">Column Gap</label>
+
+                                <PanelRow>
+                                    <InputControl
+                                        value={grid.colGap.val}
+                                        type="number"
+                                        onChange={(newVal) => setAttributes({ grid: { gridTemplateRows: grid.gridTemplateRows, gridTemplateColumns: grid.gridTemplateColumns, colGap: { val: newVal, unit: grid.colGap.unit }, rowGap: grid.rowGap, padding: grid.padding, } })}
+
+                                    />
+                                    <SelectControl className='mb-0'
+                                        value={grid.colGap.unit}
+                                        options={[
+                                            { label: 'fr', value: 'fr' },
+                                            { label: 'px', value: 'px' },
+                                            { label: '%', value: '%' },
+                                            { label: 'em', value: 'em' },
+                                        ]}
+                                        onChange={(newVal) => setAttributes({ grid: { gridTemplateRows: grid.gridTemplateRows, gridTemplateColumns: grid.gridTemplateColumns, colGap: { val: grid.colGap.val, unit: newVal }, rowGap: grid.rowGap, padding: grid.padding, } })}
+                                    />
+
+
+                                </PanelRow>
+
+
+
+
+
+                                <label for="">Row Gap</label>
+
+                                <PanelRow>
+                                    <InputControl
+                                        value={grid.rowGap.val}
+                                        type="number"
+                                        onChange={(newVal) => setAttributes({ grid: { gridTemplateRows: grid.gridTemplateRows, gridTemplateColumns: grid.gridTemplateColumns, rowGap: { val: newVal, unit: grid.rowGap.unit }, colGap: grid.colGap, padding: grid.padding, } })}
+
+                                    />
+                                    <SelectControl className='mb-0'
+                                        value={grid.rowGap.unit}
+                                        options={[
+                                            { label: 'fr', value: 'fr' },
+                                            { label: 'px', value: 'px' },
+                                            { label: '%', value: '%' },
+                                            { label: 'em', value: 'em' },
+                                        ]}
+                                        onChange={(newVal) => setAttributes({ grid: { gridTemplateRows: grid.gridTemplateRows, gridTemplateColumns: grid.gridTemplateColumns, rowGap: { val: grid.rowGap.val, unit: newVal }, colGap: grid.colGap, padding: grid.padding, } })}
+                                    />
+
+
+                                </PanelRow>
+
+
+
+
+
+
 
 
                             </PanelBody>
@@ -608,33 +856,31 @@ registerBlockType("prefix-blocks/post-grid", {
 
 
                 <div className="my-custom-block">
-                    <h1>Hello from asdasd Gutenberg Editor!!! {dummyName}</h1>
-
                     <CustomCss cssData={props.attributes}>
-                        <div>1</div>
-                        <div>2</div>
-                        <div>3</div>
-                        <div>4</div>
-                        <div>5</div>
-                        <div>6</div>
-                        <div>7</div>
-                        <div>8</div>
-                        <div>9</div>
-                        <div>10</div>
-                        <div>11</div>
-                        <div>12</div>
-                        <div>1</div>
-                        <div>2</div>
-                        <div>3</div>
-                        <div>4</div>
-                        <div>5</div>
-                        <div>6</div>
-                        <div>7</div>
-                        <div>8</div>
-                        <div>9</div>
-                        <div>10</div>
-                        <div>11</div>
-                        <div>12</div>
+                        <div className='bg-gray-400 p-3 '>1</div>
+                        <div className='bg-gray-400 p-3'>2</div>
+                        <div className='bg-gray-400 p-3'>3</div>
+                        <div className='bg-gray-400 p-3'>4</div>
+                        <div className='bg-gray-400 p-3'>5</div>
+                        <div className='bg-gray-400 p-3'>6</div>
+                        <div className='bg-gray-400 p-3'>7</div>
+                        <div className='bg-gray-400 p-3'>8</div>
+                        <div className='bg-gray-400 p-3'>9</div>
+                        <div className='bg-gray-400 p-3'>10</div>
+                        <div className='bg-gray-400 p-3'>11</div>
+                        <div className='bg-gray-400 p-3'>12</div>
+                        <div className='bg-gray-400 p-3'>1</div>
+                        <div className='bg-gray-400 p-3'>2</div>
+                        <div className='bg-gray-400 p-3'>3</div>
+                        <div className='bg-gray-400 p-3'>4</div>
+                        <div className='bg-gray-400 p-3'>5</div>
+                        <div className='bg-gray-400 p-3'>6</div>
+                        <div className='bg-gray-400 p-3'>7</div>
+                        <div className='bg-gray-400 p-3'>8</div>
+                        <div className='bg-gray-400 p-3'>9</div>
+                        <div className='bg-gray-400 p-3'>10</div>
+                        <div className='bg-gray-400 p-3'>11</div>
+                        <div className='bg-gray-400 p-3'>12</div>
 
 
 
@@ -648,7 +894,7 @@ registerBlockType("prefix-blocks/post-grid", {
                     <code>
                         {viewType}
                         <br />
-                        {JSON.stringify(grid)}
+                        {JSON.stringify(layout)}
                     </code>
 
 
