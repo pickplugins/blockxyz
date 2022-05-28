@@ -1016,11 +1016,29 @@ row-gap: ${props => {
         css: ''
       }
     },
-    queryArgs: [{}],
+    queryArgs: {
+      type: 'object',
+      default: [{
+        id: 'postType',
+        name: 'Post Type'
+      }, {
+        id: 'order',
+        name: 'Order'
+      }, {
+        id: 'orderby',
+        name: 'Orderby'
+      }, {
+        id: 'postsPerPage',
+        name: 'Posts Per Page'
+      }, {
+        id: 'postStatus',
+        name: 'Post Status'
+      }]
+    },
     queryArgsx: {
       type: 'object',
       default: {
-        postType: 'Load More',
+        postType: '',
         taxQuery: '',
         metaQuery: '',
         s: '',
@@ -1113,6 +1131,8 @@ row-gap: ${props => {
     var search = attributes.search;
     var grid = attributes.grid;
     var layout = attributes.layout;
+    var queryArgs = attributes.queryArgs;
+    console.log(queryArgs);
     const colors = [{
       name: 'red',
       color: '#f00'
@@ -1379,7 +1399,15 @@ row-gap: ${props => {
     }))), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_3__.PanelBody, {
       title: "Query Post",
       initialOpen: false
-    }), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_3__.PanelBody, {
+    }, queryArgs.map((item, index) => {//console.log(item);
+      //console.log(index);
+    }), console.log(_queryprams__WEBPACK_IMPORTED_MODULE_9__["default"]), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_3__.SelectControl, {
+      label: "",
+      options: queryArgs,
+      onChange: newVal => {
+        console.log(newVal);
+      }
+    })), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_3__.PanelBody, {
       title: "Layouts",
       initialOpen: false
     }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_3__.PanelRow, null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_3__.__experimentalInputControl, {
@@ -2172,256 +2200,256 @@ const breakPoints = [{
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-const queryPrams = {
-  postType: {
-    name: 'Post Types',
-    description: "Select Post Types to Query"
-  },
-  taxQuery: {
-    name: 'Tax Query',
-    description: "Taxonomies query arguments"
-  },
-  metaQuery: {
-    name: 'Meta Query',
-    description: "Meta field query"
-  },
-  s: {
-    name: 'keyword',
-    description: "Search keyword paramater"
-  },
-  postStatus: {
-    name: 'post status',
-    description: "Query post by post status"
-  },
-  order: {
-    name: 'order',
-    description: "Post query order"
-  },
-  orderby: {
-    name: 'orderby',
-    description: "Post query orderby"
-  },
-  metaKey: {
-    name: 'meta fields key',
-    description: "Post query by meta fields key"
-  },
-  // Date Parameters
-  dateQuery: {
-    name: 'date',
-    description: "Post query by date"
-  },
-  year: {
-    name: 'year',
-    description: "Post query by year"
-  },
-  monthnum: {
-    name: 'month',
-    description: "Post query by month"
-  },
-  w: {
-    name: 'week',
-    description: "Post query by week"
-  },
-  day: {
-    name: 'day',
-    description: "Post query by day"
-  },
-  hour: {
-    name: 'hour',
-    description: "Post query by hour"
-  },
-  minute: {
-    name: 'miniute',
-    description: "Post query by miniute"
-  },
-  second: {
-    name: 'Post Types',
-    description: "Post query by second"
-  },
-  m: {
-    name: 'Post Types',
-    description: "Post query by month"
-  },
-  // Author Parameters
-  author: {
-    name: 'Author',
-    description: "Post query by Author ID"
-  },
-  authorName: {
-    name: 'Author Name',
-    description: "Post query by Author Name"
-  },
-  authorIn: {
-    name: 'Author In',
-    description: "Post query by Author IDs"
-  },
-  authorNotIn: {
-    name: 'Author Not In',
-    description: ""
-  },
-  // Category Parameters
-  cat: {
-    name: 'Post Types',
-    description: ""
-  },
-  categoryName: {
-    name: 'Category Name',
-    description: ""
-  },
-  categoryAnd: {
-    name: 'CategoryAnd',
-    description: ""
-  },
-  categoryIn: {
-    name: 'categoryIn',
-    description: ""
-  },
-  categoryNotIn: {
-    name: 'categoryNotIn',
-    description: ""
-  },
-  // Tag Parameters
-  tag: {
-    name: 'tag',
-    description: ""
-  },
-  tagId: {
-    name: 'tagId',
-    description: ""
-  },
-  tagAnd: {
-    name: 'tagAnd',
-    description: ""
-  },
-  tagIn: {
-    name: 'tagIn',
-    description: ""
-  },
-  tagNotIn: {
-    name: 'tagNotIn',
-    description: ""
-  },
-  tagSlugAnd: {
-    name: 'tagSlugAnd',
-    description: ""
-  },
-  tagSlugIn: {
-    name: 'tagSlugIn',
-    description: ""
-  },
-  p: {
-    name: 'Post id',
-    description: ""
-  },
-  name: {
-    name: 'Post Types',
-    description: ""
-  },
-  pageId: {
-    name: 'Post Types',
-    description: ""
-  },
-  pagename: {
-    name: 'Post Types',
-    description: ""
-  },
-  postParent: {
-    name: 'Post Types',
-    description: ""
-  },
-  postParentIn: {
-    name: 'Post Types',
-    description: ""
-  },
-  postParentPotIn: {
-    name: 'Post Types',
-    description: ""
-  },
-  postIn: {
-    name: 'Post Types',
-    description: ""
-  },
-  postNotIn: {
-    name: 'Post Types',
-    description: ""
-  },
-  postNameIn: {
-    name: 'Post Types',
-    description: ""
-  },
-  hasPassword: {
-    name: 'Post Types',
-    description: ""
-  },
-  commentCount: {
-    name: 'Post Types',
-    description: ""
-  },
-  nopaging: {
-    name: 'Post Types',
-    description: ""
-  },
-  postsPerPage: {
-    name: 'Post Types',
-    description: ""
-  },
-  paged: {
-    name: 'Post Types',
-    description: ""
-  },
-  offset: {
-    name: 'Post Types',
-    description: ""
-  },
-  postsPerArchivePage: {
-    name: 'Post Types',
-    description: ""
-  },
-  ignoreStickyPosts: {
-    name: 'Post Types',
-    description: ""
-  },
-  metaKey: {
-    name: 'Post Types',
-    description: ""
-  },
-  metaValue: {
-    name: 'Post Types',
-    description: ""
-  },
-  metaValueNum: {
-    name: 'Post Types',
-    description: ""
-  },
-  metaCompare: {
-    name: 'Post Types',
-    description: ""
-  },
-  metaQuery: {
-    name: 'Post Types',
-    description: ""
-  },
-  perm: {
-    name: 'Post Types',
-    description: ""
-  },
-  postMimeType: {
-    name: 'Post Types',
-    description: ""
-  },
-  cache_results: {
-    name: 'Post Types',
-    description: ""
-  },
-  update_post_meta_cache: {
-    name: 'Post Types',
-    description: ""
-  },
-  update_post_term_cache: {
-    name: 'Post Types',
-    description: ""
-  }
-};
+const queryPrams = [{
+  id: 'postType',
+  value: '',
+  label: 'Post Types',
+  description: "Select Post Types to Query"
+}, {
+  id: 'taxQuery',
+  label: 'Tax Query',
+  description: "Taxonomies query arguments"
+}, {
+  id: 'metaQuery',
+  label: 'Meta Query',
+  description: "Meta field query"
+}, {
+  id: 's',
+  label: 'keyword',
+  description: "Search keyword paramater"
+}, {
+  id: 'postStatus',
+  label: 'post status',
+  description: "Query post by post status"
+}, {
+  id: 'order',
+  label: 'order',
+  description: "Post query order"
+}, {
+  id: 'orderby',
+  label: 'orderby',
+  description: "Post query orderby"
+}, {
+  id: 'metaKey',
+  label: 'meta fields key',
+  description: "Post query by meta fields key"
+}, // Date Parameters
+{
+  id: 'dateQuery',
+  label: 'date',
+  description: "Post query by date"
+}, {
+  id: 'year',
+  label: 'year',
+  description: "Post query by year"
+}, {
+  id: 'monthnum',
+  label: 'month',
+  description: "Post query by month"
+}, {
+  id: 'w',
+  label: 'week',
+  description: "Post query by week"
+}, {
+  id: 'day',
+  label: 'day',
+  description: "Post query by day"
+}, {
+  id: 'hour',
+  label: 'hour',
+  description: "Post query by hour"
+}, {
+  id: 'minute',
+  label: 'miniute',
+  description: "Post query by miniute"
+}, {
+  id: 'second',
+  label: 'Post Types',
+  description: "Post query by second"
+}, {
+  id: 'm',
+  label: 'Post Types',
+  description: "Post query by month"
+}, // Author Parameters
+{
+  id: 'author',
+  label: 'Author',
+  description: "Post query by Author ID"
+}, {
+  id: 'authorName',
+  label: 'Author Name',
+  description: "Post query by Author Name"
+}, {
+  id: 'authorIn',
+  label: 'Author In',
+  description: "Post query by Author IDs"
+}, {
+  id: 'authorNotIn',
+  label: 'Author Not In',
+  description: ""
+}, // Category Parameters
+{
+  id: 'cat',
+  label: 'Post Types',
+  description: ""
+}, {
+  id: 'categoryName',
+  label: 'Category Name',
+  description: ""
+}, {
+  id: 'categoryAnd',
+  label: 'CategoryAnd',
+  description: ""
+}, {
+  id: 'categoryIn',
+  label: 'categoryIn',
+  description: ""
+}, {
+  id: 'categoryNotIn',
+  label: 'categoryNotIn',
+  description: ""
+}, // Tag Parameters
+{
+  id: 'tag',
+  label: 'tag',
+  description: ""
+}, {
+  id: 'tagId',
+  label: 'tagId',
+  description: ""
+}, {
+  id: 'tagAnd',
+  label: 'tagAnd',
+  description: ""
+}, {
+  id: 'tagIn',
+  label: 'tagIn',
+  description: ""
+}, {
+  id: 'tagNotIn',
+  label: 'tagNotIn',
+  description: ""
+}, {
+  id: 'tagSlugAnd',
+  label: 'tagSlugAnd',
+  description: ""
+}, {
+  id: 'tagSlugIn',
+  label: 'tagSlugIn',
+  description: ""
+}, {
+  id: 'p',
+  label: 'Post id',
+  description: ""
+}, {
+  id: 'name',
+  label: 'Post Types',
+  description: ""
+}, {
+  id: 'pageId',
+  label: 'Post Types',
+  description: ""
+}, {
+  id: 'pagename',
+  label: 'Post Types',
+  description: ""
+}, {
+  id: 'postParent',
+  label: 'Post Types',
+  description: ""
+}, {
+  id: 'postParentIn',
+  label: 'Post Types',
+  description: ""
+}, {
+  id: 'postParentPotIn',
+  label: 'Post Types',
+  description: ""
+}, {
+  id: 'postIn',
+  label: 'Post Types',
+  description: ""
+}, {
+  id: 'postNotIn',
+  label: 'Post Types',
+  description: ""
+}, {
+  id: 'postNameIn',
+  label: 'Post Types',
+  description: ""
+}, {
+  id: 'hasPassword',
+  label: 'Post Types',
+  description: ""
+}, {
+  id: 'commentCount',
+  label: 'Post Types',
+  description: ""
+}, {
+  id: 'nopaging',
+  label: 'Post Types',
+  description: ""
+}, {
+  id: 'postsPerPage',
+  label: 'Post Types',
+  description: ""
+}, {
+  id: 'paged',
+  label: 'Post Types',
+  description: ""
+}, {
+  id: 'offset',
+  label: 'Post Types',
+  description: ""
+}, {
+  id: 'postsPerArchivePage',
+  label: 'Post Types',
+  description: ""
+}, {
+  id: 'ignoreStickyPosts',
+  label: 'Post Types',
+  description: ""
+}, {
+  id: 'metaKey',
+  label: 'Post Types',
+  description: ""
+}, {
+  id: 'metaValue',
+  label: 'Post Types',
+  description: ""
+}, {
+  id: 'metaValueNum',
+  label: 'Post Types',
+  description: ""
+}, {
+  id: 'metaCompare',
+  label: 'Post Types',
+  description: ""
+}, {
+  id: 'metaQuery',
+  label: 'Post Types',
+  description: ""
+}, {
+  id: 'perm',
+  label: 'Post Types',
+  description: ""
+}, {
+  id: 'postMimeType',
+  label: 'Post Types',
+  description: ""
+}, {
+  id: 'cacheResults',
+  label: 'Post Types',
+  description: ""
+}, {
+  id: 'updatePostMetaCache',
+  label: 'Post Types',
+  description: ""
+}, {
+  id: 'updatePostTermCache',
+  label: 'Post Types',
+  description: ""
+}];
 /* harmony default export */ __webpack_exports__["default"] = (queryPrams);
 
 /***/ }),

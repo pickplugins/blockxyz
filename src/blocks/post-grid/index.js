@@ -5,7 +5,7 @@ import styled from 'styled-components'
 
 
 import { createElement } from '@wordpress/element'
-import { PanelBody, RangeControl, Button, Panel, PanelRow, Dropdown, DropdownMenu, SelectControl, ColorPicker, ColorPalette, ToolsPanelItem } from '@wordpress/components'
+import { PanelBody, RangeControl, Button, Panel, PanelRow, Dropdown, DropdownMenu, SelectControl, ColorPicker, ColorPalette, ToolsPanelItem, ComboboxControl } from '@wordpress/components'
 import { InspectorControls, BlockControls, AlignmentToolbar, RichText } from '@wordpress/block-editor'
 import { __experimentalInputControl as InputControl } from '@wordpress/components';
 
@@ -84,14 +84,23 @@ registerBlockType("prefix-blocks/post-grid", {
             type: 'object',
             default: { js: '', css: '' },
         },
+        queryArgs: {
+            type: 'object',
+            default: [
+                { id: 'postType', name: 'Post Type' },
+                { id: 'order', name: 'Order' },
+                { id: 'orderby', name: 'Orderby' },
+                { id: 'postsPerPage', name: 'Posts Per Page' },
+                { id: 'postStatus', name: 'Post Status' },
 
-        queryArgs: [
-            {}
-        ],
+            ],
+        },
+
+
         queryArgsx: {
             type: 'object',
             default: {
-                postType: 'Load More',
+                postType: '',
                 taxQuery: '',
                 metaQuery: '',
                 s: '',
@@ -205,7 +214,10 @@ registerBlockType("prefix-blocks/post-grid", {
         var search = attributes.search;
         var grid = attributes.grid;
         var layout = attributes.layout;
+        var queryArgs = attributes.queryArgs;
 
+
+        console.log(queryArgs);
 
         const colors = [
             { name: 'red', color: '#f00' },
@@ -244,6 +256,7 @@ registerBlockType("prefix-blocks/post-grid", {
             setAttributes({ dummyName: content });
 
         }
+
 
 
         function addGridColumn() {
@@ -467,7 +480,31 @@ registerBlockType("prefix-blocks/post-grid", {
                             </PanelBody>
 
 
-                            <PanelBody title="Query Post" initialOpen={false}></PanelBody>
+                            <PanelBody title="Query Post" initialOpen={false}>
+
+
+                                {queryArgs.map((item, index) => {
+
+                                    //console.log(item);
+                                    //console.log(index);
+
+                                })
+
+
+
+                                }
+
+                                {console.log(queryPrams)}
+
+                                <SelectControl
+                                    label=""
+                                    options={queryArgs}
+                                    onChange={(newVal) => { console.log(newVal); }}
+                                />
+
+
+
+                            </PanelBody>
                             <PanelBody title="Layouts" initialOpen={false}>
 
 
