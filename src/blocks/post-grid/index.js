@@ -24,7 +24,7 @@ const ALLOWED_MEDIA_TYPES = ['image'];
 import breakPoints from '../../breakpoints'
 import queryPrams from '../../queryprams'
 
-
+//console.log(queryPrams);
 
 
 const CustomCss = styled.div`
@@ -86,14 +86,15 @@ registerBlockType("prefix-blocks/post-grid", {
         },
         queryArgs: {
             type: 'object',
-            default: [
-                { id: 'postType', name: 'Post Type' },
-                { id: 'order', name: 'Order' },
-                { id: 'orderby', name: 'Orderby' },
-                { id: 'postsPerPage', name: 'Posts Per Page' },
-                { id: 'postStatus', name: 'Post Status' },
+            default: {
+                items: [
+                    { multiple: false, value: 0, val: [], id: 'postType', label: 'Post Types 1', description: "Select Post Types to Query" },
+                    { multiple: false, value: 1, val: '', id: 'taxQuery', label: 'Tax Query', description: "Taxonomies query arguments" },
+                    { multiple: false, value: 2, val: '', id: 'metaQuery', label: 'Meta Query', description: "Meta field query" },
+                    { multiple: false, value: 3, val: '', id: 's', label: 'keyword', description: "Search keyword paramater" },
 
-            ],
+                ]
+            },
         },
 
 
@@ -217,7 +218,7 @@ registerBlockType("prefix-blocks/post-grid", {
         var queryArgs = attributes.queryArgs;
 
 
-        console.log(queryArgs);
+        //console.log(queryArgs);
 
         const colors = [
             { name: 'red', color: '#f00' },
@@ -231,7 +232,7 @@ registerBlockType("prefix-blocks/post-grid", {
             (select) => select(coreStore).getPostTypes({ per_page: -1 }), []
         );
 
-        console.log(postTypes);
+        //console.log(postTypes);
         //setAttributes({ dummyName: 'Raju' });
 
 
@@ -258,6 +259,237 @@ registerBlockType("prefix-blocks/post-grid", {
         }
 
 
+
+        function removeQueryPram(i) {
+
+            console.log(i);
+            queryArgs.items.splice(i, 1);
+
+
+
+            setAttributes({ queryArgs: { items: queryArgs.items } });
+
+        }
+
+
+        function updateQueryPram(newVal, index) {
+
+            console.log(index);
+            console.log(newVal);
+
+            var itemData = queryArgs.items[index];
+
+
+
+            if (itemData.id == 's' || itemData.id == 'order') {
+                itemData.val = newVal;
+                queryArgs.items[index] = itemData;
+                setAttributes({ queryArgs: { items: queryArgs.items } });
+
+            }
+
+            if (itemData.id == 'postType' || itemData.id == 'orderby' || itemData.id == 'postStatus') {
+                itemData.val = newVal;
+                queryArgs.items[index] = itemData;
+                setAttributes({ queryArgs: { items: queryArgs.items } });
+
+            }
+
+
+
+            //queryArgs.items.splice(i, 1);
+
+            console.log(queryArgs);
+
+
+        }
+
+
+
+        function generateQueryArgOptions(item, index) {
+
+
+            return (
+
+
+                <div className=' '>
+
+                    <PanelBody title={item.label} initialOpen={false}>
+
+                        <PanelRow>
+                            <span
+                                onClick={(ev) => { removeQueryPram(index) }}
+                                className='cursor-pointer px-3 bg-red-300 text-sm'><span className='dashicon dashicons dashicons-no-alt'></span> Delete</span>
+                        </PanelRow>
+
+
+                        <div className={item.id == 'postType' ? '' : 'hidden'}>
+
+                            <SelectControl
+                                style={{ height: '75px' }}
+                                label=""
+                                multiple
+                                value={item.val}
+                                options={[
+                                    { label: 'Post', value: 'post' },
+                                    { label: 'Page', value: 'page' },
+
+
+                                ]}
+                                onChange={(newVal) => updateQueryPram(newVal, index)}
+                            />
+
+
+                        </div>
+
+
+                        <div className={item.id == 'postStatus' ? '' : 'hidden'}>
+
+                            <SelectControl
+                                style={{ height: '75px' }}
+                                label=""
+                                multiple
+                                value={item.val}
+                                options={[
+                                    { label: 'Publish', value: 'publish' },
+                                    { label: 'Pending', value: 'pending' },
+                                    { label: 'Draft', value: 'draft' },
+                                    { label: 'Auto draft', value: 'auto-draft' },
+                                    { label: 'Future', value: 'future' },
+                                    { label: 'Private', value: 'private' },
+                                    { label: 'Inherit', value: 'inherit' },
+                                    { label: 'Trash', value: 'trash' },
+                                    { label: 'Any', value: 'any' },
+
+
+
+
+                                ]}
+                                onChange={(newVal) => updateQueryPram(newVal, index)}
+                            />
+
+
+                        </div>
+
+
+
+                        <div className={item.id == 'order' ? '' : 'hidden'}>
+
+                            <SelectControl
+                                style={{ margin: 0 }}
+                                label=""
+
+                                value={item.val}
+                                options={[
+                                    { label: 'Ascending', value: 'ASC' },
+                                    { label: 'Descending', value: 'DESC' },
+
+                                ]}
+                                onChange={(newVal) => updateQueryPram(newVal, index)}
+                            />
+
+                        </div>
+
+                        <div className={item.id == 'orderby' ? '' : 'hidden'}>
+
+                            <SelectControl
+                                style={{ height: '75px' }}
+                                label=""
+                                multiple
+                                value={item.val}
+                                options={[
+                                    { label: 'None', value: 'none' },
+                                    { label: 'ID', value: 'ID' },
+                                    { label: 'author', value: 'author' },
+                                    { label: 'title', value: 'title' },
+                                    { label: 'name', value: 'name' },
+
+                                    { label: 'type', value: 'type' },
+                                    { label: 'date', value: 'date' },
+                                    { label: 'modified', value: 'modified' },
+                                    { label: 'parent', value: 'parent' },
+                                    { label: 'rand', value: 'rand' },
+                                    { label: 'comment_count', value: 'comment_count' },
+                                    { label: 'relevance', value: 'relevance' },
+                                    { label: 'menu_order', value: 'menu_order' },
+                                    { label: 'meta_value', value: 'meta_value' },
+                                    { label: 'meta_value_num', value: 'meta_value_num' },
+                                    { label: 'post__in', value: 'post__in' },
+                                    { label: 'post_name__in', value: 'post_name__in' },
+                                    { label: 'post_parent__in', value: 'post_parent__in' },
+
+
+                                ]}
+                                onChange={(newVal) => updateQueryPram(newVal, index)}
+                            />
+
+                        </div>
+
+
+
+
+                        <div className={item.id == 'taxQuery' ? '' : 'hidden'}>
+                            post tax Query
+                        </div>
+
+                        <div className={item.id == 'metaQuery' ? '' : 'hidden'}>
+                            post meta Query
+                        </div>
+                        <div className={item.id == 's' ? '' : 'hidden'}>
+                            <InputControl
+                                value={item.val}
+                                onChange={(newVal) => updateQueryPram(newVal, index)}
+                            />
+
+                        </div>
+
+
+
+
+
+                    </PanelBody>
+
+
+
+                </div>
+
+
+            )
+
+        }
+
+
+
+        function addQueryPram(id) {
+
+
+            // console.log(queryPrams);
+
+            var attrExist = false;
+
+            console.log(id);
+            var data = queryPrams[id];
+            var multiple = data.multiple;
+            console.log(multiple);
+
+            var isExist = queryArgs.items.map((item) => {
+                //console.log(item);
+
+                if (item.id == id) {
+                    console.log(item);
+                    return true;
+                }
+            })
+
+            console.log(isExist);
+
+
+
+            var items = queryArgs.items.concat([data])
+
+            setAttributes({ queryArgs: { items: items } });
+
+        }
 
         function addGridColumn() {
 
@@ -394,15 +626,16 @@ registerBlockType("prefix-blocks/post-grid", {
                                         <MediaUpload
                                             onSelect={(media) => {
                                                 // media.id
-                                                console.log(media);
                                                 setAttributes({ container: { padding: container.padding, margin: container.margin, bgColor: container.bgColor, bgImg: { id: media.id, url: media.url } } })
                                             }
 
 
                                             }
-                                            onClose={() =>
+                                            onClose={() => {
+                                                //console.log('onClose')
+                                            }
 
-                                                console.log('onClose')
+
                                             }
 
                                             allowedTypes={ALLOWED_MEDIA_TYPES}
@@ -454,7 +687,7 @@ registerBlockType("prefix-blocks/post-grid", {
                                     <MediaUpload
                                         onSelect={(media) => {
                                             // media.id
-                                            console.log(media);
+                                            //console.log(media);
                                             updateLazyLoadsrcUrl(media.url, media.id);
                                             //updateLazyLoadsrcId(media.id);
 
@@ -462,9 +695,11 @@ registerBlockType("prefix-blocks/post-grid", {
 
 
                                         }
-                                        onClose={() =>
+                                        onClose={() => {
+                                            //console.log('onClose')
+                                        }
 
-                                            console.log('onClose')
+
                                         }
 
                                         allowedTypes={ALLOWED_MEDIA_TYPES}
@@ -483,10 +718,21 @@ registerBlockType("prefix-blocks/post-grid", {
                             <PanelBody title="Query Post" initialOpen={false}>
 
 
-                                {queryArgs.map((item, index) => {
+
+                                <SelectControl
+                                    label=""
+                                    options={queryPrams}
+                                    onChange={(newVal) => addQueryPram(newVal)}
+
+                                />
+
+
+                                {queryArgs.items.map((item, index) => {
 
                                     //console.log(item);
                                     //console.log(index);
+
+                                    return generateQueryArgOptions(item, index);
 
                                 })
 
@@ -494,13 +740,8 @@ registerBlockType("prefix-blocks/post-grid", {
 
                                 }
 
-                                {console.log(queryPrams)}
 
-                                <SelectControl
-                                    label=""
-                                    options={queryArgs}
-                                    onChange={(newVal) => { console.log(newVal); }}
-                                />
+
 
 
 
@@ -931,7 +1172,7 @@ registerBlockType("prefix-blocks/post-grid", {
                     <code>
                         {viewType}
                         <br />
-                        {JSON.stringify(layout)}
+                        {JSON.stringify(queryArgs)}
                     </code>
 
 

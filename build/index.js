@@ -868,6 +868,7 @@ const ALLOWED_MEDIA_TYPES = ['image']; //var el = element.createElement;
 //console.log(breakPoints);
 
 
+ //console.log(queryPrams);
 
 const CustomCss = styled_components__WEBPACK_IMPORTED_MODULE_10__["default"].div`
 display: grid;
@@ -1018,22 +1019,37 @@ row-gap: ${props => {
     },
     queryArgs: {
       type: 'object',
-      default: [{
-        id: 'postType',
-        name: 'Post Type'
-      }, {
-        id: 'order',
-        name: 'Order'
-      }, {
-        id: 'orderby',
-        name: 'Orderby'
-      }, {
-        id: 'postsPerPage',
-        name: 'Posts Per Page'
-      }, {
-        id: 'postStatus',
-        name: 'Post Status'
-      }]
+      default: {
+        items: [{
+          multiple: false,
+          value: 0,
+          val: [],
+          id: 'postType',
+          label: 'Post Types 1',
+          description: "Select Post Types to Query"
+        }, {
+          multiple: false,
+          value: 1,
+          val: '',
+          id: 'taxQuery',
+          label: 'Tax Query',
+          description: "Taxonomies query arguments"
+        }, {
+          multiple: false,
+          value: 2,
+          val: '',
+          id: 'metaQuery',
+          label: 'Meta Query',
+          description: "Meta field query"
+        }, {
+          multiple: false,
+          value: 3,
+          val: '',
+          id: 's',
+          label: 'keyword',
+          description: "Search keyword paramater"
+        }]
+      }
     },
     queryArgsx: {
       type: 'object',
@@ -1131,8 +1147,8 @@ row-gap: ${props => {
     var search = attributes.search;
     var grid = attributes.grid;
     var layout = attributes.layout;
-    var queryArgs = attributes.queryArgs;
-    console.log(queryArgs);
+    var queryArgs = attributes.queryArgs; //console.log(queryArgs);
+
     const colors = [{
       name: 'red',
       color: '#f00'
@@ -1145,8 +1161,8 @@ row-gap: ${props => {
     }];
     const postTypes = (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_6__.useSelect)(select => select(_wordpress_core_data__WEBPACK_IMPORTED_MODULE_7__.store).getPostTypes({
       per_page: -1
-    }), []);
-    console.log(postTypes); //setAttributes({ dummyName: 'Raju' });
+    }), []); //console.log(postTypes);
+    //setAttributes({ dummyName: 'Raju' });
 
     function updateViewType(val) {
       setAttributes({
@@ -1177,6 +1193,229 @@ row-gap: ${props => {
     function updateName(content) {
       setAttributes({
         dummyName: content
+      });
+    }
+
+    function removeQueryPram(i) {
+      console.log(i);
+      queryArgs.items.splice(i, 1);
+      setAttributes({
+        queryArgs: {
+          items: queryArgs.items
+        }
+      });
+    }
+
+    function updateQueryPram(newVal, index) {
+      console.log(index);
+      console.log(newVal);
+      var itemData = queryArgs.items[index];
+
+      if (itemData.id == 's' || itemData.id == 'order') {
+        itemData.val = newVal;
+        queryArgs.items[index] = itemData;
+        setAttributes({
+          queryArgs: {
+            items: queryArgs.items
+          }
+        });
+      }
+
+      if (itemData.id == 'postType' || itemData.id == 'orderby' || itemData.id == 'postStatus') {
+        itemData.val = newVal;
+        queryArgs.items[index] = itemData;
+        setAttributes({
+          queryArgs: {
+            items: queryArgs.items
+          }
+        });
+      } //queryArgs.items.splice(i, 1);
+
+
+      console.log(queryArgs);
+    }
+
+    function generateQueryArgOptions(item, index) {
+      return (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.createElement)("div", {
+        className: " "
+      }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_3__.PanelBody, {
+        title: item.label,
+        initialOpen: false
+      }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_3__.PanelRow, null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.createElement)("span", {
+        onClick: ev => {
+          removeQueryPram(index);
+        },
+        className: "cursor-pointer px-3 bg-red-300 text-sm"
+      }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.createElement)("span", {
+        className: "dashicon dashicons dashicons-no-alt"
+      }), " Delete")), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.createElement)("div", {
+        className: item.id == 'postType' ? '' : 'hidden'
+      }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_3__.SelectControl, {
+        style: {
+          height: '75px'
+        },
+        label: "",
+        multiple: true,
+        value: item.val,
+        options: [{
+          label: 'Post',
+          value: 'post'
+        }, {
+          label: 'Page',
+          value: 'page'
+        }],
+        onChange: newVal => updateQueryPram(newVal, index)
+      })), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.createElement)("div", {
+        className: item.id == 'postStatus' ? '' : 'hidden'
+      }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_3__.SelectControl, {
+        style: {
+          height: '75px'
+        },
+        label: "",
+        multiple: true,
+        value: item.val,
+        options: [{
+          label: 'Publish',
+          value: 'publish'
+        }, {
+          label: 'Pending',
+          value: 'pending'
+        }, {
+          label: 'Draft',
+          value: 'draft'
+        }, {
+          label: 'Auto draft',
+          value: 'auto-draft'
+        }, {
+          label: 'Future',
+          value: 'future'
+        }, {
+          label: 'Private',
+          value: 'private'
+        }, {
+          label: 'Inherit',
+          value: 'inherit'
+        }, {
+          label: 'Trash',
+          value: 'trash'
+        }, {
+          label: 'Any',
+          value: 'any'
+        }],
+        onChange: newVal => updateQueryPram(newVal, index)
+      })), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.createElement)("div", {
+        className: item.id == 'order' ? '' : 'hidden'
+      }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_3__.SelectControl, {
+        style: {
+          margin: 0
+        },
+        label: "",
+        value: item.val,
+        options: [{
+          label: 'Ascending',
+          value: 'ASC'
+        }, {
+          label: 'Descending',
+          value: 'DESC'
+        }],
+        onChange: newVal => updateQueryPram(newVal, index)
+      })), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.createElement)("div", {
+        className: item.id == 'orderby' ? '' : 'hidden'
+      }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_3__.SelectControl, {
+        style: {
+          height: '75px'
+        },
+        label: "",
+        multiple: true,
+        value: item.val,
+        options: [{
+          label: 'None',
+          value: 'none'
+        }, {
+          label: 'ID',
+          value: 'ID'
+        }, {
+          label: 'author',
+          value: 'author'
+        }, {
+          label: 'title',
+          value: 'title'
+        }, {
+          label: 'name',
+          value: 'name'
+        }, {
+          label: 'type',
+          value: 'type'
+        }, {
+          label: 'date',
+          value: 'date'
+        }, {
+          label: 'modified',
+          value: 'modified'
+        }, {
+          label: 'parent',
+          value: 'parent'
+        }, {
+          label: 'rand',
+          value: 'rand'
+        }, {
+          label: 'comment_count',
+          value: 'comment_count'
+        }, {
+          label: 'relevance',
+          value: 'relevance'
+        }, {
+          label: 'menu_order',
+          value: 'menu_order'
+        }, {
+          label: 'meta_value',
+          value: 'meta_value'
+        }, {
+          label: 'meta_value_num',
+          value: 'meta_value_num'
+        }, {
+          label: 'post__in',
+          value: 'post__in'
+        }, {
+          label: 'post_name__in',
+          value: 'post_name__in'
+        }, {
+          label: 'post_parent__in',
+          value: 'post_parent__in'
+        }],
+        onChange: newVal => updateQueryPram(newVal, index)
+      })), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.createElement)("div", {
+        className: item.id == 'taxQuery' ? '' : 'hidden'
+      }, "post tax Query"), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.createElement)("div", {
+        className: item.id == 'metaQuery' ? '' : 'hidden'
+      }, "post meta Query"), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.createElement)("div", {
+        className: item.id == 's' ? '' : 'hidden'
+      }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_3__.__experimentalInputControl, {
+        value: item.val,
+        onChange: newVal => updateQueryPram(newVal, index)
+      }))));
+    }
+
+    function addQueryPram(id) {
+      // console.log(queryPrams);
+      var attrExist = false;
+      console.log(id);
+      var data = _queryprams__WEBPACK_IMPORTED_MODULE_9__["default"][id];
+      var multiple = data.multiple;
+      console.log(multiple);
+      var isExist = queryArgs.items.map(item => {
+        //console.log(item);
+        if (item.id == id) {
+          console.log(item);
+          return true;
+        }
+      });
+      console.log(isExist);
+      var items = queryArgs.items.concat([data]);
+      setAttributes({
+        queryArgs: {
+          items: items
+        }
       });
     }
 
@@ -1336,7 +1575,6 @@ row-gap: ${props => {
     }), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.createElement)(_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_4__.MediaUploadCheck, null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.createElement)(_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_4__.MediaUpload, {
       onSelect: media => {
         // media.id
-        console.log(media);
         setAttributes({
           container: {
             padding: container.padding,
@@ -1349,7 +1587,8 @@ row-gap: ${props => {
           }
         });
       },
-      onClose: () => console.log('onClose'),
+      onClose: () => {//console.log('onClose')
+      },
       allowedTypes: ALLOWED_MEDIA_TYPES,
       value: container.bgImg,
       render: _ref => {
@@ -1382,10 +1621,11 @@ row-gap: ${props => {
     }), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.createElement)(_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_4__.MediaUploadCheck, null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.createElement)(_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_4__.MediaUpload, {
       onSelect: media => {
         // media.id
-        console.log(media);
+        //console.log(media);
         updateLazyLoadsrcUrl(media.url, media.id); //updateLazyLoadsrcId(media.id);
       },
-      onClose: () => console.log('onClose'),
+      onClose: () => {//console.log('onClose')
+      },
       allowedTypes: ALLOWED_MEDIA_TYPES,
       value: lazyLoad.srcId,
       render: _ref2 => {
@@ -1399,14 +1639,14 @@ row-gap: ${props => {
     }))), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_3__.PanelBody, {
       title: "Query Post",
       initialOpen: false
-    }, queryArgs.map((item, index) => {//console.log(item);
-      //console.log(index);
-    }), console.log(_queryprams__WEBPACK_IMPORTED_MODULE_9__["default"]), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_3__.SelectControl, {
+    }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_3__.SelectControl, {
       label: "",
-      options: queryArgs,
-      onChange: newVal => {
-        console.log(newVal);
-      }
+      options: _queryprams__WEBPACK_IMPORTED_MODULE_9__["default"],
+      onChange: newVal => addQueryPram(newVal)
+    }), queryArgs.items.map((item, index) => {
+      //console.log(item);
+      //console.log(index);
+      return generateQueryArgOptions(item, index);
     })), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_3__.PanelBody, {
       title: "Layouts",
       initialOpen: false
@@ -2057,7 +2297,7 @@ row-gap: ${props => {
       className: "bg-gray-400 p-3"
     }, "11"), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.createElement)("div", {
       className: "bg-gray-400 p-3"
-    }, "12")), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.createElement)("code", null, viewType, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.createElement)("br", null), JSON.stringify(layout)))];
+    }, "12")), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.createElement)("code", null, viewType, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.createElement)("br", null), JSON.stringify(queryArgs)))];
   },
   save: function (props) {
     // to make a truly dynamic block, we're handling front end by render_callback under index.php file
@@ -2201,253 +2441,376 @@ const breakPoints = [{
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 const queryPrams = [{
+  multiple: false,
+  value: 0,
   id: 'postType',
-  value: '',
+  val: [],
   label: 'Post Types',
   description: "Select Post Types to Query"
 }, {
+  multiple: false,
+  value: 1,
   id: 'taxQuery',
   label: 'Tax Query',
   description: "Taxonomies query arguments"
 }, {
+  multiple: false,
+  value: 2,
   id: 'metaQuery',
   label: 'Meta Query',
   description: "Meta field query"
 }, {
+  multiple: false,
+  value: 3,
   id: 's',
-  label: 'keyword',
+  val: '',
+  label: 'Keyword',
   description: "Search keyword paramater"
 }, {
+  multiple: false,
+  value: 4,
   id: 'postStatus',
-  label: 'post status',
+  label: 'Post status',
   description: "Query post by post status"
 }, {
+  multiple: false,
+  value: 5,
   id: 'order',
-  label: 'order',
+  label: 'Order',
   description: "Post query order"
 }, {
+  multiple: false,
+  value: 6,
   id: 'orderby',
-  label: 'orderby',
+  label: 'Orderby',
   description: "Post query orderby"
 }, {
+  multiple: false,
+  value: 7,
   id: 'metaKey',
-  label: 'meta fields key',
+  label: 'Meta fields key',
   description: "Post query by meta fields key"
 }, // Date Parameters
 {
+  multiple: false,
+  value: 8,
   id: 'dateQuery',
-  label: 'date',
+  label: 'Date Query ',
   description: "Post query by date"
 }, {
+  multiple: false,
+  value: 9,
   id: 'year',
-  label: 'year',
+  label: 'Year',
   description: "Post query by year"
 }, {
+  multiple: false,
+  value: 10,
   id: 'monthnum',
-  label: 'month',
+  label: 'Month',
   description: "Post query by month"
 }, {
+  multiple: false,
+  value: 11,
   id: 'w',
-  label: 'week',
+  label: 'Week',
   description: "Post query by week"
 }, {
+  multiple: false,
+  value: 12,
   id: 'day',
-  label: 'day',
+  label: 'Day',
   description: "Post query by day"
 }, {
+  multiple: false,
+  value: 13,
   id: 'hour',
-  label: 'hour',
+  label: 'Hour',
   description: "Post query by hour"
 }, {
+  multiple: false,
+  value: 15,
   id: 'minute',
-  label: 'miniute',
+  label: 'Miniute',
   description: "Post query by miniute"
 }, {
+  multiple: false,
+  value: 16,
   id: 'second',
   label: 'Post Types',
   description: "Post query by second"
 }, {
+  multiple: false,
+  value: 17,
   id: 'm',
   label: 'Post Types',
   description: "Post query by month"
 }, // Author Parameters
 {
+  multiple: false,
+  value: 18,
   id: 'author',
   label: 'Author',
   description: "Post query by Author ID"
 }, {
+  multiple: false,
+  value: 19,
   id: 'authorName',
   label: 'Author Name',
   description: "Post query by Author Name"
 }, {
+  multiple: false,
+  value: 20,
   id: 'authorIn',
   label: 'Author In',
   description: "Post query by Author IDs"
 }, {
+  multiple: false,
+  value: 21,
   id: 'authorNotIn',
   label: 'Author Not In',
   description: ""
 }, // Category Parameters
 {
+  multiple: false,
+  value: 22,
   id: 'cat',
   label: 'Post Types',
   description: ""
 }, {
+  multiple: false,
+  value: 23,
   id: 'categoryName',
   label: 'Category Name',
   description: ""
 }, {
+  multiple: false,
+  value: 24,
   id: 'categoryAnd',
   label: 'CategoryAnd',
   description: ""
 }, {
+  multiple: false,
+  value: 25,
   id: 'categoryIn',
-  label: 'categoryIn',
+  label: 'Category In',
   description: ""
 }, {
+  multiple: false,
+  value: 26,
   id: 'categoryNotIn',
-  label: 'categoryNotIn',
+  label: 'Category Not In',
   description: ""
 }, // Tag Parameters
 {
+  multiple: false,
+  value: 27,
   id: 'tag',
-  label: 'tag',
+  label: 'Tags',
   description: ""
 }, {
+  multiple: false,
+  value: 28,
   id: 'tagId',
-  label: 'tagId',
+  label: 'Tag Id',
   description: ""
 }, {
+  multiple: false,
+  value: 29,
   id: 'tagAnd',
-  label: 'tagAnd',
+  label: 'Tag And',
   description: ""
 }, {
+  multiple: false,
+  value: 30,
   id: 'tagIn',
-  label: 'tagIn',
+  label: 'Tag In',
   description: ""
 }, {
+  multiple: false,
+  value: 31,
   id: 'tagNotIn',
-  label: 'tagNotIn',
+  label: 'Tag Not In',
   description: ""
 }, {
+  multiple: false,
+  value: 32,
   id: 'tagSlugAnd',
-  label: 'tagSlugAnd',
+  label: 'Tag Slug And',
   description: ""
 }, {
+  multiple: false,
+  value: 33,
   id: 'tagSlugIn',
-  label: 'tagSlugIn',
+  label: 'Tag Slug In',
   description: ""
 }, {
+  multiple: false,
+  value: 34,
   id: 'p',
   label: 'Post id',
   description: ""
 }, {
+  multiple: false,
+  value: 35,
   id: 'name',
-  label: 'Post Types',
+  label: 'Name',
   description: ""
 }, {
+  multiple: false,
+  value: 36,
   id: 'pageId',
-  label: 'Post Types',
+  label: 'Page Id',
   description: ""
 }, {
+  multiple: false,
+  value: 37,
   id: 'pagename',
-  label: 'Post Types',
+  label: 'Page name',
   description: ""
 }, {
+  multiple: false,
+  value: 38,
   id: 'postParent',
-  label: 'Post Types',
+  label: 'Post Parent',
   description: ""
 }, {
+  multiple: false,
+  value: 39,
   id: 'postParentIn',
-  label: 'Post Types',
+  label: 'Post Parent In',
   description: ""
 }, {
-  id: 'postParentPotIn',
-  label: 'Post Types',
+  multiple: false,
+  value: 0,
+  id: 'postParentNotIn',
+  label: 'Post Parent Not In',
   description: ""
 }, {
+  multiple: false,
+  value: 0,
   id: 'postIn',
-  label: 'Post Types',
+  label: 'Post In',
   description: ""
 }, {
+  multiple: false,
+  value: 0,
   id: 'postNotIn',
-  label: 'Post Types',
+  label: 'Post Not In',
   description: ""
 }, {
+  multiple: false,
+  value: 0,
   id: 'postNameIn',
-  label: 'Post Types',
+  label: 'Post Name In',
   description: ""
 }, {
+  multiple: false,
+  value: 0,
   id: 'hasPassword',
-  label: 'Post Types',
+  label: 'Has Password',
   description: ""
 }, {
+  multiple: false,
+  value: 0,
   id: 'commentCount',
-  label: 'Post Types',
+  label: 'Comment Count',
   description: ""
 }, {
+  multiple: false,
+  value: 0,
   id: 'nopaging',
-  label: 'Post Types',
+  label: 'No Paging',
   description: ""
 }, {
+  multiple: false,
+  value: 0,
   id: 'postsPerPage',
-  label: 'Post Types',
+  label: 'Posts Per Page',
   description: ""
 }, {
+  multiple: false,
+  value: 0,
   id: 'paged',
-  label: 'Post Types',
+  label: 'Paged',
   description: ""
 }, {
+  multiple: false,
+  value: 0,
   id: 'offset',
-  label: 'Post Types',
+  label: 'Offset',
   description: ""
 }, {
+  multiple: false,
+  value: 0,
   id: 'postsPerArchivePage',
-  label: 'Post Types',
+  label: 'Posts Per Archive Page',
   description: ""
 }, {
+  multiple: false,
+  value: 0,
   id: 'ignoreStickyPosts',
-  label: 'Post Types',
+  label: 'Ignore Sticky Posts',
   description: ""
 }, {
+  multiple: false,
+  value: 0,
   id: 'metaKey',
-  label: 'Post Types',
+  label: 'Meta Key',
   description: ""
 }, {
+  multiple: false,
+  value: 0,
   id: 'metaValue',
-  label: 'Post Types',
+  label: 'Meta Value',
   description: ""
 }, {
+  multiple: false,
+  value: 0,
   id: 'metaValueNum',
-  label: 'Post Types',
+  label: 'Meta Value Num',
   description: ""
 }, {
+  multiple: false,
+  value: 0,
   id: 'metaCompare',
-  label: 'Post Types',
+  label: 'Meta Compare',
   description: ""
 }, {
+  multiple: false,
+  value: 0,
   id: 'metaQuery',
-  label: 'Post Types',
+  label: 'Meta Query',
   description: ""
 }, {
+  multiple: false,
+  value: 0,
   id: 'perm',
-  label: 'Post Types',
+  label: 'Perm',
   description: ""
 }, {
+  multiple: false,
+  value: 0,
   id: 'postMimeType',
-  label: 'Post Types',
+  label: 'Post Mime Type',
   description: ""
 }, {
+  multiple: false,
+  value: 0,
   id: 'cacheResults',
-  label: 'Post Types',
+  label: 'Cache Results',
   description: ""
 }, {
+  multiple: false,
+  value: 0,
   id: 'updatePostMetaCache',
-  label: 'Post Types',
+  label: 'Update Post Meta Cache',
   description: ""
 }, {
+  multiple: false,
+  value: 0,
   id: 'updatePostTermCache',
-  label: 'Post Types',
+  label: 'Update Post Term Cache',
   description: ""
 }];
 /* harmony default export */ __webpack_exports__["default"] = (queryPrams);
