@@ -250,7 +250,32 @@ registerBlockType("prefix-blocks/post-grid", {
         }
 
 
+        function generateQueryFieldAuthorIn(xx) {
 
+            console.log(typeof xx);
+
+            var xxts = [12, 24, 32];
+
+
+            var xxt = [1, 2, 3].concat(xxts);
+
+
+            return (
+                xxt.map((x) => {
+                    return (
+                        <div>{x}</div>
+                    )
+                })
+            )
+
+
+
+
+
+
+
+
+        }
 
         function updateName(content) {
 
@@ -281,19 +306,23 @@ registerBlockType("prefix-blocks/post-grid", {
 
 
 
-            if (itemData.id == 's' || itemData.id == 'order') {
-                itemData.val = newVal;
-                queryArgs.items[index] = itemData;
-                setAttributes({ queryArgs: { items: queryArgs.items } });
+            itemData.val = newVal;
+            queryArgs.items[index] = itemData;
+            setAttributes({ queryArgs: { items: queryArgs.items } });
 
-            }
+            // if (itemData.id == 's' || itemData.id == 'order'  ) {
+            //     itemData.val = newVal;
+            //     queryArgs.items[index] = itemData;
+            //     setAttributes({ queryArgs: { items: queryArgs.items } });
 
-            if (itemData.id == 'postType' || itemData.id == 'orderby' || itemData.id == 'postStatus') {
-                itemData.val = newVal;
-                queryArgs.items[index] = itemData;
-                setAttributes({ queryArgs: { items: queryArgs.items } });
+            // }
 
-            }
+            // if (itemData.id == 'postType' || itemData.id == 'orderby' || itemData.id == 'postStatus') {
+            //     itemData.val = newVal;
+            //     queryArgs.items[index] = itemData;
+            //     setAttributes({ queryArgs: { items: queryArgs.items } });
+
+            // }
 
 
 
@@ -319,7 +348,7 @@ registerBlockType("prefix-blocks/post-grid", {
                         <PanelRow>
                             <span
                                 onClick={(ev) => { removeQueryPram(index) }}
-                                className='cursor-pointer px-3 bg-red-300 text-sm'><span className='dashicon dashicons dashicons-no-alt'></span> Delete</span>
+                                className='cursor-pointer px-3 py-1 text-white bg-red-600 text-sm'><span className='dashicon dashicons dashicons-no-alt'></span> Delete</span>
                         </PanelRow>
 
 
@@ -440,6 +469,33 @@ registerBlockType("prefix-blocks/post-grid", {
                                 value={item.val}
                                 onChange={(newVal) => updateQueryPram(newVal, index)}
                             />
+
+                        </div>
+                        <div className={(item.id == 'metaKey' || item.id == 'year' || item.id == 'monthnum' || item.id == 'w' || item.id == 'day' || item.id == 'hour' || item.id == 'minute' || item.id == 'second' || item.id == 'm' || item.id == 'author' || item.id == 'authorName') ? '' : 'hidden'}>
+                            <InputControl
+                                value={item.val}
+                                onChange={(newVal) => updateQueryPram(newVal, index)}
+                            />
+
+                        </div>
+
+                        <div className={item.id == 'authorIn' ? '' : 'hidden'}>
+
+
+                            {JSON.stringify(item.val)}
+
+                            {
+
+                                generateQueryFieldAuthorIn(item)
+
+                            }
+
+
+
+
+
+
+
 
                         </div>
 
@@ -1166,13 +1222,21 @@ registerBlockType("prefix-blocks/post-grid", {
                     </CustomCss>
 
 
-
-
-
                     <code>
                         {viewType}
                         <br />
+                        {/* {JSON.stringify(viewType)}
+                        {JSON.stringify(lazyLoad)}
+                        {JSON.stringify(container)}
+                        {JSON.stringify(pagination)}
+                        {JSON.stringify(masonry)}
+                        {JSON.stringify(search)}
+                        {JSON.stringify(grid)}
+
+                        {JSON.stringify(layout)} */}
                         {JSON.stringify(queryArgs)}
+
+
                     </code>
 
 
