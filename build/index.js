@@ -865,10 +865,17 @@ __webpack_require__.r(__webpack_exports__);
 
 
 const ALLOWED_MEDIA_TYPES = ['image']; //var el = element.createElement;
-//console.log(breakPoints);
+////console.log(breakPoints);
 
 
- //console.log(queryPrams);
+ ////console.log(queryPrams);
+
+var queryPramsX = _queryprams__WEBPACK_IMPORTED_MODULE_9__["default"].map((x, i) => {
+  return {
+    value: i,
+    label: x.label
+  };
+}); //console.log(queryPramsX);
 
 const CustomCss = styled_components__WEBPACK_IMPORTED_MODULE_10__["default"].div`
 display: grid;
@@ -1021,32 +1028,30 @@ row-gap: ${props => {
       type: 'object',
       default: {
         items: [{
-          multiple: false,
-          value: 0,
           val: [],
+          multiple: false,
           id: 'postType',
-          label: 'Post Types 1',
+          label: 'Post Types',
           description: "Select Post Types to Query"
         }, {
+          val: [],
+          args: [],
           multiple: false,
-          value: 1,
-          val: '',
           id: 'taxQuery',
           label: 'Tax Query',
           description: "Taxonomies query arguments"
         }, {
+          val: [],
+          args: [],
           multiple: false,
-          value: 2,
-          val: '',
           id: 'metaQuery',
           label: 'Meta Query',
           description: "Meta field query"
         }, {
-          multiple: false,
-          value: 3,
           val: '',
+          multiple: false,
           id: 's',
-          label: 'keyword',
+          label: 'Keyword',
           description: "Search keyword paramater"
         }]
       }
@@ -1147,7 +1152,7 @@ row-gap: ${props => {
     var search = attributes.search;
     var grid = attributes.grid;
     var layout = attributes.layout;
-    var queryArgs = attributes.queryArgs; //console.log(queryArgs);
+    var queryArgs = attributes.queryArgs; ////console.log(queryArgs);
 
     const colors = [{
       name: 'red',
@@ -1161,7 +1166,7 @@ row-gap: ${props => {
     }];
     const postTypes = (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_6__.useSelect)(select => select(_wordpress_core_data__WEBPACK_IMPORTED_MODULE_7__.store).getPostTypes({
       per_page: -1
-    }), []); //console.log(postTypes);
+    }), []); ////console.log(postTypes);
     //setAttributes({ dummyName: 'Raju' });
 
     function updateViewType(val) {
@@ -1191,7 +1196,7 @@ row-gap: ${props => {
     }
 
     function generateQueryFieldAuthorIn(xx) {
-      console.log(typeof xx);
+      //console.log(typeof xx);
       var xxts = [12, 24, 32];
       var xxt = [1, 2, 3].concat(xxts);
       return xxt.map(x => {
@@ -1206,7 +1211,7 @@ row-gap: ${props => {
     }
 
     function removeQueryPram(i) {
-      console.log(i);
+      //console.log(i);
       queryArgs.items.splice(i, 1);
       setAttributes({
         queryArgs: {
@@ -1216,8 +1221,8 @@ row-gap: ${props => {
     }
 
     function updateQueryPram(newVal, index) {
-      console.log(index);
-      console.log(newVal);
+      //console.log(index);
+      //console.log(newVal);
       var itemData = queryArgs.items[index];
       itemData.val = newVal;
       queryArgs.items[index] = itemData;
@@ -1236,8 +1241,7 @@ row-gap: ${props => {
       //     setAttributes({ queryArgs: { items: queryArgs.items } });
       // }
       //queryArgs.items.splice(i, 1);
-
-      console.log(queryArgs);
+      //console.log(queryArgs);
     }
 
     function generateQueryArgOptions(item, index) {
@@ -1253,7 +1257,7 @@ row-gap: ${props => {
         className: "cursor-pointer px-3 py-1 text-white bg-red-600 text-sm"
       }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.createElement)("span", {
         className: "dashicon dashicons dashicons-no-alt"
-      }), " Delete")), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.createElement)("div", {
+      }), " Delete")), item.id == 'postType' && (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.createElement)("div", {
         className: item.id == 'postType' ? '' : 'hidden'
       }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_3__.SelectControl, {
         style: {
@@ -1270,7 +1274,7 @@ row-gap: ${props => {
           value: 'page'
         }],
         onChange: newVal => updateQueryPram(newVal, index)
-      })), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.createElement)("div", {
+      })), item.id == 'postStatus' && (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.createElement)("div", {
         className: item.id == 'postStatus' ? '' : 'hidden'
       }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_3__.SelectControl, {
         style: {
@@ -1308,7 +1312,7 @@ row-gap: ${props => {
           value: 'any'
         }],
         onChange: newVal => updateQueryPram(newVal, index)
-      })), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.createElement)("div", {
+      })), item.id == 'order' && (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.createElement)("div", {
         className: item.id == 'order' ? '' : 'hidden'
       }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_3__.SelectControl, {
         style: {
@@ -1324,7 +1328,7 @@ row-gap: ${props => {
           value: 'DESC'
         }],
         onChange: newVal => updateQueryPram(newVal, index)
-      })), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.createElement)("div", {
+      })), item.id == 'orderby' && (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.createElement)("div", {
         className: item.id == 'orderby' ? '' : 'hidden'
       }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_3__.SelectControl, {
         style: {
@@ -1389,40 +1393,372 @@ row-gap: ${props => {
           value: 'post_parent__in'
         }],
         onChange: newVal => updateQueryPram(newVal, index)
-      })), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.createElement)("div", {
-        className: item.id == 'taxQuery' ? '' : 'hidden'
-      }, "post tax Query"), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.createElement)("div", {
-        className: item.id == 'metaQuery' ? '' : 'hidden'
-      }, "post meta Query"), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.createElement)("div", {
-        className: item.id == 's' ? '' : 'hidden'
-      }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_3__.__experimentalInputControl, {
+      })), item.id == 'taxQueryRelation' && (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.createElement)("div", {
+        className: item.id == 'taxQueryRelation' ? '' : 'hidden'
+      }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_3__.SelectControl, {
+        style: {
+          margin: 0
+        },
+        label: "",
+        value: item.val,
+        options: [{
+          label: 'OR',
+          value: 'OR'
+        }, {
+          label: 'AND',
+          value: 'AND'
+        }],
+        onChange: newVal => updateQueryPram(newVal, index)
+      })), item.id == 'metaQuery' && (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.createElement)("div", null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.createElement)("div", {
+        className: "cursor-pointer inline-block mb-2 px-3 py-1 text-white bg-blue-600 text-sm",
+        onClick: ev => {
+          var itemData = queryArgs.items[index];
+          var xx = itemData.args.concat({
+            terms: [{
+              key: '',
+              value: '',
+              compare: ''
+            }],
+            relation: 'OR'
+          });
+          queryArgs.items[index].args = xx;
+          setAttributes({
+            queryArgs: {
+              items: queryArgs.items
+            }
+          });
+        }
+      }, "Add"), item.args.map((x, j) => {
+        return (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.createElement)("div", null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_3__.PanelBody, {
+          title: "Meta Field",
+          initialOpen: false
+        }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_3__.PanelRow, null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.createElement)("div", null, "Relation"), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_3__.SelectControl, {
+          style: {
+            margin: 0
+          },
+          label: "",
+          value: x.relation,
+          options: [{
+            label: 'OR',
+            value: 'OR'
+          }, {
+            label: 'AND',
+            value: 'AND'
+          }],
+          onChange: newVal => updateQueryPram(newVal, index)
+        })), x.terms.map(y => {
+          return (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.createElement)("div", {
+            className: "border-b border-solid border-gray-300 py-3"
+          }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_3__.__experimentalInputControl, {
+            label: "Meta Key",
+            value: y.key,
+            placeholder: "Meta Key"
+          }), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_3__.__experimentalInputControl, {
+            label: "Value",
+            value: y.value,
+            placeholder: ""
+          }), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_3__.PanelRow, null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_3__.SelectControl, {
+            style: {
+              margin: 0
+            },
+            label: "Compare",
+            value: y.compare,
+            options: [{
+              label: '=',
+              value: '='
+            }, {
+              label: '!=',
+              value: '!='
+            }, {
+              label: '>',
+              value: '>'
+            }, {
+              label: '>=',
+              value: '>='
+            }, {
+              label: '<',
+              value: '<'
+            }, {
+              label: '<=',
+              value: '<='
+            }, {
+              label: 'LIKE',
+              value: 'LIKE'
+            }, {
+              label: 'NOT LIKE',
+              value: 'NOT LIKE'
+            }, {
+              label: 'IN',
+              value: 'IN'
+            }, {
+              label: 'NOT IN',
+              value: 'NOT IN'
+            }, {
+              label: 'BETWEEN',
+              value: 'BETWEEN'
+            }, {
+              label: 'NOT BETWEEN',
+              value: 'NOT BETWEEN'
+            }, {
+              label: 'AND',
+              value: 'AND'
+            }, {
+              label: 'EXISTS',
+              value: 'EXISTS'
+            }, {
+              label: 'NOT EXISTS',
+              value: 'NOT EXISTS'
+            }]
+          })));
+        }), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.createElement)("div", {
+          className: "cursor-pointer text-center px-3 py-1 text-white bg-blue-600 text-sm",
+          onClick: ev => {
+            var itemData = queryArgs.items[index];
+            var xx = itemData.args[j].terms.concat({
+              taxonomy: '',
+              field: '',
+              terms: '',
+              operator: ''
+            });
+            queryArgs.items[index].args[j].terms = xx;
+            setAttributes({
+              queryArgs: {
+                items: queryArgs.items
+              }
+            });
+          }
+        }, "Add")));
+      })), item.id == 'taxQuery' && (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.createElement)("div", null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.createElement)("div", {
+        className: "cursor-pointer inline-block mb-2 px-3 py-1 text-white bg-blue-600 text-sm",
+        onClick: ev => {
+          var itemData = queryArgs.items[index];
+          var xx = itemData.args.concat({
+            terms: [{
+              taxonomy: '',
+              field: '',
+              terms: '',
+              operator: ''
+            }],
+            relation: 'OR'
+          });
+          queryArgs.items[index].args = xx;
+          setAttributes({
+            queryArgs: {
+              items: queryArgs.items
+            }
+          });
+        }
+      }, "Add"), item.args.map((x, j) => {
+        return (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.createElement)("div", null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_3__.PanelBody, {
+          title: "Term",
+          initialOpen: false
+        }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_3__.PanelRow, null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.createElement)("div", null, "Terms Relation"), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_3__.SelectControl, {
+          style: {
+            margin: 0
+          },
+          label: "",
+          value: x.relation,
+          options: [{
+            label: 'OR',
+            value: 'OR'
+          }, {
+            label: 'AND',
+            value: 'AND'
+          }],
+          onChange: newVal => updateQueryPram(newVal, index)
+        })), x.terms.map(y => {
+          return (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.createElement)("div", {
+            className: "border-b border-solid border-gray-300 py-3"
+          }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_3__.__experimentalInputControl, {
+            label: "Taxonomy",
+            value: y.taxonomy,
+            placeholder: "Taxonomy"
+          }), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_3__.__experimentalInputControl, {
+            label: "Terms",
+            value: y.terms,
+            placeholder: "Comma separated"
+          }), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_3__.PanelRow, null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_3__.SelectControl, {
+            style: {
+              margin: 0
+            },
+            label: "Fields",
+            value: y.field,
+            options: [{
+              label: 'Term ID',
+              value: 'term_id'
+            }, {
+              label: 'Name',
+              value: 'name'
+            }, {
+              label: 'Slug',
+              value: 'slug'
+            }, {
+              label: 'Term taxonomy id',
+              value: 'term_taxonomy_id'
+            }]
+          }), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_3__.SelectControl, {
+            style: {
+              margin: 0
+            },
+            label: "Operator",
+            value: y.operator,
+            options: [{
+              label: 'IN',
+              value: 'IN'
+            }, {
+              label: 'NOT IN',
+              value: 'NOT IN'
+            }, {
+              label: 'AND',
+              value: 'AND'
+            }, {
+              label: 'EXISTS',
+              value: 'EXISTS'
+            }, {
+              label: 'NOT EXISTS',
+              value: 'NOT EXISTS'
+            }]
+          })));
+        }), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.createElement)("div", {
+          className: "cursor-pointer text-center px-3 py-1 text-white bg-blue-600 text-sm",
+          onClick: ev => {
+            var itemData = queryArgs.items[index];
+            var xx = itemData.args[j].terms.concat({
+              taxonomy: '',
+              field: '',
+              terms: '',
+              operator: ''
+            });
+            queryArgs.items[index].args[j].terms = xx;
+            setAttributes({
+              queryArgs: {
+                items: queryArgs.items
+              }
+            });
+          }
+        }, "Add")));
+      })), (item.id == 'metaKey' || item.id == 'metaValue' || item.id == 'metaValueNum' || item.id == 'metaCompare' || item.id == 'year' || item.id == 'monthnum' || item.id == 'w' || item.id == 'day' || item.id == 'hour' || item.id == 'minute' || item.id == 'second' || item.id == 'm' || item.id == 'author' || item.id == 'authorName' || item.id == 'tag' || item.id == 'tagId' || item.id == 'cat' || item.id == 'categoryName' || item.id == 'p' || item.id == 'name' || item.id == 'pageId' || item.id == 'pagename' || item.id == 'postParent' || item.id == 'postPassword' || item.id == 'postsPerPage' || item.id == 'paged' || item.id == 'offset' || item.id == 'postsPerArchivePage' || item.id == 'perm') && (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.createElement)("div", null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_3__.__experimentalInputControl, {
         value: item.val,
         onChange: newVal => updateQueryPram(newVal, index)
-      })), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.createElement)("div", {
-        className: item.id == 'metaKey' || item.id == 'year' || item.id == 'monthnum' || item.id == 'w' || item.id == 'day' || item.id == 'hour' || item.id == 'minute' || item.id == 'second' || item.id == 'm' || item.id == 'author' || item.id == 'authorName' ? '' : 'hidden'
-      }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_3__.__experimentalInputControl, {
-        value: item.val,
-        onChange: newVal => updateQueryPram(newVal, index)
-      })), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.createElement)("div", {
+      })), item.id == 'authorIn' && (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.createElement)("div", {
         className: item.id == 'authorIn' ? '' : 'hidden'
-      }, JSON.stringify(item.val), generateQueryFieldAuthorIn(item))));
+      }, JSON.stringify(item.val), generateQueryFieldAuthorIn(item)), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.createElement)("div", {
+        className: item.id == 'categoryAnd' ? '' : 'hidden'
+      }), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.createElement)("div", {
+        className: item.id == 'categoryIn' ? '' : 'hidden'
+      }), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.createElement)("div", {
+        className: item.id == 'categoryNotIn' ? '' : 'hidden'
+      }), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.createElement)("div", {
+        className: item.id == 'tagAnd' ? '' : 'hidden'
+      }), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.createElement)("div", {
+        className: item.id == 'tagIn' ? '' : 'hidden'
+      }), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.createElement)("div", {
+        className: item.id == 'tagNotIn' ? '' : 'hidden'
+      }), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.createElement)("div", {
+        className: item.id == 'tagSlugAnd' ? '' : 'hidden'
+      }), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.createElement)("div", {
+        className: item.id == 'tagSlugIn' ? '' : 'hidden'
+      }), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.createElement)("div", {
+        className: item.id == 'postParentIn' ? '' : 'hidden'
+      }), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.createElement)("div", {
+        className: item.id == 'postParentNotIn' ? '' : 'hidden'
+      }), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.createElement)("div", {
+        className: item.id == 'postIn' ? '' : 'hidden'
+      }), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.createElement)("div", {
+        className: item.id == 'postNotIn' ? '' : 'hidden'
+      }), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.createElement)("div", {
+        className: item.id == 'postNameIn' ? '' : 'hidden'
+      }), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.createElement)("div", {
+        className: item.id == 'hasPassword' ? '' : 'hidden'
+      }), item.id == 'commentCount' && (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.createElement)("div", null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_3__.__experimentalInputControl, {
+        value: item.val.value,
+        placeholder: "Comment Count, Ex: 25",
+        onChange: newVal => updateQueryPram({
+          value: newVal,
+          compare: item.val.compare
+        }, index)
+      }), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_3__.SelectControl, {
+        style: {
+          margin: 0
+        },
+        label: "",
+        value: item.val.compare,
+        options: [{
+          label: '=',
+          value: '='
+        }, {
+          label: '!=',
+          value: '!='
+        }, {
+          label: '>',
+          value: '>'
+        }, {
+          label: '>=',
+          value: '>='
+        }, {
+          label: '<',
+          value: '<'
+        }, {
+          label: '<=',
+          value: '<='
+        }],
+        onChange: newVal => updateQueryPram({
+          value: item.val.value,
+          compare: newVal
+        }, index)
+      })), item.id == 'postMimeType' && (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.createElement)("div", null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_3__.SelectControl, {
+        style: {
+          margin: 0
+        },
+        label: "",
+        multiple: true,
+        value: item.val,
+        options: [{
+          label: 'image/jpeg',
+          value: 'jpg|jpeg|jpe'
+        }, {
+          label: 'image/gif',
+          value: 'gif'
+        }, {
+          label: 'image/png',
+          value: 'png'
+        }, {
+          label: 'image/bmp',
+          value: 'bmp'
+        }],
+        onChange: newVal => updateQueryPram(newVal, index)
+      })), (item.id == 'cacheResults' || item.id == 'nopaging' || item.id == 'ignoreStickyPosts' || item.id == 'updatePostMetaCache' || item.id == 'updatePostTermCache') && (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.createElement)("div", null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_3__.SelectControl, {
+        style: {
+          margin: 0
+        },
+        label: "",
+        value: item.val,
+        options: [{
+          label: 'True',
+          value: true
+        }, {
+          label: 'False',
+          value: false
+        }],
+        onChange: newVal => updateQueryPram(newVal, index)
+      })), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.createElement)("p", null, item.description)));
     }
 
-    function addQueryPram(id) {
-      // console.log(queryPrams);
-      var attrExist = false;
-      console.log(id);
-      var data = _queryprams__WEBPACK_IMPORTED_MODULE_9__["default"][id];
-      var multiple = data.multiple;
-      console.log(multiple);
+    function addQueryPram(index) {
+      // //console.log(queryPrams);
+      var attrExist = false; //console.log(index);
+
+      var data = _queryprams__WEBPACK_IMPORTED_MODULE_9__["default"][index];
+      var multiple = data.multiple; //console.log(multiple);
+
       var isExist = queryArgs.items.map(item => {
-        //console.log(item);
-        if (item.id == id) {
-          console.log(item);
+        ////console.log(item);
+        if (item.id == index) {
+          //console.log(item);
           return true;
         }
-      });
-      console.log(isExist);
+      }); //console.log(isExist);
+
       var items = queryArgs.items.concat([data]);
       setAttributes({
         queryArgs: {
@@ -1599,7 +1935,7 @@ row-gap: ${props => {
           }
         });
       },
-      onClose: () => {//console.log('onClose')
+      onClose: () => {////console.log('onClose')
       },
       allowedTypes: ALLOWED_MEDIA_TYPES,
       value: container.bgImg,
@@ -1633,10 +1969,10 @@ row-gap: ${props => {
     }), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.createElement)(_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_4__.MediaUploadCheck, null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.createElement)(_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_4__.MediaUpload, {
       onSelect: media => {
         // media.id
-        //console.log(media);
+        ////console.log(media);
         updateLazyLoadsrcUrl(media.url, media.id); //updateLazyLoadsrcId(media.id);
       },
-      onClose: () => {//console.log('onClose')
+      onClose: () => {////console.log('onClose')
       },
       allowedTypes: ALLOWED_MEDIA_TYPES,
       value: lazyLoad.srcId,
@@ -1653,11 +1989,11 @@ row-gap: ${props => {
       initialOpen: false
     }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_3__.SelectControl, {
       label: "",
-      options: _queryprams__WEBPACK_IMPORTED_MODULE_9__["default"],
+      options: queryPramsX,
       onChange: newVal => addQueryPram(newVal)
     }), queryArgs.items.map((item, index) => {
-      //console.log(item);
-      //console.log(index);
+      ////console.log(item);
+      ////console.log(index);
       return generateQueryArgOptions(item, index);
     })), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_3__.PanelBody, {
       title: "Layouts",
@@ -1714,8 +2050,8 @@ row-gap: ${props => {
       variant: "secondary",
       onClick: addGridColumn
     }, "Add Column"), grid.gridTemplateColumns.map((item, index) => {
-      //console.log(item);
-      //console.log(index);
+      ////console.log(item);
+      ////console.log(index);
       return (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_3__.PanelRow, null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_3__.__experimentalInputControl, {
         value: item.val,
         type: "number",
@@ -1777,8 +2113,8 @@ row-gap: ${props => {
       className: "my-3",
       variant: "secondary"
     }, "Add Row"), grid.gridTemplateRows.map((item, index) => {
-      //console.log(item);
-      //console.log(index);
+      ////console.log(item);
+      ////console.log(index);
       return (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_3__.PanelRow, null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_3__.__experimentalInputControl, {
         value: item.val,
         type: "number",
@@ -2309,7 +2645,7 @@ row-gap: ${props => {
       className: "bg-gray-400 p-3"
     }, "11"), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.createElement)("div", {
       className: "bg-gray-400 p-3"
-    }, "12")), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.createElement)("code", null, viewType, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.createElement)("br", null), JSON.stringify(queryArgs)))];
+    }, "12")), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.createElement)("code", null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.createElement)("br", null), JSON.stringify(queryArgs)))];
   },
   save: function (props) {
     // to make a truly dynamic block, we're handling front end by render_callback under index.php file
@@ -2455,56 +2791,56 @@ __webpack_require__.r(__webpack_exports__);
 const queryPrams = [{
   val: [],
   multiple: false,
-  value: 0,
   id: 'postType',
   label: 'Post Types',
   description: "Select Post Types to Query"
 }, {
   val: [],
+  args: [],
   multiple: false,
-  value: 1,
   id: 'taxQuery',
   label: 'Tax Query',
   description: "Taxonomies query arguments"
 }, {
-  val: [],
+  val: 'OR',
   multiple: false,
-  value: 2,
+  id: 'taxQueryRelation',
+  label: 'Tax Query Relation',
+  description: "Taxonomies query relation"
+}, {
+  val: [],
+  args: [],
+  multiple: false,
   id: 'metaQuery',
   label: 'Meta Query',
   description: "Meta field query"
 }, {
   val: '',
   multiple: false,
-  value: 3,
   id: 's',
   label: 'Keyword',
-  description: "Search keyword paramater"
+  description: "Search keyword, ex: hello"
 }, {
   val: [],
   multiple: false,
-  value: 4,
   id: 'postStatus',
   label: 'Post status',
   description: "Query post by post status"
 }, {
   val: '',
   multiple: false,
-  value: 5,
   id: 'order',
   label: 'Order',
   description: "Post query order"
 }, {
   val: [],
   multiple: false,
-  value: 6,
   id: 'orderby',
   label: 'Orderby',
   description: "Post query orderby"
 }, {
   val: '',
   multiple: false,
-  value: 7,
   id: 'metaKey',
   label: 'Meta fields key',
   description: "Post query by meta fields key"
@@ -2512,63 +2848,54 @@ const queryPrams = [{
 {
   val: '',
   multiple: false,
-  value: 8,
   id: 'dateQuery',
   label: 'Date Query ',
   description: "Post query by date"
 }, {
   val: '',
   multiple: false,
-  value: 9,
   id: 'year',
   label: 'Year',
   description: "Post query by year"
 }, {
   val: '',
   multiple: false,
-  value: 10,
   id: 'monthnum',
   label: 'Month',
   description: "Post query by month"
 }, {
   val: '',
   multiple: false,
-  value: 11,
   id: 'w',
   label: 'Week',
   description: "Post query by week"
 }, {
   val: '',
   multiple: false,
-  value: 12,
   id: 'day',
   label: 'Day',
   description: "Post query by day"
 }, {
   val: '',
   multiple: false,
-  value: 13,
   id: 'hour',
   label: 'Hour',
   description: "Post query by hour"
 }, {
   val: '',
   multiple: false,
-  value: 15,
   id: 'minute',
   label: 'Miniute',
   description: "Post query by miniute"
 }, {
   val: '',
   multiple: false,
-  value: 16,
   id: 'second',
   label: 'Post Types',
   description: "Post query by second"
 }, {
   val: '',
   multiple: false,
-  value: 17,
   id: 'm',
   label: 'Post Types',
   description: "Post query by month"
@@ -2576,28 +2903,24 @@ const queryPrams = [{
 {
   val: '',
   multiple: false,
-  value: 18,
   id: 'author',
   label: 'Author',
   description: "Post query by Author ID"
 }, {
   val: '',
   multiple: false,
-  value: 19,
   id: 'authorName',
   label: 'Author Name',
   description: "Post query by Author Name"
 }, {
   val: [1, 223423, 32342],
   multiple: false,
-  value: 20,
   id: 'authorIn',
   label: 'Author In',
   description: "Post query by Author IDs"
 }, {
   val: [1, 2, 3],
   multiple: false,
-  value: 21,
   id: 'authorNotIn',
   label: 'Author Not In',
   description: ""
@@ -2605,35 +2928,30 @@ const queryPrams = [{
 {
   val: '',
   multiple: false,
-  value: 22,
   id: 'cat',
   label: 'Post Types',
   description: ""
 }, {
   val: '',
   multiple: false,
-  value: 23,
   id: 'categoryName',
   label: 'Category Name',
   description: ""
 }, {
-  val: '',
+  val: [],
   multiple: false,
-  value: 24,
   id: 'categoryAnd',
   label: 'CategoryAnd',
   description: ""
 }, {
-  val: '',
+  val: [],
   multiple: false,
-  value: 25,
   id: 'categoryIn',
   label: 'Category In',
   description: ""
 }, {
-  val: '',
+  val: [],
   multiple: false,
-  value: 26,
   id: 'categoryNotIn',
   label: 'Category Not In',
   description: ""
@@ -2641,245 +2959,218 @@ const queryPrams = [{
 {
   val: '',
   multiple: false,
-  value: 27,
   id: 'tag',
   label: 'Tags',
   description: ""
 }, {
   val: '',
   multiple: false,
-  value: 28,
   id: 'tagId',
   label: 'Tag Id',
   description: ""
 }, {
-  val: '',
+  val: [],
   multiple: false,
-  value: 29,
   id: 'tagAnd',
   label: 'Tag And',
   description: ""
 }, {
-  val: '',
+  val: [],
   multiple: false,
-  value: 30,
   id: 'tagIn',
   label: 'Tag In',
   description: ""
 }, {
-  val: '',
+  val: [],
   multiple: false,
-  value: 31,
   id: 'tagNotIn',
   label: 'Tag Not In',
   description: ""
 }, {
-  val: '',
+  val: [],
   multiple: false,
-  value: 32,
   id: 'tagSlugAnd',
   label: 'Tag Slug And',
   description: ""
 }, {
-  val: '',
+  val: [],
   multiple: false,
-  value: 33,
   id: 'tagSlugIn',
   label: 'Tag Slug In',
   description: ""
 }, {
   val: '',
   multiple: false,
-  value: 34,
   id: 'p',
   label: 'Post id',
   description: ""
 }, {
   val: '',
   multiple: false,
-  value: 35,
   id: 'name',
   label: 'Name',
   description: ""
 }, {
   val: '',
   multiple: false,
-  value: 36,
   id: 'pageId',
   label: 'Page Id',
   description: ""
 }, {
   val: '',
   multiple: false,
-  value: 37,
   id: 'pagename',
   label: 'Page name',
   description: ""
 }, {
   val: '',
   multiple: false,
-  value: 38,
   id: 'postParent',
   label: 'Post Parent',
   description: ""
 }, {
-  val: '',
+  val: [],
   multiple: false,
-  value: 39,
   id: 'postParentIn',
   label: 'Post Parent In',
   description: ""
 }, {
-  val: '',
+  val: [],
   multiple: false,
-  value: 0,
   id: 'postParentNotIn',
   label: 'Post Parent Not In',
   description: ""
 }, {
-  val: '',
+  val: [],
   multiple: false,
-  value: 0,
   id: 'postIn',
   label: 'Post In',
   description: ""
 }, {
-  val: '',
+  val: [],
   multiple: false,
-  value: 0,
   id: 'postNotIn',
   label: 'Post Not In',
   description: ""
 }, {
-  val: '',
+  val: [],
   multiple: false,
-  value: 0,
   id: 'postNameIn',
   label: 'Post Name In',
   description: ""
 }, {
   val: '',
   multiple: false,
-  value: 0,
   id: 'hasPassword',
   label: 'Has Password',
   description: ""
 }, {
   val: '',
   multiple: false,
-  value: 0,
+  id: 'postPassword ',
+  label: 'Post Password',
+  description: ""
+}, {
+  val: {
+    compare: '='
+  },
+  multiple: false,
   id: 'commentCount',
   label: 'Comment Count',
   description: ""
 }, {
   val: '',
   multiple: false,
-  value: 0,
   id: 'nopaging',
   label: 'No Paging',
   description: ""
 }, {
   val: '',
   multiple: false,
-  value: 0,
   id: 'postsPerPage',
   label: 'Posts Per Page',
   description: ""
 }, {
   val: '',
   multiple: false,
-  value: 0,
   id: 'paged',
   label: 'Paged',
   description: ""
 }, {
   val: '',
   multiple: false,
-  value: 0,
   id: 'offset',
   label: 'Offset',
   description: ""
 }, {
   val: '',
   multiple: false,
-  value: 0,
   id: 'postsPerArchivePage',
   label: 'Posts Per Archive Page',
   description: ""
 }, {
   val: '',
   multiple: false,
-  value: 0,
   id: 'ignoreStickyPosts',
   label: 'Ignore Sticky Posts',
   description: ""
 }, {
   val: '',
   multiple: false,
-  value: 0,
   id: 'metaKey',
   label: 'Meta Key',
   description: ""
 }, {
   val: '',
   multiple: false,
-  value: 0,
   id: 'metaValue',
   label: 'Meta Value',
   description: ""
 }, {
   val: '',
   multiple: false,
-  value: 0,
   id: 'metaValueNum',
   label: 'Meta Value Num',
   description: ""
 }, {
   val: '',
   multiple: false,
-  value: 0,
   id: 'metaCompare',
   label: 'Meta Compare',
   description: ""
 }, {
-  val: '',
+  val: [],
   multiple: false,
-  value: 0,
   id: 'metaQuery',
   label: 'Meta Query',
   description: ""
 }, {
-  val: '',
+  val: 'readable',
   multiple: false,
-  value: 0,
   id: 'perm',
   label: 'Perm',
   description: ""
 }, {
-  val: '',
+  val: [],
   multiple: false,
-  value: 0,
   id: 'postMimeType',
   label: 'Post Mime Type',
   description: ""
 }, {
-  val: '',
+  val: false,
   multiple: false,
-  value: 0,
   id: 'cacheResults',
   label: 'Cache Results',
   description: ""
 }, {
-  val: '',
+  val: false,
   multiple: false,
-  value: 0,
   id: 'updatePostMetaCache',
   label: 'Update Post Meta Cache',
   description: ""
 }, {
-  val: '',
+  val: false,
   multiple: false,
-  value: 0,
   id: 'updatePostTermCache',
   label: 'Update Post Term Cache',
   description: ""
