@@ -19,12 +19,20 @@ const ALLOWED_MEDIA_TYPES = ['image'];
 
 //var el = element.createElement;
 
-//console.log(breakPoints);
+////console.log(breakPoints);
 
 import breakPoints from '../../breakpoints'
 import queryPrams from '../../queryprams'
 
-//console.log(queryPrams);
+////console.log(queryPrams);
+
+var queryPramsX = queryPrams.map((x, i) => {
+
+    return { value: i, label: x.label }
+})
+
+
+//console.log(queryPramsX);
 
 
 const CustomCss = styled.div`
@@ -88,10 +96,10 @@ registerBlockType("prefix-blocks/post-grid", {
             type: 'object',
             default: {
                 items: [
-                    { multiple: false, value: 0, val: [], id: 'postType', label: 'Post Types 1', description: "Select Post Types to Query" },
-                    { multiple: false, value: 1, val: '', id: 'taxQuery', label: 'Tax Query', description: "Taxonomies query arguments" },
-                    { multiple: false, value: 2, val: '', id: 'metaQuery', label: 'Meta Query', description: "Meta field query" },
-                    { multiple: false, value: 3, val: '', id: 's', label: 'keyword', description: "Search keyword paramater" },
+                    { val: [], multiple: false, id: 'postType', label: 'Post Types', description: "Select Post Types to Query" },
+                    { val: [], args: [], multiple: false, id: 'taxQuery', label: 'Tax Query', description: "Taxonomies query arguments" },
+                    { val: [], args: [], multiple: false, id: 'metaQuery', label: 'Meta Query', description: "Meta field query" },
+                    { val: '', multiple: false, id: 's', label: 'Keyword', description: "Search keyword paramater" },
 
                 ]
             },
@@ -218,7 +226,7 @@ registerBlockType("prefix-blocks/post-grid", {
         var queryArgs = attributes.queryArgs;
 
 
-        //console.log(queryArgs);
+        ////console.log(queryArgs);
 
         const colors = [
             { name: 'red', color: '#f00' },
@@ -232,7 +240,7 @@ registerBlockType("prefix-blocks/post-grid", {
             (select) => select(coreStore).getPostTypes({ per_page: -1 }), []
         );
 
-        //console.log(postTypes);
+        ////console.log(postTypes);
         //setAttributes({ dummyName: 'Raju' });
 
 
@@ -252,7 +260,7 @@ registerBlockType("prefix-blocks/post-grid", {
 
         function generateQueryFieldAuthorIn(xx) {
 
-            console.log(typeof xx);
+            //console.log(typeof xx);
 
             var xxts = [12, 24, 32];
 
@@ -287,7 +295,7 @@ registerBlockType("prefix-blocks/post-grid", {
 
         function removeQueryPram(i) {
 
-            console.log(i);
+            //console.log(i);
             queryArgs.items.splice(i, 1);
 
 
@@ -299,11 +307,10 @@ registerBlockType("prefix-blocks/post-grid", {
 
         function updateQueryPram(newVal, index) {
 
-            console.log(index);
-            console.log(newVal);
+            //console.log(index);
+            //console.log(newVal);
 
             var itemData = queryArgs.items[index];
-
 
 
             itemData.val = newVal;
@@ -328,7 +335,7 @@ registerBlockType("prefix-blocks/post-grid", {
 
             //queryArgs.items.splice(i, 1);
 
-            console.log(queryArgs);
+            //console.log(queryArgs);
 
 
         }
@@ -351,8 +358,58 @@ registerBlockType("prefix-blocks/post-grid", {
                                 className='cursor-pointer px-3 py-1 text-white bg-red-600 text-sm'><span className='dashicon dashicons dashicons-no-alt'></span> Delete</span>
                         </PanelRow>
 
+                        {/* 
+                        {item.id == 'postType' &&}
+                        {item.id == 'taxQueryRelation' &&}
+                        {item.id == 'metaQuery' &&}
+                        {item.id == 's' &&}
+                        {item.id == 'postStatus' &&}
+                        {item.id == 'order' &&}
+                        {item.id == 'orderby' &&}
+                        {item.id == 'metaKey' &&}
+                        {item.id == 'dateQuery' &&}
+                        {item.id == 'year' &&}
+                        {item.id == 'monthnum' &&}
+                        {item.id == 'w' &&}
+                        {item.id == 'day' &&}
+                        {item.id == 'hour' &&}
+                        {item.id == 'minute' &&}
+                        {item.id == 'second' &&}
+                        {item.id == 'm' &&}
+                        {item.id == 'author' &&}
+                        {item.id == 'authorName' &&}
+                        {item.id == 'authorIn' &&}
+                        {item.id == 'authorNotIn' &&}
+                        {item.id == 'cat' &&}
+                        {item.id == 'categoryName' &&}
+                        {item.id == 'categoryAnd' &&}
+                        {item.id == 'categoryIn' &&}
+                        {item.id == 'categoryNotIn' &&}
+                        {item.id == 'tag' &&}
+                        {item.id == 'tagId' &&}
+                        {item.id == 'tagAnd' &&}
+                        {item.id == 'tagIn' &&}
+                        {item.id == 'tagNotIn' &&}
+                        {item.id == 'tagSlugAnd' &&}
+                        {item.id == 'tagSlugIn' &&}
+                        {item.id == 'p' &&}
+                        {item.id == 'name' &&}
+                        {item.id == 'pageId' &&}
+                        {item.id == 'pagename' &&}
+                        {item.id == 'postParent' &&}
+                        {item.id == 'postParentIn' &&}
+                        {item.id == 'postParentNotIn' &&}
+                        {item.id == 'postIn' &&}
+                        {item.id == 'postNotIn' &&}
+                        {item.id == 'postNameIn' &&}
+                        {item.id == 'hasPassword' &&}
+                        {item.id == 'postPassword' &&} */}
 
-                        <div className={item.id == 'postType' ? '' : 'hidden'}>
+
+
+
+
+                        {item.id == 'postType' && <div className={item.id == 'postType' ? '' : 'hidden'}>
 
                             <SelectControl
                                 style={{ height: '75px' }}
@@ -369,137 +426,457 @@ registerBlockType("prefix-blocks/post-grid", {
                             />
 
 
+                        </div>}
+
+
+                        {item.id == 'postStatus' &&
+                            <div className={item.id == 'postStatus' ? '' : 'hidden'}>
+
+                                <SelectControl
+                                    style={{ height: '75px' }}
+                                    label=""
+                                    multiple
+                                    value={item.val}
+                                    options={[
+                                        { label: 'Publish', value: 'publish' },
+                                        { label: 'Pending', value: 'pending' },
+                                        { label: 'Draft', value: 'draft' },
+                                        { label: 'Auto draft', value: 'auto-draft' },
+                                        { label: 'Future', value: 'future' },
+                                        { label: 'Private', value: 'private' },
+                                        { label: 'Inherit', value: 'inherit' },
+                                        { label: 'Trash', value: 'trash' },
+                                        { label: 'Any', value: 'any' },
+
+
+
+
+                                    ]}
+                                    onChange={(newVal) => updateQueryPram(newVal, index)}
+                                />
+
+
+                            </div>}
+
+
+
+                        {item.id == 'order' &&
+                            <div className={item.id == 'order' ? '' : 'hidden'}>
+
+                                <SelectControl
+                                    style={{ margin: 0 }}
+                                    label=""
+
+                                    value={item.val}
+                                    options={[
+                                        { label: 'Ascending', value: 'ASC' },
+                                        { label: 'Descending', value: 'DESC' },
+
+                                    ]}
+                                    onChange={(newVal) => updateQueryPram(newVal, index)}
+                                />
+
+                            </div>}
+                        {item.id == 'orderby' &&
+
+                            <div className={item.id == 'orderby' ? '' : 'hidden'}>
+
+                                <SelectControl
+                                    style={{ height: '75px' }}
+                                    label=""
+                                    multiple
+                                    value={item.val}
+                                    options={[
+                                        { label: 'None', value: 'none' },
+                                        { label: 'ID', value: 'ID' },
+                                        { label: 'author', value: 'author' },
+                                        { label: 'title', value: 'title' },
+                                        { label: 'name', value: 'name' },
+
+                                        { label: 'type', value: 'type' },
+                                        { label: 'date', value: 'date' },
+                                        { label: 'modified', value: 'modified' },
+                                        { label: 'parent', value: 'parent' },
+                                        { label: 'rand', value: 'rand' },
+                                        { label: 'comment_count', value: 'comment_count' },
+                                        { label: 'relevance', value: 'relevance' },
+                                        { label: 'menu_order', value: 'menu_order' },
+                                        { label: 'meta_value', value: 'meta_value' },
+                                        { label: 'meta_value_num', value: 'meta_value_num' },
+                                        { label: 'post__in', value: 'post__in' },
+                                        { label: 'post_name__in', value: 'post_name__in' },
+                                        { label: 'post_parent__in', value: 'post_parent__in' },
+
+
+                                    ]}
+                                    onChange={(newVal) => updateQueryPram(newVal, index)}
+                                />
+
+                            </div>}
+                        {item.id == 'taxQueryRelation' &&
+                            <div className={item.id == 'taxQueryRelation' ? '' : 'hidden'}>
+
+
+                                <SelectControl
+                                    style={{ margin: 0 }}
+                                    label=""
+                                    value={item.val}
+                                    options={[
+                                        { label: 'OR', value: 'OR' },
+                                        { label: 'AND', value: 'AND' },
+
+                                    ]}
+                                    onChange={(newVal) => updateQueryPram(newVal, index)}
+                                />
+
+                            </div>}
+
+
+
+
+                        {item.id == 'metaQuery' &&
+                            <div>
+                                <div
+                                    className='cursor-pointer inline-block mb-2 px-3 py-1 text-white bg-blue-600 text-sm'
+                                    onClick={(ev) => {
+                                        var itemData = queryArgs.items[index];
+                                        var xx = itemData.args.concat({ terms: [{ key: '', value: '', compare: '' }], relation: 'OR' });
+                                        queryArgs.items[index].args = xx;
+                                        setAttributes({ queryArgs: { items: queryArgs.items } });
+                                    }}
+
+                                >Add</div>
+                                {
+                                    item.args.map((x, j) => {
+                                        return (
+                                            <div>
+                                                <PanelBody title="Meta Field" initialOpen={false}>
+                                                    <PanelRow>
+                                                        <div>Relation</div>
+                                                        <SelectControl
+                                                            style={{ margin: 0 }}
+                                                            label=""
+                                                            value={x.relation}
+                                                            options={[
+                                                                { label: 'OR', value: 'OR' },
+                                                                { label: 'AND', value: 'AND' },
+                                                            ]}
+                                                            onChange={(newVal) => updateQueryPram(newVal, index)}
+                                                        />
+                                                    </PanelRow>
+                                                    {x.terms.map(y => {
+                                                        return (
+
+                                                            <div className='border-b border-solid border-gray-300 py-3'>
+
+                                                                <InputControl
+                                                                    label="Meta Key"
+                                                                    value={y.key}
+                                                                    placeholder="Meta Key"
+                                                                />
+
+                                                                <InputControl
+                                                                    label="Value"
+                                                                    value={y.value}
+                                                                    placeholder=""
+                                                                />
+
+                                                                <PanelRow>
+
+                                                                    <SelectControl
+                                                                        style={{ margin: 0 }}
+                                                                        label="Compare"
+                                                                        value={y.compare}
+                                                                        options={[
+
+                                                                            { label: '=', value: '=' },
+                                                                            { label: '!=', value: '!=' },
+                                                                            { label: '>', value: '>' },
+                                                                            { label: '>=', value: '>=' },
+                                                                            { label: '<', value: '<' },
+                                                                            { label: '<=', value: '<=' },
+
+                                                                            { label: 'LIKE', value: 'LIKE' },
+                                                                            { label: 'NOT LIKE', value: 'NOT LIKE' },
+
+                                                                            { label: 'IN', value: 'IN' },
+                                                                            { label: 'NOT IN', value: 'NOT IN' },
+
+                                                                            { label: 'BETWEEN', value: 'BETWEEN' },
+                                                                            { label: 'NOT BETWEEN', value: 'NOT BETWEEN' },
+
+                                                                            { label: 'AND', value: 'AND' },
+                                                                            { label: 'EXISTS', value: 'EXISTS' },
+                                                                            { label: 'NOT EXISTS', value: 'NOT EXISTS' },
+                                                                        ]}
+                                                                    />
+                                                                </PanelRow>
+                                                            </div>
+                                                        )
+                                                    })}
+                                                    <div
+                                                        className='cursor-pointer text-center px-3 py-1 text-white bg-blue-600 text-sm'
+                                                        onClick={(ev) => {
+
+                                                            var itemData = queryArgs.items[index];
+
+                                                            var xx = itemData.args[j].terms.concat({ taxonomy: '', field: '', terms: '', operator: '' });
+                                                            queryArgs.items[index].args[j].terms = xx;
+
+                                                            setAttributes({ queryArgs: { items: queryArgs.items } });
+                                                        }}
+                                                    >Add</div>
+                                                </PanelBody>
+                                            </div>
+                                        )
+
+                                    })
+                                }
+
+                            </div>
+                        }
+
+
+                        {item.id == 'taxQuery' &&
+                            <div>
+                                <div
+                                    className='cursor-pointer inline-block mb-2 px-3 py-1 text-white bg-blue-600 text-sm'
+                                    onClick={(ev) => {
+                                        var itemData = queryArgs.items[index];
+                                        var xx = itemData.args.concat({ terms: [{ taxonomy: '', field: '', terms: '', operator: '' }], relation: 'OR' });
+                                        queryArgs.items[index].args = xx;
+                                        setAttributes({ queryArgs: { items: queryArgs.items } });
+                                    }}
+
+                                >Add</div>
+                                {
+                                    item.args.map((x, j) => {
+                                        return (
+                                            <div>
+                                                <PanelBody title="Term" initialOpen={false}>
+                                                    <PanelRow>
+                                                        <div>Terms Relation</div>
+                                                        <SelectControl
+                                                            style={{ margin: 0 }}
+                                                            label=""
+                                                            value={x.relation}
+                                                            options={[
+                                                                { label: 'OR', value: 'OR' },
+                                                                { label: 'AND', value: 'AND' },
+                                                            ]}
+                                                            onChange={(newVal) => updateQueryPram(newVal, index)}
+                                                        />
+                                                    </PanelRow>
+                                                    {x.terms.map(y => {
+                                                        return (
+
+                                                            <div className='border-b border-solid border-gray-300 py-3'>
+
+                                                                <InputControl
+                                                                    label="Taxonomy"
+                                                                    value={y.taxonomy}
+                                                                    placeholder="Taxonomy"
+                                                                />
+
+                                                                <InputControl
+                                                                    label="Terms"
+                                                                    value={y.terms}
+                                                                    placeholder="Comma separated"
+                                                                />
+
+                                                                <PanelRow>
+                                                                    <SelectControl
+                                                                        style={{ margin: 0 }}
+                                                                        label="Fields"
+                                                                        value={y.field}
+                                                                        options={[
+                                                                            { label: 'Term ID', value: 'term_id' },
+                                                                            { label: 'Name', value: 'name' },
+                                                                            { label: 'Slug', value: 'slug' },
+                                                                            { label: 'Term taxonomy id', value: 'term_taxonomy_id' },
+
+                                                                        ]}
+
+                                                                    />
+                                                                    <SelectControl
+                                                                        style={{ margin: 0 }}
+                                                                        label="Operator"
+                                                                        value={y.operator}
+                                                                        options={[
+                                                                            { label: 'IN', value: 'IN' },
+                                                                            { label: 'NOT IN', value: 'NOT IN' },
+                                                                            { label: 'AND', value: 'AND' },
+                                                                            { label: 'EXISTS', value: 'EXISTS' },
+                                                                            { label: 'NOT EXISTS', value: 'NOT EXISTS' },
+                                                                        ]}
+                                                                    />
+                                                                </PanelRow>
+                                                            </div>
+                                                        )
+                                                    })}
+                                                    <div
+                                                        className='cursor-pointer text-center px-3 py-1 text-white bg-blue-600 text-sm'
+                                                        onClick={(ev) => {
+
+                                                            var itemData = queryArgs.items[index];
+
+                                                            var xx = itemData.args[j].terms.concat({ taxonomy: '', field: '', terms: '', operator: '' });
+                                                            queryArgs.items[index].args[j].terms = xx;
+
+                                                            setAttributes({ queryArgs: { items: queryArgs.items } });
+                                                        }}
+                                                    >Add</div>
+                                                </PanelBody>
+                                            </div>
+                                        )
+
+                                    })
+                                }
+
+                            </div>
+                        }
+
+
+
+
+
+                        {(item.id == 'metaKey' || item.id == 'metaValue' || item.id == 'metaValueNum' || item.id == 'metaCompare' || item.id == 'year' || item.id == 'monthnum' || item.id == 'w' || item.id == 'day' || item.id == 'hour' || item.id == 'minute' || item.id == 'second' || item.id == 'm' || item.id == 'author' || item.id == 'authorName' || item.id == 'tag' || item.id == 'tagId' || item.id == 'cat' || item.id == 'categoryName' || item.id == 'p' || item.id == 'name' || item.id == 'pageId' || item.id == 'pagename' || item.id == 'postParent' || item.id == 'postPassword' || item.id == 'postsPerPage' || item.id == 'paged' || item.id == 'offset' || item.id == 'postsPerArchivePage' || item.id == 'perm') &&
+
+                            <div >
+                                <InputControl
+                                    value={item.val}
+                                    onChange={(newVal) => updateQueryPram(newVal, index)}
+                                />
+
+
+                            </div>
+
+                        }
+                        {item.id == 'authorIn' &&
+                            <div className={item.id == 'authorIn' ? '' : 'hidden'}>
+
+
+                                {JSON.stringify(item.val)}
+
+                                {
+
+                                    generateQueryFieldAuthorIn(item)
+
+                                }
+
+                            </div>}
+
+
+
+
+
+
+
+
+
+
+                        <div className={item.id == 'categoryAnd' ? '' : 'hidden'}>
+
+
+                        </div>
+                        <div className={item.id == 'categoryIn' ? '' : 'hidden'}>
+                        </div>
+                        <div className={item.id == 'categoryNotIn' ? '' : 'hidden'}>
                         </div>
 
-
-                        <div className={item.id == 'postStatus' ? '' : 'hidden'}>
-
-                            <SelectControl
-                                style={{ height: '75px' }}
-                                label=""
-                                multiple
-                                value={item.val}
-                                options={[
-                                    { label: 'Publish', value: 'publish' },
-                                    { label: 'Pending', value: 'pending' },
-                                    { label: 'Draft', value: 'draft' },
-                                    { label: 'Auto draft', value: 'auto-draft' },
-                                    { label: 'Future', value: 'future' },
-                                    { label: 'Private', value: 'private' },
-                                    { label: 'Inherit', value: 'inherit' },
-                                    { label: 'Trash', value: 'trash' },
-                                    { label: 'Any', value: 'any' },
-
-
-
-
-                                ]}
-                                onChange={(newVal) => updateQueryPram(newVal, index)}
-                            />
-
-
+                        <div className={item.id == 'tagAnd' ? '' : 'hidden'}>
                         </div>
-
-
-
-                        <div className={item.id == 'order' ? '' : 'hidden'}>
-
-                            <SelectControl
-                                style={{ margin: 0 }}
-                                label=""
-
-                                value={item.val}
-                                options={[
-                                    { label: 'Ascending', value: 'ASC' },
-                                    { label: 'Descending', value: 'DESC' },
-
-                                ]}
-                                onChange={(newVal) => updateQueryPram(newVal, index)}
-                            />
-
+                        <div className={item.id == 'tagIn' ? '' : 'hidden'}>
                         </div>
-
-                        <div className={item.id == 'orderby' ? '' : 'hidden'}>
-
-                            <SelectControl
-                                style={{ height: '75px' }}
-                                label=""
-                                multiple
-                                value={item.val}
-                                options={[
-                                    { label: 'None', value: 'none' },
-                                    { label: 'ID', value: 'ID' },
-                                    { label: 'author', value: 'author' },
-                                    { label: 'title', value: 'title' },
-                                    { label: 'name', value: 'name' },
-
-                                    { label: 'type', value: 'type' },
-                                    { label: 'date', value: 'date' },
-                                    { label: 'modified', value: 'modified' },
-                                    { label: 'parent', value: 'parent' },
-                                    { label: 'rand', value: 'rand' },
-                                    { label: 'comment_count', value: 'comment_count' },
-                                    { label: 'relevance', value: 'relevance' },
-                                    { label: 'menu_order', value: 'menu_order' },
-                                    { label: 'meta_value', value: 'meta_value' },
-                                    { label: 'meta_value_num', value: 'meta_value_num' },
-                                    { label: 'post__in', value: 'post__in' },
-                                    { label: 'post_name__in', value: 'post_name__in' },
-                                    { label: 'post_parent__in', value: 'post_parent__in' },
-
-
-                                ]}
-                                onChange={(newVal) => updateQueryPram(newVal, index)}
-                            />
-
+                        <div className={item.id == 'tagNotIn' ? '' : 'hidden'}>
                         </div>
-
-
-
-
-                        <div className={item.id == 'taxQuery' ? '' : 'hidden'}>
-                            post tax Query
+                        <div className={item.id == 'tagSlugAnd' ? '' : 'hidden'}>
                         </div>
+                        <div className={item.id == 'tagSlugIn' ? '' : 'hidden'}></div>
+                        <div className={item.id == 'postParentIn' ? '' : 'hidden'}></div>
+                        <div className={item.id == 'postParentNotIn' ? '' : 'hidden'}></div>
+                        <div className={item.id == 'postIn' ? '' : 'hidden'}></div>
+                        <div className={item.id == 'postNotIn' ? '' : 'hidden'}></div>
+                        <div className={item.id == 'postNameIn' ? '' : 'hidden'}></div>
+                        <div className={item.id == 'hasPassword' ? '' : 'hidden'}></div>
 
-                        <div className={item.id == 'metaQuery' ? '' : 'hidden'}>
-                            post meta Query
-                        </div>
-                        <div className={item.id == 's' ? '' : 'hidden'}>
-                            <InputControl
-                                value={item.val}
-                                onChange={(newVal) => updateQueryPram(newVal, index)}
-                            />
+                        {item.id == 'commentCount' &&
+                            <div >
 
-                        </div>
-                        <div className={(item.id == 'metaKey' || item.id == 'year' || item.id == 'monthnum' || item.id == 'w' || item.id == 'day' || item.id == 'hour' || item.id == 'minute' || item.id == 'second' || item.id == 'm' || item.id == 'author' || item.id == 'authorName') ? '' : 'hidden'}>
-                            <InputControl
-                                value={item.val}
-                                onChange={(newVal) => updateQueryPram(newVal, index)}
-                            />
+                                <InputControl
+                                    value={item.val.value}
+                                    placeholder="Comment Count, Ex: 25"
+                                    onChange={(newVal) => updateQueryPram({ value: newVal, compare: item.val.compare }, index)}
+                                />
 
-                        </div>
+                                <SelectControl
+                                    style={{ margin: 0 }}
+                                    label=""
 
-                        <div className={item.id == 'authorIn' ? '' : 'hidden'}>
+                                    value={item.val.compare}
+                                    options={[
+                                        { label: '=', value: '=' },
+                                        { label: '!=', value: '!=' },
+                                        { label: '>', value: '>' },
+                                        { label: '>=', value: '>=' },
+                                        { label: '<', value: '<' },
+                                        { label: '<=', value: '<=' },
+                                    ]}
+                                    onChange={(newVal) => updateQueryPram({ value: item.val.value, compare: newVal }, index)}
+                                />
 
-
-                            {JSON.stringify(item.val)}
-
-                            {
-
-                                generateQueryFieldAuthorIn(item)
-
-                            }
-
-
-
-
-
-
-
-
-                        </div>
+                            </div>
+                        }
 
 
+                        {item.id == 'postMimeType' &&
+                            <div >
+
+
+                                <SelectControl
+                                    style={{ margin: 0 }}
+                                    label=""
+                                    multiple
+                                    value={item.val}
+                                    options={[
+                                        { label: 'image/jpeg', value: 'jpg|jpeg|jpe' },
+                                        { label: 'image/gif', value: 'gif' },
+                                        { label: 'image/png', value: 'png' },
+                                        { label: 'image/bmp', value: 'bmp' },
+
+
+                                    ]}
+                                    onChange={(newVal) => updateQueryPram(newVal, index)}
+                                />
+
+                            </div>}
+                        {(item.id == 'cacheResults' || item.id == 'nopaging' || item.id == 'ignoreStickyPosts' || item.id == 'updatePostMetaCache' || item.id == 'updatePostTermCache') &&
+                            <div >
+                                <SelectControl
+                                    style={{ margin: 0 }}
+                                    label=""
+
+                                    value={item.val}
+                                    options={[
+                                        { label: 'True', value: true },
+                                        { label: 'False', value: false },
+
+                                    ]}
+                                    onChange={(newVal) => updateQueryPram(newVal, index)}
+                                />
+                            </div>
+                        }
+
+
+
+
+
+
+
+
+
+
+                        <p>{item.description}</p>
 
 
 
@@ -516,33 +893,32 @@ registerBlockType("prefix-blocks/post-grid", {
 
 
 
-        function addQueryPram(id) {
+        function addQueryPram(index) {
 
 
-            // console.log(queryPrams);
+            // //console.log(queryPrams);
 
             var attrExist = false;
 
-            console.log(id);
-            var data = queryPrams[id];
+            //console.log(index);
+            var data = queryPrams[index];
             var multiple = data.multiple;
-            console.log(multiple);
+            //console.log(multiple);
 
             var isExist = queryArgs.items.map((item) => {
-                //console.log(item);
+                ////console.log(item);
 
-                if (item.id == id) {
-                    console.log(item);
+                if (item.id == index) {
+                    //console.log(item);
                     return true;
                 }
             })
 
-            console.log(isExist);
+            //console.log(isExist);
 
 
 
             var items = queryArgs.items.concat([data])
-
             setAttributes({ queryArgs: { items: items } });
 
         }
@@ -688,7 +1064,7 @@ registerBlockType("prefix-blocks/post-grid", {
 
                                             }
                                             onClose={() => {
-                                                //console.log('onClose')
+                                                ////console.log('onClose')
                                             }
 
 
@@ -743,7 +1119,7 @@ registerBlockType("prefix-blocks/post-grid", {
                                     <MediaUpload
                                         onSelect={(media) => {
                                             // media.id
-                                            //console.log(media);
+                                            ////console.log(media);
                                             updateLazyLoadsrcUrl(media.url, media.id);
                                             //updateLazyLoadsrcId(media.id);
 
@@ -752,7 +1128,7 @@ registerBlockType("prefix-blocks/post-grid", {
 
                                         }
                                         onClose={() => {
-                                            //console.log('onClose')
+                                            ////console.log('onClose')
                                         }
 
 
@@ -777,16 +1153,18 @@ registerBlockType("prefix-blocks/post-grid", {
 
                                 <SelectControl
                                     label=""
-                                    options={queryPrams}
+                                    options={queryPramsX}
                                     onChange={(newVal) => addQueryPram(newVal)}
 
                                 />
 
 
+
+
                                 {queryArgs.items.map((item, index) => {
 
-                                    //console.log(item);
-                                    //console.log(index);
+                                    ////console.log(item);
+                                    ////console.log(index);
 
                                     return generateQueryArgOptions(item, index);
 
@@ -849,8 +1227,8 @@ registerBlockType("prefix-blocks/post-grid", {
 
 
                                 {grid.gridTemplateColumns.map((item, index) => {
-                                    //console.log(item);
-                                    //console.log(index);
+                                    ////console.log(item);
+                                    ////console.log(index);
 
                                     return (
 
@@ -899,8 +1277,8 @@ registerBlockType("prefix-blocks/post-grid", {
 
 
                                 {grid.gridTemplateRows.map((item, index) => {
-                                    //console.log(item);
-                                    //console.log(index);
+                                    ////console.log(item);
+                                    ////console.log(index);
 
                                     return (
 
@@ -1223,7 +1601,7 @@ registerBlockType("prefix-blocks/post-grid", {
 
 
                     <code>
-                        {viewType}
+                        {/* {viewType} */}
                         <br />
                         {/* {JSON.stringify(viewType)}
                         {JSON.stringify(lazyLoad)}
