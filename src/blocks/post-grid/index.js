@@ -32,13 +32,16 @@ var queryPramsX = queryPrams.map((x, i) => {
     return { value: i, label: x.label }
 })
 
-apiFetch({
-    path: 'http://localhost/wp/wp-json/wp/v2/posts',
-    method: 'POST',
-    data: { title: 'Categories' },
-}).then((res) => {
-    console.log(res);
-});
+
+
+
+// wp.apiFetch({ path: '/wp/v2/categories?per_page=100' })
+//     .then(terms => console.log(terms));
+
+
+
+
+
 
 //console.log(queryPramsX);
 
@@ -88,9 +91,14 @@ registerBlockType("prefix-blocks/post-grid", {
         },
 
 
+
         layout: {
             type: 'object',
             default: { id: '', keyword: '', category: '', categories: [] },
+        },
+        layoutList: {
+            type: 'array',
+            default: [],
         },
         masonry: {
             type: 'object',
@@ -219,7 +227,6 @@ registerBlockType("prefix-blocks/post-grid", {
     edit: function (props) {
 
 
-
         var attributes = props.attributes;
         var setAttributes = props.setAttributes;
 
@@ -233,6 +240,19 @@ registerBlockType("prefix-blocks/post-grid", {
         var grid = attributes.grid;
         var layout = attributes.layout;
         var queryArgs = attributes.queryArgs;
+        var layoutList = attributes.layoutList;
+
+
+
+        // apiFetch({
+        //     path: '/wp/v2/posts/',
+        //     method: 'POST',
+        //     data: { title: 'Categories' },
+        // }).then((res) => {
+        //     console.log(res);
+
+        // });
+
 
 
         ////console.log(queryArgs);
@@ -263,9 +283,25 @@ registerBlockType("prefix-blocks/post-grid", {
 
         function updateLazyLoadsrcUrl(url, id) {
             setAttributes({ lazyLoad: { enable: lazyLoad.enable, srcUrl: url, srcId: id } });
-
         }
 
+
+        function fetchLayouts() {
+
+
+            // setAttributes({ layout: { id: layout.id, categories: layout.categories, keyword: layout.keyword, category: layout.category, lists: [1, 2, 3], } });
+
+
+
+            wp.apiFetch({ path: '/wp/v2/post_grid_layout?per_page=100' })
+                .then(items => {
+
+
+                    setAttributes({ layoutList: items });
+
+
+                });
+        }
 
         function generateQueryFieldAuthorIn(xx) {
 
@@ -1044,18 +1080,11 @@ registerBlockType("prefix-blocks/post-grid", {
 
         }
 
-        function selectLayout() {
+        function selectLayout(post_content) {
 
-            var post_content = `<!-- wp:paragraph -->
-    <p>Hello</p>
-    <!-- /wp:paragraph -->
-    <!-- wp:list -->
-    <ul>
-    <li>hello 1</li>
-    <li>hello 2</li>
-    <li> </li>
-    </ul>
-    <!-- /wp:list -->`;
+            console.log(post_content);
+
+
 
 
 
@@ -1296,7 +1325,10 @@ registerBlockType("prefix-blocks/post-grid", {
                                         value={layout.keyword}
                                         type="text"
                                         placeholder="Search Here..."
-                                        onChange={(newVal) => setAttributes({ layout: { id: layout.id, keyword: newVal, category: layout.category, categories: layout.categories } })}
+                                        onChange={(newVal) => {
+                                            fetchLayouts();
+                                            setAttributes({ layout: { id: layout.id, keyword: newVal, category: layout.category, categories: layout.categories } })
+                                        }}
 
                                     />
                                     <SelectControl
@@ -1313,7 +1345,10 @@ registerBlockType("prefix-blocks/post-grid", {
 
 
                                         ]}
-                                        onChange={(newVal) => setAttributes({ layout: { id: layout.id, keyword: layout.keyword, category: newVal, categories: layout.categories } })}
+                                        onChange={(newVal) => {
+                                            fetchLayouts();
+                                            setAttributes({ layout: { id: layout.id, keyword: layout.keyword, category: newVal, categories: layout.categories } })
+                                        }}
                                     />
 
 
@@ -1323,6 +1358,25 @@ registerBlockType("prefix-blocks/post-grid", {
                                 </PanelRow>
 
                                 <Button className='mb-3' variant="secondary" onClick={selectLayout} >Select layout</Button>
+
+
+
+                                {layoutList.length > 0 && layoutList.map(x => {
+                                    return (
+                                        <div>
+                                            <div onClick={(ev) => { selectLayout(x.content.rendered) }}>{x.title.rendered}</div>
+
+                                        </div>
+                                    )
+                                })}
+
+
+                                <PanelRow>
+
+
+
+
+                                </PanelRow>
 
 
                             </PanelBody>
@@ -1719,7 +1773,7 @@ registerBlockType("prefix-blocks/post-grid", {
                         {JSON.stringify(grid)}
 
                         {JSON.stringify(layout)} */}
-                        {JSON.stringify(queryArgs)}
+                        {JSON.stringify(layout)}
 
 
                     </code>
