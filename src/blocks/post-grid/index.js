@@ -534,107 +534,7 @@ registerBlockType("prefix-blocks/post-grid", {
 
 
 
-                        {item.id == 'metaQuery' &&
-                            <div>
-                                <div
-                                    className='cursor-pointer inline-block mb-2 px-3 py-1 text-white bg-blue-600 text-sm'
-                                    onClick={(ev) => {
-                                        var itemData = queryArgs.items[index];
-                                        var xx = itemData.args.concat({ terms: [{ key: '', value: '', compare: '' }], relation: 'OR' });
-                                        queryArgs.items[index].args = xx;
-                                        setAttributes({ queryArgs: { items: queryArgs.items } });
-                                    }}
 
-                                >Add</div>
-                                {
-                                    item.args.map((x, j) => {
-                                        return (
-                                            <div>
-                                                <PanelBody title="Meta Field" initialOpen={false}>
-                                                    <PanelRow>
-                                                        <div>Relation</div>
-                                                        <SelectControl
-                                                            style={{ margin: 0 }}
-                                                            label=""
-                                                            value={x.relation}
-                                                            options={[
-                                                                { label: 'OR', value: 'OR' },
-                                                                { label: 'AND', value: 'AND' },
-                                                            ]}
-                                                            onChange={(newVal) => updateQueryPram(newVal, index)}
-                                                        />
-                                                    </PanelRow>
-                                                    {x.terms.map(y => {
-                                                        return (
-
-                                                            <div className='border-b border-solid border-gray-300 py-3'>
-
-                                                                <InputControl
-                                                                    label="Meta Key"
-                                                                    value={y.key}
-                                                                    placeholder="Meta Key"
-                                                                />
-
-                                                                <InputControl
-                                                                    label="Value"
-                                                                    value={y.value}
-                                                                    placeholder=""
-                                                                />
-
-                                                                <PanelRow>
-
-                                                                    <SelectControl
-                                                                        style={{ margin: 0 }}
-                                                                        label="Compare"
-                                                                        value={y.compare}
-                                                                        options={[
-
-                                                                            { label: '=', value: '=' },
-                                                                            { label: '!=', value: '!=' },
-                                                                            { label: '>', value: '>' },
-                                                                            { label: '>=', value: '>=' },
-                                                                            { label: '<', value: '<' },
-                                                                            { label: '<=', value: '<=' },
-
-                                                                            { label: 'LIKE', value: 'LIKE' },
-                                                                            { label: 'NOT LIKE', value: 'NOT LIKE' },
-
-                                                                            { label: 'IN', value: 'IN' },
-                                                                            { label: 'NOT IN', value: 'NOT IN' },
-
-                                                                            { label: 'BETWEEN', value: 'BETWEEN' },
-                                                                            { label: 'NOT BETWEEN', value: 'NOT BETWEEN' },
-
-                                                                            { label: 'AND', value: 'AND' },
-                                                                            { label: 'EXISTS', value: 'EXISTS' },
-                                                                            { label: 'NOT EXISTS', value: 'NOT EXISTS' },
-                                                                        ]}
-                                                                    />
-                                                                </PanelRow>
-                                                            </div>
-                                                        )
-                                                    })}
-                                                    <div
-                                                        className='cursor-pointer text-center px-3 py-1 text-white bg-blue-600 text-sm'
-                                                        onClick={(ev) => {
-
-                                                            var itemData = queryArgs.items[index];
-
-                                                            var xx = itemData.args[j].terms.concat({ taxonomy: '', field: '', terms: '', operator: '' });
-                                                            queryArgs.items[index].args[j].terms = xx;
-
-                                                            setAttributes({ queryArgs: { items: queryArgs.items } });
-                                                        }}
-                                                    >Add</div>
-                                                </PanelBody>
-                                            </div>
-                                        )
-
-                                    })
-                                }
-
-                            </div>
-                        }
 
 
                         {item.id == 'taxQuery' &&
@@ -654,6 +554,20 @@ registerBlockType("prefix-blocks/post-grid", {
                                         return (
                                             <div>
                                                 <PanelBody title="Term" initialOpen={false}>
+
+                                                    <div
+                                                        className='cursor-pointer inline-block mb-2 px-3 py-1 text-white bg-red-600 text-sm'
+                                                        onClick={(ev) => {
+
+                                                            var itemData = queryArgs.items[index];
+                                                            var xx = itemData.args.splice(j, 1);
+                                                            queryArgs.items[index].args = itemData.args;
+                                                            setAttributes({ queryArgs: { items: queryArgs.items } });
+                                                        }}
+
+                                                    >Remove</div>
+
+
                                                     <PanelRow>
                                                         <div>Terms Relation</div>
                                                         <SelectControl
@@ -664,10 +578,25 @@ registerBlockType("prefix-blocks/post-grid", {
                                                                 { label: 'OR', value: 'OR' },
                                                                 { label: 'AND', value: 'AND' },
                                                             ]}
-                                                            onChange={(newVal) => updateQueryPram(newVal, index)}
+                                                            onChange={(newVal) => {
+                                                                var itemData = queryArgs.items[index];
+
+                                                                //itemData.args.relation = newVal;
+                                                                itemData.args[j].relation = newVal;
+
+                                                                //var term = itemData.args[j].terms[k]
+                                                                //term.taxonomy = newVal;
+                                                                console.log(itemData.args[j].relation);
+
+                                                                console.log(newVal);
+                                                                console.log(j);
+
+                                                                queryArgs.items[index].args = itemData.args;
+                                                                setAttributes({ queryArgs: { items: queryArgs.items } });
+                                                            }}
                                                         />
                                                     </PanelRow>
-                                                    {x.terms.map(y => {
+                                                    {x.terms.map((y, k) => {
                                                         return (
 
                                                             <div className='border-b border-solid border-gray-300 py-3'>
@@ -676,12 +605,32 @@ registerBlockType("prefix-blocks/post-grid", {
                                                                     label="Taxonomy"
                                                                     value={y.taxonomy}
                                                                     placeholder="Taxonomy"
+                                                                    onChange={(newVal) => {
+                                                                        var itemData = queryArgs.items[index];
+
+
+                                                                        var term = itemData.args[j].terms[k]
+                                                                        term.taxonomy = newVal;
+
+                                                                        queryArgs.items[index].args = itemData.args;
+                                                                        setAttributes({ queryArgs: { items: queryArgs.items } });
+                                                                    }}
                                                                 />
 
                                                                 <InputControl
                                                                     label="Terms"
                                                                     value={y.terms}
                                                                     placeholder="Comma separated"
+                                                                    onChange={(newVal) => {
+                                                                        var itemData = queryArgs.items[index];
+
+
+                                                                        var term = itemData.args[j].terms[k]
+                                                                        term.terms = newVal;
+
+                                                                        queryArgs.items[index].args = itemData.args;
+                                                                        setAttributes({ queryArgs: { items: queryArgs.items } });
+                                                                    }}
                                                                 />
 
                                                                 <PanelRow>
@@ -696,6 +645,16 @@ registerBlockType("prefix-blocks/post-grid", {
                                                                             { label: 'Term taxonomy id', value: 'term_taxonomy_id' },
 
                                                                         ]}
+                                                                        onChange={(newVal) => {
+                                                                            var itemData = queryArgs.items[index];
+
+
+                                                                            var term = itemData.args[j].terms[k]
+                                                                            term.field = newVal;
+
+                                                                            queryArgs.items[index].args = itemData.args;
+                                                                            setAttributes({ queryArgs: { items: queryArgs.items } });
+                                                                        }}
 
                                                                     />
                                                                     <SelectControl
@@ -709,6 +668,16 @@ registerBlockType("prefix-blocks/post-grid", {
                                                                             { label: 'EXISTS', value: 'EXISTS' },
                                                                             { label: 'NOT EXISTS', value: 'NOT EXISTS' },
                                                                         ]}
+                                                                        onChange={(newVal) => {
+                                                                            var itemData = queryArgs.items[index];
+
+
+                                                                            var term = itemData.args[j].terms[k]
+                                                                            term.operator = newVal;
+
+                                                                            queryArgs.items[index].args = itemData.args;
+                                                                            setAttributes({ queryArgs: { items: queryArgs.items } });
+                                                                        }}
                                                                     />
                                                                 </PanelRow>
                                                             </div>

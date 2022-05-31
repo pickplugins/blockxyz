@@ -1409,125 +1409,6 @@ row-gap: ${props => {
           value: 'AND'
         }],
         onChange: newVal => updateQueryPram(newVal, index)
-      })), item.id == 'metaQuery' && (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.createElement)("div", null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.createElement)("div", {
-        className: "cursor-pointer inline-block mb-2 px-3 py-1 text-white bg-blue-600 text-sm",
-        onClick: ev => {
-          var itemData = queryArgs.items[index];
-          var xx = itemData.args.concat({
-            terms: [{
-              key: '',
-              value: '',
-              compare: ''
-            }],
-            relation: 'OR'
-          });
-          queryArgs.items[index].args = xx;
-          setAttributes({
-            queryArgs: {
-              items: queryArgs.items
-            }
-          });
-        }
-      }, "Add"), item.args.map((x, j) => {
-        return (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.createElement)("div", null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_3__.PanelBody, {
-          title: "Meta Field",
-          initialOpen: false
-        }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_3__.PanelRow, null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.createElement)("div", null, "Relation"), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_3__.SelectControl, {
-          style: {
-            margin: 0
-          },
-          label: "",
-          value: x.relation,
-          options: [{
-            label: 'OR',
-            value: 'OR'
-          }, {
-            label: 'AND',
-            value: 'AND'
-          }],
-          onChange: newVal => updateQueryPram(newVal, index)
-        })), x.terms.map(y => {
-          return (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.createElement)("div", {
-            className: "border-b border-solid border-gray-300 py-3"
-          }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_3__.__experimentalInputControl, {
-            label: "Meta Key",
-            value: y.key,
-            placeholder: "Meta Key"
-          }), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_3__.__experimentalInputControl, {
-            label: "Value",
-            value: y.value,
-            placeholder: ""
-          }), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_3__.PanelRow, null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_3__.SelectControl, {
-            style: {
-              margin: 0
-            },
-            label: "Compare",
-            value: y.compare,
-            options: [{
-              label: '=',
-              value: '='
-            }, {
-              label: '!=',
-              value: '!='
-            }, {
-              label: '>',
-              value: '>'
-            }, {
-              label: '>=',
-              value: '>='
-            }, {
-              label: '<',
-              value: '<'
-            }, {
-              label: '<=',
-              value: '<='
-            }, {
-              label: 'LIKE',
-              value: 'LIKE'
-            }, {
-              label: 'NOT LIKE',
-              value: 'NOT LIKE'
-            }, {
-              label: 'IN',
-              value: 'IN'
-            }, {
-              label: 'NOT IN',
-              value: 'NOT IN'
-            }, {
-              label: 'BETWEEN',
-              value: 'BETWEEN'
-            }, {
-              label: 'NOT BETWEEN',
-              value: 'NOT BETWEEN'
-            }, {
-              label: 'AND',
-              value: 'AND'
-            }, {
-              label: 'EXISTS',
-              value: 'EXISTS'
-            }, {
-              label: 'NOT EXISTS',
-              value: 'NOT EXISTS'
-            }]
-          })));
-        }), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.createElement)("div", {
-          className: "cursor-pointer text-center px-3 py-1 text-white bg-blue-600 text-sm",
-          onClick: ev => {
-            var itemData = queryArgs.items[index];
-            var xx = itemData.args[j].terms.concat({
-              taxonomy: '',
-              field: '',
-              terms: '',
-              operator: ''
-            });
-            queryArgs.items[index].args[j].terms = xx;
-            setAttributes({
-              queryArgs: {
-                items: queryArgs.items
-              }
-            });
-          }
-        }, "Add")));
       })), item.id == 'taxQuery' && (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.createElement)("div", null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.createElement)("div", {
         className: "cursor-pointer inline-block mb-2 px-3 py-1 text-white bg-blue-600 text-sm",
         onClick: ev => {
@@ -1552,7 +1433,19 @@ row-gap: ${props => {
         return (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.createElement)("div", null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_3__.PanelBody, {
           title: "Term",
           initialOpen: false
-        }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_3__.PanelRow, null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.createElement)("div", null, "Terms Relation"), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_3__.SelectControl, {
+        }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.createElement)("div", {
+          className: "cursor-pointer inline-block mb-2 px-3 py-1 text-white bg-red-600 text-sm",
+          onClick: ev => {
+            var itemData = queryArgs.items[index];
+            var xx = itemData.args.splice(j, 1);
+            queryArgs.items[index].args = itemData.args;
+            setAttributes({
+              queryArgs: {
+                items: queryArgs.items
+              }
+            });
+          }
+        }, "Remove"), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_3__.PanelRow, null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.createElement)("div", null, "Terms Relation"), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_3__.SelectControl, {
           style: {
             margin: 0
           },
@@ -1565,18 +1458,55 @@ row-gap: ${props => {
             label: 'AND',
             value: 'AND'
           }],
-          onChange: newVal => updateQueryPram(newVal, index)
-        })), x.terms.map(y => {
+          onChange: newVal => {
+            var itemData = queryArgs.items[index]; //itemData.args.relation = newVal;
+
+            itemData.args[j].relation = newVal; //var term = itemData.args[j].terms[k]
+            //term.taxonomy = newVal;
+
+            console.log(itemData.args[j].relation);
+            console.log(newVal);
+            console.log(j);
+            queryArgs.items[index].args = itemData.args;
+            setAttributes({
+              queryArgs: {
+                items: queryArgs.items
+              }
+            });
+          }
+        })), x.terms.map((y, k) => {
           return (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.createElement)("div", {
             className: "border-b border-solid border-gray-300 py-3"
           }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_3__.__experimentalInputControl, {
             label: "Taxonomy",
             value: y.taxonomy,
-            placeholder: "Taxonomy"
+            placeholder: "Taxonomy",
+            onChange: newVal => {
+              var itemData = queryArgs.items[index];
+              var term = itemData.args[j].terms[k];
+              term.taxonomy = newVal;
+              queryArgs.items[index].args = itemData.args;
+              setAttributes({
+                queryArgs: {
+                  items: queryArgs.items
+                }
+              });
+            }
           }), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_3__.__experimentalInputControl, {
             label: "Terms",
             value: y.terms,
-            placeholder: "Comma separated"
+            placeholder: "Comma separated",
+            onChange: newVal => {
+              var itemData = queryArgs.items[index];
+              var term = itemData.args[j].terms[k];
+              term.terms = newVal;
+              queryArgs.items[index].args = itemData.args;
+              setAttributes({
+                queryArgs: {
+                  items: queryArgs.items
+                }
+              });
+            }
           }), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_3__.PanelRow, null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_3__.SelectControl, {
             style: {
               margin: 0
@@ -1595,7 +1525,18 @@ row-gap: ${props => {
             }, {
               label: 'Term taxonomy id',
               value: 'term_taxonomy_id'
-            }]
+            }],
+            onChange: newVal => {
+              var itemData = queryArgs.items[index];
+              var term = itemData.args[j].terms[k];
+              term.field = newVal;
+              queryArgs.items[index].args = itemData.args;
+              setAttributes({
+                queryArgs: {
+                  items: queryArgs.items
+                }
+              });
+            }
           }), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_3__.SelectControl, {
             style: {
               margin: 0
@@ -1617,7 +1558,18 @@ row-gap: ${props => {
             }, {
               label: 'NOT EXISTS',
               value: 'NOT EXISTS'
-            }]
+            }],
+            onChange: newVal => {
+              var itemData = queryArgs.items[index];
+              var term = itemData.args[j].terms[k];
+              term.operator = newVal;
+              queryArgs.items[index].args = itemData.args;
+              setAttributes({
+                queryArgs: {
+                  items: queryArgs.items
+                }
+              });
+            }
           })));
         }), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.createElement)("div", {
           className: "cursor-pointer text-center px-3 py-1 text-white bg-blue-600 text-sm",
