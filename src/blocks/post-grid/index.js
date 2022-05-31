@@ -2,6 +2,7 @@ import { registerBlockType } from '@wordpress/blocks'
 import { __ } from '@wordpress/i18n'
 
 import styled from 'styled-components'
+import apiFetch from '@wordpress/api-fetch';
 
 
 import { createElement } from '@wordpress/element'
@@ -31,6 +32,13 @@ var queryPramsX = queryPrams.map((x, i) => {
     return { value: i, label: x.label }
 })
 
+apiFetch({
+    path: '/wp/v2/posts/1',
+    method: 'POST',
+    data: { title: 'Categories' },
+}).then((res) => {
+    console.log(res);
+});
 
 //console.log(queryPramsX);
 
@@ -100,6 +108,7 @@ registerBlockType("prefix-blocks/post-grid", {
                     { val: [], args: [], multiple: false, id: 'taxQuery', label: 'Tax Query', description: "Taxonomies query arguments" },
                     { val: [], args: [], multiple: false, id: 'metaQuery', label: 'Meta Query', description: "Meta field query" },
                     { val: '', multiple: false, id: 's', label: 'Keyword', description: "Search keyword paramater" },
+                    { val: [], args: [1, 2, 3], multiple: false, id: 'postNameIn', label: 'Post Name In', description: "" },
 
                 ]
             },
@@ -357,53 +366,6 @@ registerBlockType("prefix-blocks/post-grid", {
                                 onClick={(ev) => { removeQueryPram(index) }}
                                 className='cursor-pointer px-3 py-1 text-white bg-red-600 text-sm'><span className='dashicon dashicons dashicons-no-alt'></span> Delete</span>
                         </PanelRow>
-
-                        {/* 
-                        {item.id == 'postType' &&}
-                        {item.id == 'taxQueryRelation' &&}
-                        {item.id == 'metaQuery' &&}
-                        {item.id == 's' &&}
-                        {item.id == 'postStatus' &&}
-                        {item.id == 'order' &&}
-                        {item.id == 'orderby' &&}
-                        {item.id == 'metaKey' &&}
-                        {item.id == 'dateQuery' &&}
-                        {item.id == 'year' &&}
-                        {item.id == 'monthnum' &&}
-                        {item.id == 'w' &&}
-                        {item.id == 'day' &&}
-                        {item.id == 'hour' &&}
-                        {item.id == 'minute' &&}
-                        {item.id == 'second' &&}
-                        {item.id == 'm' &&}
-                        {item.id == 'author' &&}
-                        {item.id == 'authorName' &&}
-                        {item.id == 'authorIn' &&}
-                        {item.id == 'authorNotIn' &&}
-                        {item.id == 'cat' &&}
-                        {item.id == 'categoryName' &&}
-                        {item.id == 'categoryAnd' &&}
-                        {item.id == 'categoryIn' &&}
-                        {item.id == 'categoryNotIn' &&}
-                        {item.id == 'tag' &&}
-                        {item.id == 'tagId' &&}
-                        {item.id == 'tagAnd' &&}
-                        {item.id == 'tagIn' &&}
-                        {item.id == 'tagNotIn' &&}
-                        {item.id == 'tagSlugAnd' &&}
-                        {item.id == 'tagSlugIn' &&}
-                        {item.id == 'p' &&}
-                        {item.id == 'name' &&}
-                        {item.id == 'pageId' &&}
-                        {item.id == 'pagename' &&}
-                        {item.id == 'postParent' &&}
-                        {item.id == 'postParentIn' &&}
-                        {item.id == 'postParentNotIn' &&}
-                        {item.id == 'postIn' &&}
-                        {item.id == 'postNotIn' &&}
-                        {item.id == 'postNameIn' &&}
-                        {item.id == 'hasPassword' &&}
-                        {item.id == 'postPassword' &&} */}
 
 
 
@@ -905,41 +867,45 @@ registerBlockType("prefix-blocks/post-grid", {
 
                                 }
 
-                            </div>}
+                            </div>
+                        }
 
 
 
 
 
+                        {(item.id == 'postNameIn' || item.id == 'postNotIn' || item.id == 'postIn' || item.id == 'postParentNotIn' || item.id == 'tagNotIn' || item.id == 'tagAnd' || item.id == 'tagIn' || item.id == 'postParentIn' || item.id == 'tagSlugIn' || item.id == 'tagSlugAnd' || item.id == 'categoryNotIn' || item.id == 'categoryIn' || item.id == 'categoryAnd') &&
+
+                            <div >
+                                <InputControl
+                                    value={item.val}
+                                    placeholder="Comma separated"
+                                    onChange={(newVal) => updateQueryPram(newVal, index)}
+                                />
 
 
+                            </div>
 
+                        }
 
+                        <div className={item.id == 'postNameIndd' ? '' : 'hidden'}>
+                            {JSON.stringify(item.args)}
+                            <div
+                                className='cursor-pointer text-center px-3 py-1 text-white bg-blue-600 text-sm'
+                                onClick={(ev) => {
 
-                        <div className={item.id == 'categoryAnd' ? '' : 'hidden'}>
+                                    var itemData = queryArgs.items[index];
+
+                                    var args = itemData.args;
+                                    var args = itemData.args.concat({ slug: '' });
+                                    itemData.args = args;
+                                    queryArgs.items[index] = itemData;
+                                    setAttributes({ queryArgs: { items: queryArgs.items } });
+                                }}
+                            >Add</div>
 
 
                         </div>
-                        <div className={item.id == 'categoryIn' ? '' : 'hidden'}>
-                        </div>
-                        <div className={item.id == 'categoryNotIn' ? '' : 'hidden'}>
-                        </div>
-
-                        <div className={item.id == 'tagAnd' ? '' : 'hidden'}>
-                        </div>
-                        <div className={item.id == 'tagIn' ? '' : 'hidden'}>
-                        </div>
-                        <div className={item.id == 'tagNotIn' ? '' : 'hidden'}>
-                        </div>
-                        <div className={item.id == 'tagSlugAnd' ? '' : 'hidden'}>
-                        </div>
-                        <div className={item.id == 'tagSlugIn' ? '' : 'hidden'}></div>
-                        <div className={item.id == 'postParentIn' ? '' : 'hidden'}></div>
-                        <div className={item.id == 'postParentNotIn' ? '' : 'hidden'}></div>
-                        <div className={item.id == 'postIn' ? '' : 'hidden'}></div>
-                        <div className={item.id == 'postNotIn' ? '' : 'hidden'}></div>
-                        <div className={item.id == 'postNameIn' ? '' : 'hidden'}></div>
-                        <div className={item.id == 'hasPassword' ? '' : 'hidden'}></div>
 
                         {item.id == 'commentCount' &&
                             <div >
@@ -991,7 +957,7 @@ registerBlockType("prefix-blocks/post-grid", {
                                 />
 
                             </div>}
-                        {(item.id == 'cacheResults' || item.id == 'nopaging' || item.id == 'ignoreStickyPosts' || item.id == 'updatePostMetaCache' || item.id == 'updatePostTermCache') &&
+                        {(item.id == 'cacheResults' || item.id == 'nopaging' || item.id == 'hasPassword' || item.id == 'ignoreStickyPosts' || item.id == 'updatePostMetaCache' || item.id == 'updatePostTermCache') &&
                             <div >
                                 <SelectControl
                                     style={{ margin: 0 }}

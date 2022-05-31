@@ -20,17 +20,17 @@ const queryPrams = [
   { val: '', multiple: false, id: 'day', label: 'Day', description: "Post query by day" },
   { val: '', multiple: false, id: 'hour', label: 'Hour', description: "Post query by hour" },
   { val: '', multiple: false, id: 'minute', label: 'Miniute', description: "Post query by miniute" },
-  { val: '', multiple: false, id: 'second', label: 'Post Types', description: "Post query by second" },
-  { val: '', multiple: false, id: 'm', label: 'Post Types', description: "Post query by month" },
+  { val: '', multiple: false, id: 'second', label: 'Second', description: "Post query by second" },
+  { val: '', multiple: false, id: 'm', label: 'Month', description: "Post query by month" },
 
   // Author Parameters
   { val: '', multiple: false, id: 'author', label: 'Author', description: "Post query by Author ID" },
   { val: '', multiple: false, id: 'authorName', label: 'Author Name', description: "Post query by Author Name" },
-  { val: [1, 223423, 32342], multiple: false, id: 'authorIn', label: 'Author In', description: "Post query by Author IDs" },
-  { val: [1, 2, 3], multiple: false, id: 'authorNotIn', label: 'Author Not In', description: "" },
+  { val: [], multiple: false, id: 'authorIn', label: 'Author In', description: "Post query by Author IDs" },
+  { val: [], multiple: false, id: 'authorNotIn', label: 'Author Not In', description: "" },
 
   // Category Parameters
-  { val: '', multiple: false, id: 'cat', label: 'Post Types', description: "" },
+  { val: '', multiple: false, id: 'cat', label: 'Category ID', description: "" },
   { val: '', multiple: false, id: 'categoryName', label: 'Category Name', description: "" },
   { val: [], multiple: false, id: 'categoryAnd', label: 'CategoryAnd', description: "" },
   { val: [], multiple: false, id: 'categoryIn', label: 'Category In', description: "" },
@@ -55,7 +55,7 @@ const queryPrams = [
   { val: [], multiple: false, id: 'postParentNotIn', label: 'Post Parent Not In', description: "" },
   { val: [], multiple: false, id: 'postIn', label: 'Post In', description: "" },
   { val: [], multiple: false, id: 'postNotIn', label: 'Post Not In', description: "" },
-  { val: [], multiple: false, id: 'postNameIn', label: 'Post Name In', description: "" },
+  { val: [], args: [{ slug: '' }], multiple: false, id: 'postNameIn', label: 'Post Name In', description: "" },
 
   { val: '', multiple: false, id: 'hasPassword', label: 'Has Password', description: "" },
   { val: '', multiple: false, id: 'postPassword ', label: 'Post Password', description: "" },

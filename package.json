@@ -17,6 +17,7 @@
     "tailwindcss": "^3.0.24"
   },
   "dependencies": {
+    "@wordpress/api-fetch": "^6.6.0",
     "styled-components": "^5.3.5"
   }
 }
