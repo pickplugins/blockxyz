@@ -1409,6 +1409,201 @@ row-gap: ${props => {
           value: 'AND'
         }],
         onChange: newVal => updateQueryPram(newVal, index)
+      })), item.id == 'metaQuery' && (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.createElement)("div", null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.createElement)("div", {
+        className: "cursor-pointer inline-block mb-2 px-3 py-1 text-white bg-blue-600 text-sm",
+        onClick: ev => {
+          var itemData = queryArgs.items[index];
+          var xx = itemData.args.concat({
+            fields: [{
+              key: '',
+              value: '',
+              type: '',
+              compare: ''
+            }],
+            relation: 'OR'
+          });
+          queryArgs.items[index].args = xx;
+          setAttributes({
+            queryArgs: {
+              items: queryArgs.items
+            }
+          });
+        }
+      }, "Add"), item.args.map((x, j) => {
+        return (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.createElement)("div", null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_3__.PanelBody, {
+          title: "Meta Field",
+          initialOpen: false
+        }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.createElement)("div", {
+          className: "cursor-pointer inline-block mb-2 px-3 py-1 text-white bg-red-600 text-sm",
+          onClick: ev => {
+            var itemData = queryArgs.items[index];
+            var xx = itemData.args.splice(j, 1);
+            queryArgs.items[index].args = itemData.args;
+            setAttributes({
+              queryArgs: {
+                items: queryArgs.items
+              }
+            });
+          }
+        }, "Remove"), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_3__.PanelRow, null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.createElement)("div", null, "Relation"), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_3__.SelectControl, {
+          style: {
+            margin: 0
+          },
+          label: "",
+          value: x.relation,
+          options: [{
+            label: 'OR',
+            value: 'OR'
+          }, {
+            label: 'AND',
+            value: 'AND'
+          }],
+          onChange: newVal => {
+            var itemData = queryArgs.items[index]; //itemData.args.relation = newVal;
+
+            itemData.args[j].relation = newVal; //var term = itemData.args[j].fields[k]
+            //term.taxonomy = newVal;
+
+            console.log(itemData.args[j].relation);
+            console.log(newVal);
+            console.log(j);
+            queryArgs.items[index].args = itemData.args;
+            setAttributes({
+              queryArgs: {
+                items: queryArgs.items
+              }
+            });
+          }
+        })), x.fields.map((y, k) => {
+          return (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.createElement)("div", {
+            className: "border-b border-solid border-gray-300 py-3"
+          }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_3__.__experimentalInputControl, {
+            label: "Custom field key",
+            value: y.key,
+            placeholder: "meta_key",
+            onChange: newVal => {
+              var itemData = queryArgs.items[index];
+              var term = itemData.args[j].fields[k];
+              term.key = newVal;
+              queryArgs.items[index].args = itemData.args;
+              setAttributes({
+                queryArgs: {
+                  items: queryArgs.items
+                }
+              });
+            }
+          }), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_3__.__experimentalInputControl, {
+            label: "Meta Value ",
+            value: y.value,
+            placeholder: "25",
+            onChange: newVal => {
+              var itemData = queryArgs.items[index];
+              var term = itemData.args[j].fields[k];
+              term.value = newVal;
+              queryArgs.items[index].args = itemData.args;
+              setAttributes({
+                queryArgs: {
+                  items: queryArgs.items
+                }
+              });
+            }
+          }), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_3__.PanelRow, null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_3__.SelectControl, {
+            style: {
+              margin: 0
+            },
+            label: "Custom field type",
+            value: y.type,
+            options: [{
+              label: 'NUMERIC',
+              value: 'NUMERIC'
+            }, {
+              label: 'BINARY',
+              value: 'BINARY'
+            }, {
+              label: 'CHAR',
+              value: 'CHAR'
+            }, {
+              label: 'DATE',
+              value: 'DATE'
+            }, {
+              label: 'DATETIME',
+              value: 'DATETIME'
+            }, {
+              label: 'DECIMAL',
+              value: 'DECIMAL'
+            }, {
+              label: 'SIGNED',
+              value: 'SIGNED'
+            }, {
+              label: 'TIME',
+              value: 'TIME'
+            }, {
+              label: 'UNSIGNED',
+              value: 'UNSIGNED'
+            }],
+            onChange: newVal => {
+              var itemData = queryArgs.items[index];
+              var term = itemData.args[j].fields[k];
+              term.type = newVal;
+              queryArgs.items[index].args = itemData.args;
+              setAttributes({
+                queryArgs: {
+                  items: queryArgs.items
+                }
+              });
+            }
+          }), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_3__.SelectControl, {
+            style: {
+              margin: 0
+            },
+            label: "compare ",
+            value: y.compare,
+            options: [{
+              label: 'IN',
+              value: 'IN'
+            }, {
+              label: 'NOT IN',
+              value: 'NOT IN'
+            }, {
+              label: 'AND',
+              value: 'AND'
+            }, {
+              label: 'EXISTS',
+              value: 'EXISTS'
+            }, {
+              label: 'NOT EXISTS',
+              value: 'NOT EXISTS'
+            }],
+            onChange: newVal => {
+              var itemData = queryArgs.items[index];
+              var term = itemData.args[j].fields[k];
+              term.compare = newVal;
+              queryArgs.items[index].args = itemData.args;
+              setAttributes({
+                queryArgs: {
+                  items: queryArgs.items
+                }
+              });
+            }
+          })));
+        }), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.createElement)("div", {
+          className: "cursor-pointer text-center px-3 py-1 text-white bg-blue-600 text-sm",
+          onClick: ev => {
+            var itemData = queryArgs.items[index];
+            var xx = itemData.args[j].fields.concat({
+              key: '',
+              value: '',
+              type: '',
+              compare: ''
+            });
+            queryArgs.items[index].args[j].fields = xx;
+            setAttributes({
+              queryArgs: {
+                items: queryArgs.items
+              }
+            });
+          }
+        }, "Add")));
       })), item.id == 'taxQuery' && (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.createElement)("div", null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.createElement)("div", {
         className: "cursor-pointer inline-block mb-2 px-3 py-1 text-white bg-blue-600 text-sm",
         onClick: ev => {
