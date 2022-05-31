@@ -880,7 +880,7 @@ var queryPramsX = _queryprams__WEBPACK_IMPORTED_MODULE_10__["default"].map((x, i
   };
 });
 _wordpress_api_fetch__WEBPACK_IMPORTED_MODULE_2___default()({
-  path: '/wp/v2/posts/1',
+  path: 'http://localhost/wp/wp-json/wp/v2/posts',
   method: 'POST',
   data: {
     title: 'Categories'

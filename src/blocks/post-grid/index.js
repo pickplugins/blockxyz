@@ -33,7 +33,7 @@ var queryPramsX = queryPrams.map((x, i) => {
 })
 
 apiFetch({
-    path: '/wp/v2/posts/1',
+    path: 'http://localhost/wp/wp-json/wp/v2/posts',
     method: 'POST',
     data: { title: 'Categories' },
 }).then((res) => {
