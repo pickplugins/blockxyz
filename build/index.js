@@ -1036,7 +1036,7 @@ row-gap: ${props => {
     posts: {
       type: 'object',
       default: {
-        items: ''
+        items: []
       }
     },
     queryArgs: {
@@ -1102,7 +1102,8 @@ row-gap: ${props => {
     var grid = attributes.grid;
     var layout = attributes.layout;
     var queryArgs = attributes.queryArgs;
-    var layoutList = attributes.layoutList; // apiFetch({
+    var layoutList = attributes.layoutList;
+    var posts = attributes.posts; // apiFetch({
     //     path: '/wp/v2/posts/',
     //     method: 'POST',
     //     data: { title: 'Categories' },
@@ -1159,6 +1160,7 @@ row-gap: ${props => {
           val: item.val
         };
       });
+      console.log(arg);
       _wordpress_api_fetch__WEBPACK_IMPORTED_MODULE_2___default()({
         path: '/blockxyz/v2/get_posts',
         method: 'POST',
@@ -1179,16 +1181,16 @@ row-gap: ${props => {
     }
 
     function fetchLayouts() {
-      // setAttributes({ layout: { id: layout.id, categories: layout.categories, keyword: layout.keyword, category: layout.category, lists: [1, 2, 3], } });
+      fetchPosts(); // setAttributes({ layout: { id: layout.id, categories: layout.categories, keyword: layout.keyword, category: layout.category, lists: [1, 2, 3], } });
       // wp.apiFetch({ path: '/blockxyz/v2/get_posts' })
       //     .then(items => {
       //         console.log(items);
       //     });
+
       _wordpress_api_fetch__WEBPACK_IMPORTED_MODULE_2___default()({
         path: '/blockxyz/v2/get_posts',
         method: 'POST',
         data: {
-          returnFields: ['id', 'title', 'content', 'thumbnail'],
           taxonomy: 'category'
         }
       }).then(res => {
@@ -1791,7 +1793,7 @@ row-gap: ${props => {
             });
           }
         }, "Add")));
-      })), (item.id == 'metaKey' || item.id == 'metaValue' || item.id == 'metaValueNum' || item.id == 'metaCompare' || item.id == 'year' || item.id == 'monthnum' || item.id == 'w' || item.id == 'day' || item.id == 'hour' || item.id == 'minute' || item.id == 'second' || item.id == 'm' || item.id == 'author' || item.id == 'authorName' || item.id == 'tag' || item.id == 'tagId' || item.id == 'cat' || item.id == 'categoryName' || item.id == 'p' || item.id == 'name' || item.id == 'pageId' || item.id == 'pagename' || item.id == 'postParent' || item.id == 'postPassword' || item.id == 'postsPerPage' || item.id == 'paged' || item.id == 'offset' || item.id == 'postsPerArchivePage' || item.id == 'perm') && (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_3__.createElement)("div", null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_3__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_4__.__experimentalInputControl, {
+      })), (item.id == 'metaKey' || item.id == 's' || item.id == 'metaValue' || item.id == 'metaValueNum' || item.id == 'metaCompare' || item.id == 'year' || item.id == 'monthnum' || item.id == 'w' || item.id == 'day' || item.id == 'hour' || item.id == 'minute' || item.id == 'second' || item.id == 'm' || item.id == 'author' || item.id == 'authorName' || item.id == 'tag' || item.id == 'tagId' || item.id == 'cat' || item.id == 'categoryName' || item.id == 'p' || item.id == 'name' || item.id == 'pageId' || item.id == 'pagename' || item.id == 'postParent' || item.id == 'postPassword' || item.id == 'postsPerPage' || item.id == 'paged' || item.id == 'offset' || item.id == 'postsPerArchivePage' || item.id == 'perm') && (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_3__.createElement)("div", null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_3__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_4__.__experimentalInputControl, {
         value: item.val,
         onChange: newVal => updateQueryPram(newVal, index)
       })), item.id == 'authorIn' && (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_3__.createElement)("div", {
@@ -2186,11 +2188,24 @@ row-gap: ${props => {
       variant: "secondary",
       onClick: selectLayout
     }, "Select layout"), layoutList.length > 0 && layoutList.map(x => {
-      return (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_3__.createElement)("div", null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_3__.createElement)("div", {
+      return (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_3__.createElement)("div", {
+        className: "my-3  cursor-pointer"
+      }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_3__.createElement)("div", {
+        className: "relative",
         onClick: ev => {
           selectLayout(x.post_content);
         }
-      }, x.post_title));
+      }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_3__.createElement)("img", {
+        src: x.thumb_url
+      }), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_3__.createElement)("div", {
+        className: "text-[16px] p-2 bg-blue-600 text-white bg-opacity-90 text-bold absolute bottom-0 w-full text-center"
+      }, x.post_title)), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_3__.createElement)("div", {
+        className: "my-3"
+      }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_3__.createElement)("span", {
+        className: ['text-white px-3 py-1 mx-2', x.is_pro ? ' bg-red-600' : ' bg-blue-600'].join('')
+      }, x.is_pro ? 'Pro' : 'Free'), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_3__.createElement)("span", {
+        className: "mx-2"
+      }, "#", x.post_id)));
     }), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_3__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_4__.PanelRow, null)), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_3__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_4__.PanelBody, {
       title: "Grid Settings",
       initialOpen: false,
@@ -2795,7 +2810,7 @@ row-gap: ${props => {
       className: "bg-gray-400 p-3"
     }, "11"), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_3__.createElement)("div", {
       className: "bg-gray-400 p-3"
-    }, "12")), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_3__.createElement)("code", null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_3__.createElement)("br", null), JSON.stringify(layout)))];
+    }, "12")), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_3__.createElement)("code", null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_3__.createElement)("br", null), JSON.stringify(posts)))];
   },
   save: function (props) {
     // to make a truly dynamic block, we're handling front end by render_callback under index.php file

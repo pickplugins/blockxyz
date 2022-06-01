@@ -60,91 +60,47 @@ class BlockPostGridRest
         error_log(serialize($queryArgs));
 
 
-        $taxonomy       = isset($post_data['taxonomy']) ? $post_data['taxonomy'] : '';
-        $post_type       = isset($post_data['post_type']) ? $post_data['post_type'] : '';
-        $posts_per_page      = isset($post_data['posts_per_page']) ? $post_data['posts_per_page'] : '';
-        $order      = isset($post_data['order']) ? $post_data['order'] : '';
-        $orderby      = isset($post_data['orderby']) ? $post_data['orderby'] : '';
-        $returnFields     = isset($post_data['returnFields']) ? $post_data['returnFields'] : [];
+        $post_types       = isset($post_data['post_types']) ? $post_data['post_types'] : ['post'];
+
+        $query_args = [];
+        $posts = [];
+
+        $query_args['post_type'] = $post_types;
+        $post_grid_wp_query = new WP_Query($query_args);
 
 
+        if ($post_grid_wp_query->have_posts()) :
 
-        $term           = $post_data['term'];
-        $image_type     = $post_data['image_type'];
-        $image_size     = $post_data['image_size'];
-        $avatar_size    = $post_data['avatar_size'];
-        $link_color     = $post_data['link_color'];
-        $default_image  = isset($post_data['default_image']['id']) ? absint($post_data['default_image']['id']) : 0;
-        $language       = $post_data['language'];
+            while ($post_grid_wp_query->have_posts()) : $post_grid_wp_query->the_post();
 
-
-
-        $post_args = array(
-            'post_type'      => $post_type,
-            'post_status'    => 'publish',
-            'order'          => $order,
-            'orderby'        => $orderby,
-            'posts_per_page' => $posts_per_page,
-        );
-        if ('all' !== $term && 0 !== absint($term) && 'none' !== $taxonomy) {
-            $post_args['tax_query'] = array( // phpcs:ignore
-                array(
-                    'taxonomy' => $taxonomy,
-                    'terms'    => $term,
-                ),
-            );
-        }
-        // WPML Compatability.
-        global $sitepress;
-        if (!empty($sitepress)) {
-            $sitepress->switch_lang($language);
-        }
-        $query = new \WP_Query($post_args);
-        if (!empty($sitepress)) {
-            $sitepress->switch_lang($sitepress->get_default_language());
-        }
-        $posts = array();
-        if ($query->have_posts()) {
-            while ($query->have_posts()) {
                 global $post;
-                $query->the_post();
-                if ('gravatar' === $image_type) {
-                    $thumbnail = get_avatar($post->post_author, $avatar_size);
-                } else {
-                    $thumbnail = get_the_post_thumbnail($post->ID, $image_size);
-                    if (empty($thumbnail)) {
-                        $thumbnail = wp_get_attachment_image($default_image, $image_size);
-                    }
-                }
-                $post->featured_image_src = $thumbnail;
 
-                // Get author information.
-                $display_name = get_the_author_meta('display_name', $post->post_author);
-                $author_url   = get_author_posts_url($post->post_author);
-
-                $post->author_info               = new \stdClass();
-                $post->author_info->display_name = $display_name;
-                $post->author_info->author_link  = $author_url;
-
-                $post->link = get_permalink($post->ID);
-
-
-
-                if (empty($post->post_excerpt)) {
-                    $post->post_excerpt = apply_filters('the_excerpt', wp_strip_all_tags(strip_shortcodes($post->post_content)));
-                }
-
-                if (!$post->post_excerpt) {
-                    $post->post_excerpt = null;
-                }
-
+                $post_id = $post->ID;
+                $post->post_id = $post->ID;
+                $post->post_title = $post->post_title;
                 $post->post_excerpt = wp_kses_post($post->post_excerpt);
-                $post->post_content = apply_filters('ptam_the_content', $post->post_content);
+                $post->post_content = $post->post_content;
+                $thumb = wp_get_attachment_image_src(get_post_thumbnail_id($post_id));
+                $thumb_url = isset($thumb[0]) ? $thumb[0] : '';
+                $post->thumb_url = !empty($thumb_url) ? $thumb_url : post_grid_plugin_url . 'assets/frontend/images/placeholder.png';
+
+                $post->is_pro = ($post_id % 2 == 0) ? true : false;
+
+
+
                 $posts[]            = $post;
-            }
-        }
-        $return = $posts;
-        die(wp_json_encode($return));
+
+
+            //error_log(serialize($thumb_url));
+
+
+            endwhile;
+            wp_reset_query();
+            wp_reset_postdata();
+        endif;
+
+
+        die(wp_json_encode($posts));
     }
 
     /**

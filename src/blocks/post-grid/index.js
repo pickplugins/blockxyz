@@ -110,7 +110,7 @@ registerBlockType("prefix-blocks/post-grid", {
         },
         posts: {
             type: 'object',
-            default: { items: '' },
+            default: { items: [] },
         },
         queryArgs: {
             type: 'object',
@@ -157,6 +157,7 @@ registerBlockType("prefix-blocks/post-grid", {
         var layout = attributes.layout;
         var queryArgs = attributes.queryArgs;
         var layoutList = attributes.layoutList;
+        var posts = attributes.posts;
 
 
 
@@ -208,6 +209,9 @@ registerBlockType("prefix-blocks/post-grid", {
                 return { id: item.id, val: item.val }
             })
 
+            console.log(arg);
+
+
 
             apiFetch({
                 path: '/blockxyz/v2/get_posts',
@@ -228,6 +232,7 @@ registerBlockType("prefix-blocks/post-grid", {
 
         function fetchLayouts() {
 
+            fetchPosts()
 
             // setAttributes({ layout: { id: layout.id, categories: layout.categories, keyword: layout.keyword, category: layout.category, lists: [1, 2, 3], } });
 
@@ -240,7 +245,7 @@ registerBlockType("prefix-blocks/post-grid", {
             apiFetch({
                 path: '/blockxyz/v2/get_posts',
                 method: 'POST',
-                data: { returnFields: ['id', 'title', 'content', 'thumbnail'], taxonomy: 'category' },
+                data: { taxonomy: 'category' },
             }).then((res) => {
                 console.log(res);
                 setAttributes({ layoutList: res });
@@ -830,7 +835,7 @@ registerBlockType("prefix-blocks/post-grid", {
 
 
 
-                        {(item.id == 'metaKey' || item.id == 'metaValue' || item.id == 'metaValueNum' || item.id == 'metaCompare' || item.id == 'year' || item.id == 'monthnum' || item.id == 'w' || item.id == 'day' || item.id == 'hour' || item.id == 'minute' || item.id == 'second' || item.id == 'm' || item.id == 'author' || item.id == 'authorName' || item.id == 'tag' || item.id == 'tagId' || item.id == 'cat' || item.id == 'categoryName' || item.id == 'p' || item.id == 'name' || item.id == 'pageId' || item.id == 'pagename' || item.id == 'postParent' || item.id == 'postPassword' || item.id == 'postsPerPage' || item.id == 'paged' || item.id == 'offset' || item.id == 'postsPerArchivePage' || item.id == 'perm') &&
+                        {(item.id == 'metaKey' || item.id == 's' || item.id == 'metaValue' || item.id == 'metaValueNum' || item.id == 'metaCompare' || item.id == 'year' || item.id == 'monthnum' || item.id == 'w' || item.id == 'day' || item.id == 'hour' || item.id == 'minute' || item.id == 'second' || item.id == 'm' || item.id == 'author' || item.id == 'authorName' || item.id == 'tag' || item.id == 'tagId' || item.id == 'cat' || item.id == 'categoryName' || item.id == 'p' || item.id == 'name' || item.id == 'pageId' || item.id == 'pagename' || item.id == 'postParent' || item.id == 'postPassword' || item.id == 'postsPerPage' || item.id == 'paged' || item.id == 'offset' || item.id == 'postsPerArchivePage' || item.id == 'perm') &&
 
                             <div >
                                 <InputControl
@@ -1313,9 +1318,22 @@ registerBlockType("prefix-blocks/post-grid", {
 
                                 {layoutList.length > 0 && layoutList.map(x => {
                                     return (
-                                        <div>
+                                        <div className='my-3  cursor-pointer' >
 
-                                            <div onClick={(ev) => { selectLayout(x.post_content) }}>{x.post_title}</div>
+                                            <div className='relative' onClick={(ev) => { selectLayout(x.post_content) }}>
+                                                <img src={x.thumb_url} />
+
+                                                <div className='text-[16px] p-2 bg-blue-600 text-white bg-opacity-90 text-bold absolute bottom-0 w-full text-center' >{x.post_title}</div>
+                                            </div>
+
+
+                                            <div className='my-3'>
+                                                <span className={['text-white px-3 py-1 mx-2', x.is_pro ? ' bg-red-600' : ' bg-blue-600'].join('')}>
+                                                    {x.is_pro ? 'Pro' : 'Free'}
+                                                </span>
+                                                <span className='mx-2' >#{x.post_id}</span>
+
+                                            </div>
 
                                         </div>
                                     )
@@ -1724,7 +1742,7 @@ registerBlockType("prefix-blocks/post-grid", {
                         {JSON.stringify(grid)}
 
                         {JSON.stringify(layout)} */}
-                        {JSON.stringify(layout)}
+                        {JSON.stringify(posts)}
 
 
                     </code>
