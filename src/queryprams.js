@@ -1,9 +1,9 @@
 const queryPrams = [
   { val: [], multiple: false, id: 'postType', label: 'Post Types', description: "Select Post Types to Query" },
-  { val: [], args: [], multiple: false, id: 'taxQuery', label: 'Tax Query', description: "Taxonomies query arguments" },
+  { val: [], multiple: false, id: 'taxQuery', label: 'Tax Query', description: "Taxonomies query arguments" },
   { val: 'OR', multiple: false, id: 'taxQueryRelation', label: 'Tax Query Relation', description: "Taxonomies query relation" },
 
-  { val: [], args: [], multiple: false, id: 'metaQuery', label: 'Meta Query', description: "Meta field query" },
+  { val: [], multiple: false, id: 'metaQuery', label: 'Meta Query', description: "Meta field query" },
   { val: '', multiple: false, id: 's', label: 'Keyword', description: "Search keyword, ex: hello" },
 
   { val: [], multiple: false, id: 'postStatus', label: 'Post status', description: "Query post by post status" },
@@ -55,7 +55,7 @@ const queryPrams = [
   { val: [], multiple: false, id: 'postParentNotIn', label: 'Post Parent Not In', description: "" },
   { val: [], multiple: false, id: 'postIn', label: 'Post In', description: "" },
   { val: [], multiple: false, id: 'postNotIn', label: 'Post Not In', description: "" },
-  { val: [], args: [{ slug: '' }], multiple: false, id: 'postNameIn', label: 'Post Name In', description: "" },
+  { val: [{ slug: '' }], multiple: false, id: 'postNameIn', label: 'Post Name In', description: "" },
 
   { val: '', multiple: false, id: 'hasPassword', label: 'Has Password', description: "" },
   { val: '', multiple: false, id: 'postPassword ', label: 'Post Password', description: "" },

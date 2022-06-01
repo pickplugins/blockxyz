@@ -108,105 +108,21 @@ registerBlockType("prefix-blocks/post-grid", {
             type: 'object',
             default: { js: '', css: '' },
         },
+        posts: {
+            type: 'object',
+            default: { items: '' },
+        },
         queryArgs: {
             type: 'object',
             default: {
                 items: [
                     { val: [], multiple: false, id: 'postType', label: 'Post Types', description: "Select Post Types to Query" },
-                    { val: [], args: [], multiple: false, id: 'taxQuery', label: 'Tax Query', description: "Taxonomies query arguments" },
-                    { val: [], args: [], multiple: false, id: 'metaQuery', label: 'Meta Query', description: "Meta field query" },
+                    { val: [], multiple: false, id: 'taxQuery', label: 'Tax Query', description: "Taxonomies query arguments" },
+                    { val: [], multiple: false, id: 'metaQuery', label: 'Meta Query', description: "Meta field query" },
                     { val: '', multiple: false, id: 's', label: 'Keyword', description: "Search keyword paramater" },
-                    { val: [], args: [1, 2, 3], multiple: false, id: 'postNameIn', label: 'Post Name In', description: "" },
+                    { val: [], multiple: false, id: 'postNameIn', label: 'Post Name In', description: "" },
 
                 ]
-            },
-        },
-
-
-        queryArgsx: {
-            type: 'object',
-            default: {
-                postType: '',
-                taxQuery: '',
-                metaQuery: '',
-                s: '',
-
-                postStatus: '',
-                order: '',
-                orderby: '',
-
-                metaKey: '',
-
-
-                // Date Parameters
-                dateQuery: '',
-                year: '',
-                monthnum: '',
-                w: '',
-                day: '',
-                hour: '',
-                minute: '',
-                second: '',
-                m: '',
-
-                // Author Parameters
-                author: '',
-                authorName: '',
-                authorIn: '',
-                authorNotIn: '',
-
-                // Category Parameters
-                cat: '',
-                categoryName: '',
-                categoryAnd: '',
-                categoryIn: '',
-                categoryNotIn: '',
-
-                // Tag Parameters
-
-                tag: '',
-                tagId: '',
-                tagAnd: '',
-                tagIn: '',
-                tagNotIn: '',
-                tagSlugAnd: '',
-                tagSlugIn: '',
-
-                p: '',
-                name: '',
-                pageId: '',
-                pagename: '',
-                postParent: '',
-                postParentIn: '',
-                postParentPotIn: '',
-                postIn: '',
-                postNotIn: '',
-                postNameIn: '',
-
-                hasPassword: '',
-                commentCount: '',
-
-                nopaging: '',
-                postsPerPage: '',
-                paged: '',
-                offset: '',
-                postsPerArchivePage: '',
-                ignoreStickyPosts: '',
-
-                metaKey: '',
-                metaValue: '',
-                metaValueNum: '',
-                metaCompare: '',
-                metaQuery: '',
-
-                perm: '',
-                postMimeType: '',
-                cache_results: '',
-                update_post_meta_cache: '',
-                update_post_term_cache: '',
-
-
-
             },
         },
 
@@ -285,22 +201,57 @@ registerBlockType("prefix-blocks/post-grid", {
             setAttributes({ lazyLoad: { enable: lazyLoad.enable, srcUrl: url, srcId: id } });
         }
 
+        function fetchPosts() {
+
+
+            var arg = queryArgs.items.map(item => {
+                return { id: item.id, val: item.val }
+            })
+
+
+            apiFetch({
+                path: '/blockxyz/v2/get_posts',
+                method: 'POST',
+                data: { queryArgs: queryArgs.items },
+            }).then((res) => {
+                console.log(res);
+                setAttributes({ posts: { items: res } });
+
+            });
+
+
+            // wp.apiFetch({ path: '/wp/v2/post_grid_layout?per_page=100' })
+            //     .then(items => {
+            //         setAttributes({ layoutList: items });
+            //     });
+        }
 
         function fetchLayouts() {
 
 
             // setAttributes({ layout: { id: layout.id, categories: layout.categories, keyword: layout.keyword, category: layout.category, lists: [1, 2, 3], } });
 
+            // wp.apiFetch({ path: '/blockxyz/v2/get_posts' })
+            //     .then(items => {
+
+            //         console.log(items);
+            //     });
+
+            apiFetch({
+                path: '/blockxyz/v2/get_posts',
+                method: 'POST',
+                data: { returnFields: ['id', 'title', 'content', 'thumbnail'], taxonomy: 'category' },
+            }).then((res) => {
+                console.log(res);
+                setAttributes({ layoutList: res });
+
+            });
 
 
-            wp.apiFetch({ path: '/wp/v2/post_grid_layout?per_page=100' })
-                .then(items => {
-
-
-                    setAttributes({ layoutList: items });
-
-
-                });
+            // wp.apiFetch({ path: '/wp/v2/post_grid_layout?per_page=100' })
+            //     .then(items => {
+            //         setAttributes({ layoutList: items });
+            //     });
         }
 
         function generateQueryFieldAuthorIn(xx) {
@@ -538,14 +489,14 @@ registerBlockType("prefix-blocks/post-grid", {
                                     className='cursor-pointer inline-block mb-2 px-3 py-1 text-white bg-blue-600 text-sm'
                                     onClick={(ev) => {
                                         var itemData = queryArgs.items[index];
-                                        var xx = itemData.args.concat({ fields: [{ key: '', value: '', type: '', compare: '' }], relation: 'OR' });
-                                        queryArgs.items[index].args = xx;
+                                        var xx = itemData.val.concat({ fields: [{ key: '', value: '', type: '', compare: '' }], relation: 'OR' });
+                                        queryArgs.items[index].val = xx;
                                         setAttributes({ queryArgs: { items: queryArgs.items } });
                                     }}
 
                                 >Add</div>
                                 {
-                                    item.args.map((x, j) => {
+                                    item.val.map((x, j) => {
                                         return (
                                             <div>
                                                 <PanelBody title="Meta Field" initialOpen={false}>
@@ -555,8 +506,8 @@ registerBlockType("prefix-blocks/post-grid", {
                                                         onClick={(ev) => {
 
                                                             var itemData = queryArgs.items[index];
-                                                            var xx = itemData.args.splice(j, 1);
-                                                            queryArgs.items[index].args = itemData.args;
+                                                            var xx = itemData.val.splice(j, 1);
+                                                            queryArgs.items[index].val = itemData.val;
                                                             setAttributes({ queryArgs: { items: queryArgs.items } });
                                                         }}
 
@@ -576,17 +527,17 @@ registerBlockType("prefix-blocks/post-grid", {
                                                             onChange={(newVal) => {
                                                                 var itemData = queryArgs.items[index];
 
-                                                                //itemData.args.relation = newVal;
-                                                                itemData.args[j].relation = newVal;
+                                                                //itemData.val.relation = newVal;
+                                                                itemData.val[j].relation = newVal;
 
-                                                                //var term = itemData.args[j].fields[k]
+                                                                //var term = itemData.val[j].fields[k]
                                                                 //term.taxonomy = newVal;
-                                                                console.log(itemData.args[j].relation);
+                                                                console.log(itemData.val[j].relation);
 
                                                                 console.log(newVal);
                                                                 console.log(j);
 
-                                                                queryArgs.items[index].args = itemData.args;
+                                                                queryArgs.items[index].val = itemData.val;
                                                                 setAttributes({ queryArgs: { items: queryArgs.items } });
                                                             }}
                                                         />
@@ -604,10 +555,10 @@ registerBlockType("prefix-blocks/post-grid", {
                                                                         var itemData = queryArgs.items[index];
 
 
-                                                                        var term = itemData.args[j].fields[k]
+                                                                        var term = itemData.val[j].fields[k]
                                                                         term.key = newVal;
 
-                                                                        queryArgs.items[index].args = itemData.args;
+                                                                        queryArgs.items[index].val = itemData.val;
                                                                         setAttributes({ queryArgs: { items: queryArgs.items } });
                                                                     }}
                                                                 />
@@ -620,10 +571,10 @@ registerBlockType("prefix-blocks/post-grid", {
                                                                         var itemData = queryArgs.items[index];
 
 
-                                                                        var term = itemData.args[j].fields[k]
+                                                                        var term = itemData.val[j].fields[k]
                                                                         term.value = newVal;
 
-                                                                        queryArgs.items[index].args = itemData.args;
+                                                                        queryArgs.items[index].val = itemData.val;
                                                                         setAttributes({ queryArgs: { items: queryArgs.items } });
                                                                     }}
                                                                 />
@@ -650,10 +601,10 @@ registerBlockType("prefix-blocks/post-grid", {
                                                                             var itemData = queryArgs.items[index];
 
 
-                                                                            var term = itemData.args[j].fields[k]
+                                                                            var term = itemData.val[j].fields[k]
                                                                             term.type = newVal;
 
-                                                                            queryArgs.items[index].args = itemData.args;
+                                                                            queryArgs.items[index].val = itemData.val;
                                                                             setAttributes({ queryArgs: { items: queryArgs.items } });
                                                                         }}
 
@@ -673,10 +624,10 @@ registerBlockType("prefix-blocks/post-grid", {
                                                                             var itemData = queryArgs.items[index];
 
 
-                                                                            var term = itemData.args[j].fields[k]
+                                                                            var term = itemData.val[j].fields[k]
                                                                             term.compare = newVal;
 
-                                                                            queryArgs.items[index].args = itemData.args;
+                                                                            queryArgs.items[index].val = itemData.val;
                                                                             setAttributes({ queryArgs: { items: queryArgs.items } });
                                                                         }}
                                                                     />
@@ -690,8 +641,8 @@ registerBlockType("prefix-blocks/post-grid", {
 
                                                             var itemData = queryArgs.items[index];
 
-                                                            var xx = itemData.args[j].fields.concat({ key: '', value: '', type: '', compare: '' });
-                                                            queryArgs.items[index].args[j].fields = xx;
+                                                            var xx = itemData.val[j].fields.concat({ key: '', value: '', type: '', compare: '' });
+                                                            queryArgs.items[index].val[j].fields = xx;
 
                                                             setAttributes({ queryArgs: { items: queryArgs.items } });
                                                         }}
@@ -713,14 +664,14 @@ registerBlockType("prefix-blocks/post-grid", {
                                     className='cursor-pointer inline-block mb-2 px-3 py-1 text-white bg-blue-600 text-sm'
                                     onClick={(ev) => {
                                         var itemData = queryArgs.items[index];
-                                        var xx = itemData.args.concat({ terms: [{ taxonomy: '', field: '', terms: '', operator: '' }], relation: 'OR' });
-                                        queryArgs.items[index].args = xx;
+                                        var xx = itemData.val.concat({ terms: [{ taxonomy: '', field: '', terms: '', operator: '' }], relation: 'OR' });
+                                        queryArgs.items[index].val = xx;
                                         setAttributes({ queryArgs: { items: queryArgs.items } });
                                     }}
 
                                 >Add</div>
                                 {
-                                    item.args.map((x, j) => {
+                                    item.val.map((x, j) => {
                                         return (
                                             <div>
                                                 <PanelBody title="Term" initialOpen={false}>
@@ -730,8 +681,8 @@ registerBlockType("prefix-blocks/post-grid", {
                                                         onClick={(ev) => {
 
                                                             var itemData = queryArgs.items[index];
-                                                            var xx = itemData.args.splice(j, 1);
-                                                            queryArgs.items[index].args = itemData.args;
+                                                            var xx = itemData.val.splice(j, 1);
+                                                            queryArgs.items[index].val = itemData.val;
                                                             setAttributes({ queryArgs: { items: queryArgs.items } });
                                                         }}
 
@@ -751,17 +702,17 @@ registerBlockType("prefix-blocks/post-grid", {
                                                             onChange={(newVal) => {
                                                                 var itemData = queryArgs.items[index];
 
-                                                                //itemData.args.relation = newVal;
-                                                                itemData.args[j].relation = newVal;
+                                                                //itemData.val.relation = newVal;
+                                                                itemData.val[j].relation = newVal;
 
-                                                                //var term = itemData.args[j].terms[k]
+                                                                //var term = itemData.val[j].terms[k]
                                                                 //term.taxonomy = newVal;
-                                                                console.log(itemData.args[j].relation);
+                                                                console.log(itemData.val[j].relation);
 
                                                                 console.log(newVal);
                                                                 console.log(j);
 
-                                                                queryArgs.items[index].args = itemData.args;
+                                                                queryArgs.items[index].val = itemData.val;
                                                                 setAttributes({ queryArgs: { items: queryArgs.items } });
                                                             }}
                                                         />
@@ -779,10 +730,10 @@ registerBlockType("prefix-blocks/post-grid", {
                                                                         var itemData = queryArgs.items[index];
 
 
-                                                                        var term = itemData.args[j].terms[k]
+                                                                        var term = itemData.val[j].terms[k]
                                                                         term.taxonomy = newVal;
 
-                                                                        queryArgs.items[index].args = itemData.args;
+                                                                        queryArgs.items[index].val = itemData.val;
                                                                         setAttributes({ queryArgs: { items: queryArgs.items } });
                                                                     }}
                                                                 />
@@ -795,10 +746,10 @@ registerBlockType("prefix-blocks/post-grid", {
                                                                         var itemData = queryArgs.items[index];
 
 
-                                                                        var term = itemData.args[j].terms[k]
+                                                                        var term = itemData.val[j].terms[k]
                                                                         term.terms = newVal;
 
-                                                                        queryArgs.items[index].args = itemData.args;
+                                                                        queryArgs.items[index].val = itemData.val;
                                                                         setAttributes({ queryArgs: { items: queryArgs.items } });
                                                                     }}
                                                                 />
@@ -819,10 +770,10 @@ registerBlockType("prefix-blocks/post-grid", {
                                                                             var itemData = queryArgs.items[index];
 
 
-                                                                            var term = itemData.args[j].terms[k]
+                                                                            var term = itemData.val[j].terms[k]
                                                                             term.field = newVal;
 
-                                                                            queryArgs.items[index].args = itemData.args;
+                                                                            queryArgs.items[index].val = itemData.val;
                                                                             setAttributes({ queryArgs: { items: queryArgs.items } });
                                                                         }}
 
@@ -842,10 +793,10 @@ registerBlockType("prefix-blocks/post-grid", {
                                                                             var itemData = queryArgs.items[index];
 
 
-                                                                            var term = itemData.args[j].terms[k]
+                                                                            var term = itemData.val[j].terms[k]
                                                                             term.operator = newVal;
 
-                                                                            queryArgs.items[index].args = itemData.args;
+                                                                            queryArgs.items[index].val = itemData.val;
                                                                             setAttributes({ queryArgs: { items: queryArgs.items } });
                                                                         }}
                                                                     />
@@ -859,8 +810,8 @@ registerBlockType("prefix-blocks/post-grid", {
 
                                                             var itemData = queryArgs.items[index];
 
-                                                            var xx = itemData.args[j].terms.concat({ taxonomy: '', field: '', terms: '', operator: '' });
-                                                            queryArgs.items[index].args[j].terms = xx;
+                                                            var xx = itemData.val[j].terms.concat({ taxonomy: '', field: '', terms: '', operator: '' });
+                                                            queryArgs.items[index].val[j].terms = xx;
 
                                                             setAttributes({ queryArgs: { items: queryArgs.items } });
                                                         }}
@@ -925,16 +876,15 @@ registerBlockType("prefix-blocks/post-grid", {
                         }
 
                         <div className={item.id == 'postNameIndd' ? '' : 'hidden'}>
-                            {JSON.stringify(item.args)}
+                            {JSON.stringify(item.val)}
                             <div
                                 className='cursor-pointer text-center px-3 py-1 text-white bg-blue-600 text-sm'
                                 onClick={(ev) => {
 
                                     var itemData = queryArgs.items[index];
 
-                                    var args = itemData.args;
-                                    var args = itemData.args.concat({ slug: '' });
-                                    itemData.args = args;
+                                    var val = itemData.val.concat({ slug: '' });
+                                    itemData.val = val;
                                     queryArgs.items[index] = itemData;
                                     setAttributes({ queryArgs: { items: queryArgs.items } });
                                 }}
@@ -1364,7 +1314,8 @@ registerBlockType("prefix-blocks/post-grid", {
                                 {layoutList.length > 0 && layoutList.map(x => {
                                     return (
                                         <div>
-                                            <div onClick={(ev) => { selectLayout(x.content.rendered) }}>{x.title.rendered}</div>
+
+                                            <div onClick={(ev) => { selectLayout(x.post_content) }}>{x.post_title}</div>
 
                                         </div>
                                     )

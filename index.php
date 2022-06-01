@@ -20,6 +20,7 @@ class BlockXyz
 
 
         require_once(PREFIX_PLUGIN_PATH . 'src/blocks/post-grid/index.php');
+        require_once(PREFIX_PLUGIN_PATH . 'src/blocks/post-grid/rest.php');
     }
 
     public function init_plugin()
