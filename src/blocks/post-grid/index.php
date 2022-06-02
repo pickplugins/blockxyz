@@ -27,7 +27,13 @@ class BlockPostGrid
     function theHTML($attributes)
     {
         if (!is_admin()) {
-            wp_enqueue_script('blk_post_grid', PREFIX_PLUGIN_PATH . 'src/blocks/post-grid/index.js', array('wp-element'));
+
+            wp_enqueue_script('blk_post_grid', PREFIX_PLUGIN_PATH . 'build/index.js', array('wp-element'));
+
+            //wp_enqueue_script('blk_post_grid', PREFIX_PLUGIN_PATH . 'src/blocks/post-grid/index.js', array('wp-element'));
+
+
+
             wp_enqueue_style('blk_post_grid', PREFIX_PLUGIN_PATH . 'src/blocks/post-grid/index.css');
         }
 
