@@ -859,6 +859,12 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
+const {
+  parse
+} = wp.blockSerializationDefaultParser;
+const {
+  RawHTML
+} = wp.element;
 
 
 
@@ -980,17 +986,17 @@ row-gap: ${props => {
           val: 1,
           unit: 'fr'
         }, {
-          val: 2,
+          val: 1,
           unit: 'fr'
         }, {
-          val: 3,
+          val: 1,
           unit: 'fr'
         }],
         gridTemplateRows: [{
           val: 1,
           unit: 'fr'
         }, {
-          val: 2,
+          val: 1,
           unit: 'fr'
         }],
         colGap: {
@@ -1011,6 +1017,8 @@ row-gap: ${props => {
       type: 'object',
       default: {
         id: '',
+        data: {},
+        loading: false,
         keyword: '',
         category: '',
         categories: []
@@ -1181,8 +1189,17 @@ row-gap: ${props => {
     }
 
     function fetchLayouts() {
-      fetchPosts(); // setAttributes({ layout: { id: layout.id, categories: layout.categories, keyword: layout.keyword, category: layout.category, lists: [1, 2, 3], } });
-      // wp.apiFetch({ path: '/blockxyz/v2/get_posts' })
+      fetchPosts();
+      setAttributes({
+        layout: {
+          id: layout.id,
+          data: layout.data,
+          loading: true,
+          keyword: layout.keyword,
+          category: layout.category,
+          categories: layout.categories
+        }
+      }); // wp.apiFetch({ path: '/blockxyz/v2/get_posts' })
       //     .then(items => {
       //         console.log(items);
       //     });
@@ -1197,6 +1214,17 @@ row-gap: ${props => {
         console.log(res);
         setAttributes({
           layoutList: res
+        });
+        setAttributes({
+          layout: {
+            id: layout.id,
+            data: layout.data,
+            data: layout.data,
+            loading: false,
+            keyword: layout.keyword,
+            category: layout.category,
+            categories: layout.categories
+          }
         });
       }); // wp.apiFetch({ path: '/wp/v2/post_grid_layout?per_page=100' })
       //     .then(items => {
@@ -1217,6 +1245,58 @@ row-gap: ${props => {
       setAttributes({
         dummyName: content
       });
+    }
+
+    function generateLayout(x, i) {
+      var savedBlocks = layout.data; //console.log(blocks);
+
+      var content = "<!-- wp:paragraph --><p>paragraph one</p><!-- /wp:paragraph --><!-- wp:paragraph --><p>then two</p><!-- /wp:paragraph -->"; // Parse the serialized content into valid blocks using parse from @wordpress/block-serialization-default-parser
+
+      var blocks = savedBlocks.length > 0 ? savedBlocks : parse(content);
+      return (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_3__.createElement)("div", {
+        className: "bg-gray-400 p-3 "
+      }, blocks.map((block, index) => {
+        return (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_3__.createElement)(RawHTML, {
+          key: index
+        }, block.innerHTML);
+      })); // return (
+      //   <div className='bg-gray-400 p-3 '>
+      //     <div className='my-2'>{x.post_title}</div>
+      //     <div className='my-2'>
+      //       <img src={x.thumb_url} />
+      //     </div>
+      //   </div>)
+    }
+
+    function selectLayout(id, post_content) {
+      var data = wp.blocks.parse(post_content);
+      var sss = data.map(x => {
+        return {
+          attrs: x.attributes,
+          blockName: x.name,
+          innerBlocks: x.innerBlocks,
+          innerContent: [x.originalContent],
+          innerHTML: x.originalContent
+        };
+      });
+      setAttributes({
+        layout: {
+          id: id,
+          data: sss,
+          loading: false,
+          keyword: layout.keyword,
+          category: layout.category,
+          categories: layout.categories
+        }
+      });
+      console.log(sss); //wp.data.dispatch('core/editor').insertBlocks(wp.blocks.parse(post_content));
+
+      var content = "<!-- wp:paragraph --><p>paragraph one</p><!-- /wp:paragraph --><!-- wp:paragraph --><p>then two</p><!-- /wp:paragraph -->"; // Parse the serialized content into valid blocks using parse from @wordpress/block-serialization-default-parser
+
+      var blocks = parse(content);
+      console.log(blocks); // Iterate over each block to render innerHTML within RawHTML that sets up dangerouslySetInnerHTML for you..
+
+      blocks.map((block, index) => {});
     }
 
     function removeQueryPram(i) {
@@ -1932,11 +2012,6 @@ row-gap: ${props => {
       });
     }
 
-    function selectLayout(post_content) {
-      console.log(post_content);
-      wp.data.dispatch('core/editor').insertBlocks(wp.blocks.parse(post_content));
-    }
-
     function addGridRow() {
       var gridTemplateRows = grid.gridTemplateRows.concat([{
         val: 1,
@@ -2143,15 +2218,17 @@ row-gap: ${props => {
       type: "text",
       placeholder: "Search Here...",
       onChange: newVal => {
-        fetchLayouts();
         setAttributes({
           layout: {
             id: layout.id,
+            data: layout.data,
+            loading: false,
             keyword: newVal,
             category: layout.category,
             categories: layout.categories
           }
         });
+        fetchLayouts();
       }
     }), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_3__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_4__.SelectControl, {
       style: {
@@ -2177,23 +2254,21 @@ row-gap: ${props => {
         setAttributes({
           layout: {
             id: layout.id,
+            data: layout.data,
+            loading: layout.loading,
             keyword: layout.keyword,
             category: newVal,
             categories: layout.categories
           }
         });
       }
-    })), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_3__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_4__.Button, {
-      className: "mb-3",
-      variant: "secondary",
-      onClick: selectLayout
-    }, "Select layout"), layoutList.length > 0 && layoutList.map(x => {
+    })), layout.loading == true && (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_3__.createElement)("div", null, "Loading"), layoutList.length > 0 && layoutList.map(x => {
       return (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_3__.createElement)("div", {
         className: "my-3  cursor-pointer"
       }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_3__.createElement)("div", {
         className: "relative",
         onClick: ev => {
-          selectLayout(x.post_content);
+          selectLayout(x.post_id, x.post_content);
         }
       }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_3__.createElement)("img", {
         src: x.thumb_url
@@ -2762,55 +2837,9 @@ row-gap: ${props => {
       className: "my-custom-block"
     }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_3__.createElement)(CustomCss, {
       cssData: props.attributes
-    }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_3__.createElement)("div", {
-      className: "bg-gray-400 p-3 "
-    }, "1"), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_3__.createElement)("div", {
-      className: "bg-gray-400 p-3"
-    }, "2"), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_3__.createElement)("div", {
-      className: "bg-gray-400 p-3"
-    }, "3"), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_3__.createElement)("div", {
-      className: "bg-gray-400 p-3"
-    }, "4"), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_3__.createElement)("div", {
-      className: "bg-gray-400 p-3"
-    }, "5"), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_3__.createElement)("div", {
-      className: "bg-gray-400 p-3"
-    }, "6"), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_3__.createElement)("div", {
-      className: "bg-gray-400 p-3"
-    }, "7"), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_3__.createElement)("div", {
-      className: "bg-gray-400 p-3"
-    }, "8"), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_3__.createElement)("div", {
-      className: "bg-gray-400 p-3"
-    }, "9"), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_3__.createElement)("div", {
-      className: "bg-gray-400 p-3"
-    }, "10"), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_3__.createElement)("div", {
-      className: "bg-gray-400 p-3"
-    }, "11"), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_3__.createElement)("div", {
-      className: "bg-gray-400 p-3"
-    }, "12"), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_3__.createElement)("div", {
-      className: "bg-gray-400 p-3"
-    }, "1"), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_3__.createElement)("div", {
-      className: "bg-gray-400 p-3"
-    }, "2"), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_3__.createElement)("div", {
-      className: "bg-gray-400 p-3"
-    }, "3"), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_3__.createElement)("div", {
-      className: "bg-gray-400 p-3"
-    }, "4"), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_3__.createElement)("div", {
-      className: "bg-gray-400 p-3"
-    }, "5"), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_3__.createElement)("div", {
-      className: "bg-gray-400 p-3"
-    }, "6"), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_3__.createElement)("div", {
-      className: "bg-gray-400 p-3"
-    }, "7"), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_3__.createElement)("div", {
-      className: "bg-gray-400 p-3"
-    }, "8"), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_3__.createElement)("div", {
-      className: "bg-gray-400 p-3"
-    }, "9"), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_3__.createElement)("div", {
-      className: "bg-gray-400 p-3"
-    }, "10"), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_3__.createElement)("div", {
-      className: "bg-gray-400 p-3"
-    }, "11"), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_3__.createElement)("div", {
-      className: "bg-gray-400 p-3"
-    }, "12")), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_3__.createElement)("code", null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_3__.createElement)("br", null), JSON.stringify(posts)))];
+    }, posts.items.map((x, i) => {
+      return generateLayout(x, i);
+    })), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_3__.createElement)("code", null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_3__.createElement)("br", null)))];
   },
   save: function (props) {
     // to make a truly dynamic block, we're handling front end by render_callback under index.php file

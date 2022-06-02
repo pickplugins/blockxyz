@@ -60,7 +60,7 @@ class BlockPostGridRest
         error_log(serialize($queryArgs));
 
 
-        $post_types       = isset($post_data['post_types']) ? $post_data['post_types'] : ['post'];
+        $post_types       = isset($post_data['post_types']) ? $post_data['post_types'] : ['post_grid_layout'];
 
         $query_args = [];
         $posts = [];

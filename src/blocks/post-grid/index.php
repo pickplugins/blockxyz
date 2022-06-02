@@ -35,8 +35,7 @@ class BlockPostGrid
 
         ob_start(); ?>
 
-        <div class="update-me-by-front-end-technologies">
-            <h1>asda sasd Hello from asdasd1 Gutenberg Editor!!! </h1>
+        <div class="post-grid-wrap">
             <code><?php echo serialize($attributes); ?></code>
         </div>
 
