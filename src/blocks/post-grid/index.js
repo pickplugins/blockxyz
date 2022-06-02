@@ -22,12 +22,12 @@ const ALLOWED_MEDIA_TYPES = ['image'];
 
 //var el = element.createElement;
 
-////console.log(breakPoints);
+//////console.log(breakPoints);
 
 import breakPoints from '../../breakpoints'
 import queryPrams from '../../queryprams'
 
-////console.log(queryPrams);
+//////console.log(queryPrams);
 
 var queryPramsX = queryPrams.map((x, i) => {
 
@@ -38,14 +38,14 @@ var queryPramsX = queryPrams.map((x, i) => {
 
 
 // wp.apiFetch({ path: '/wp/v2/categories?per_page=100' })
-//     .then(terms => console.log(terms));
+//     .then(terms => //console.log(terms));
 
 
 
 
 
 
-//console.log(queryPramsX);
+////console.log(queryPramsX);
 
 
 const CustomCss = styled.div`
@@ -168,13 +168,13 @@ registerBlockType("prefix-blocks/post-grid", {
     //     method: 'POST',
     //     data: { title: 'Categories' },
     // }).then((res) => {
-    //     console.log(res);
+    //     //console.log(res);
 
     // });
 
 
 
-    ////console.log(queryArgs);
+    //////console.log(queryArgs);
 
     const colors = [
       { name: 'red', color: '#f00' },
@@ -188,7 +188,7 @@ registerBlockType("prefix-blocks/post-grid", {
       (select) => select(coreStore).getPostTypes({ per_page: -1 }), []
     );
 
-    ////console.log(postTypes);
+    //////console.log(postTypes);
     //setAttributes({ dummyName: 'Raju' });
 
 
@@ -211,7 +211,7 @@ registerBlockType("prefix-blocks/post-grid", {
         return { id: item.id, val: item.val }
       })
 
-      console.log(arg);
+      //console.log(arg);
 
 
 
@@ -220,7 +220,7 @@ registerBlockType("prefix-blocks/post-grid", {
         method: 'POST',
         data: { queryArgs: queryArgs.items },
       }).then((res) => {
-        console.log(res);
+        //console.log(res);
         setAttributes({ posts: { items: res } });
 
       });
@@ -242,7 +242,7 @@ registerBlockType("prefix-blocks/post-grid", {
       // wp.apiFetch({ path: '/blockxyz/v2/get_posts' })
       //     .then(items => {
 
-      //         console.log(items);
+      //         //console.log(items);
       //     });
 
 
@@ -253,7 +253,7 @@ registerBlockType("prefix-blocks/post-grid", {
         method: 'POST',
         data: { taxonomy: 'category' },
       }).then((res) => {
-        console.log(res);
+        //console.log(res);
         setAttributes({ layoutList: res });
         setAttributes({ layout: { id: layout.id, data: layout.data, data: layout.data, loading: false, keyword: layout.keyword, category: layout.category, categories: layout.categories } })
 
@@ -268,7 +268,7 @@ registerBlockType("prefix-blocks/post-grid", {
 
     function generateQueryFieldAuthorIn(xx) {
 
-      //console.log(typeof xx);
+      ////console.log(typeof xx);
 
       var xxts = [12, 24, 32];
 
@@ -302,7 +302,6 @@ registerBlockType("prefix-blocks/post-grid", {
     function generateLayout(x, i) {
 
       var savedBlocks = layout.data;
-      //console.log(blocks);
 
       var content = "<!-- wp:paragraph --><p>paragraph one</p><!-- /wp:paragraph --><!-- wp:paragraph --><p>then two</p><!-- /wp:paragraph -->";
 
@@ -310,21 +309,45 @@ registerBlockType("prefix-blocks/post-grid", {
       var blocks = (savedBlocks.length > 0) ? savedBlocks : parse(content);
 
 
+
+
       return (
         <div className='bg-gray-400 p-3 '>
 
 
-          {blocks.map((block, index) => {
 
-            return (
-              <RawHTML key={index}>{block.innerHTML}</RawHTML>
 
-            )
+          {
+            blocks.map((block, i) => {
+              console.log(block);
 
-          })}
+              if (block.innerBlocks.length > 0) {
+                return recursInnerBlocksHtml(block.innerBlocks, i);
+              }
+
+              return (<RawHTML >{block.innerHTML}</RawHTML>)
+
+
+            })}
+
 
         </div>
       )
+    }
+    function recursInnerBlocksHtml(blocks, index = 0) {
+
+
+      blocks.map((block, i) => {
+        console.log(block);
+
+        if (block.innerBlocks.length > 0) {
+          return recursInnerBlocksHtml(block.innerBlocks, i);
+        }
+
+        return (<RawHTML >{block.innerHTML}</RawHTML>)
+
+
+      })
 
 
 
@@ -333,49 +356,31 @@ registerBlockType("prefix-blocks/post-grid", {
 
 
 
-      // return (
-      //   <div className='bg-gray-400 p-3 '>
-
-
-      //     <div className='my-2'>{x.post_title}</div>
-      //     <div className='my-2'>
-      //       <img src={x.thumb_url} />
-      //     </div>
-
-      //   </div>)
 
     }
 
 
+
+
     function selectLayout(id, post_content) {
 
-      var data = wp.blocks.parse(post_content);
-      var sss = data.map(x => {
-        return { attrs: x.attributes, blockName: x.name, innerBlocks: x.innerBlocks, innerContent: [x.originalContent], innerHTML: x.originalContent }
-      })
+      var blocks = parse(post_content);
 
-      setAttributes({ layout: { id: id, data: sss, loading: false, keyword: layout.keyword, category: layout.category, categories: layout.categories } })
+      setAttributes({ layout: { id: id, data: blocks, loading: false, keyword: layout.keyword, category: layout.category, categories: layout.categories } })
 
 
-
-
-      console.log(sss);
+      ////console.log(sss);
       //wp.data.dispatch('core/editor').insertBlocks(wp.blocks.parse(post_content));
 
 
-      var content = "<!-- wp:paragraph --><p>paragraph one</p><!-- /wp:paragraph --><!-- wp:paragraph --><p>then two</p><!-- /wp:paragraph -->";
+      // var content = "<!-- wp:paragraph --><p>paragraph one</p><!-- /wp:paragraph --><!-- wp:paragraph --><p>then two</p><!-- /wp:paragraph -->";
 
       // Parse the serialized content into valid blocks using parse from @wordpress/block-serialization-default-parser
-      var blocks = parse(content);
+      //var blocks = parse(content);
 
-      console.log(blocks
+      //console.log(blocks)
 
-      )
 
-      // Iterate over each block to render innerHTML within RawHTML that sets up dangerouslySetInnerHTML for you..
-      blocks.map((block, index) => {
-
-      })
 
 
 
@@ -384,7 +389,7 @@ registerBlockType("prefix-blocks/post-grid", {
 
     function removeQueryPram(i) {
 
-      //console.log(i);
+      ////console.log(i);
       queryArgs.items.splice(i, 1);
 
 
@@ -396,8 +401,8 @@ registerBlockType("prefix-blocks/post-grid", {
 
     function updateQueryPram(newVal, index) {
 
-      //console.log(index);
-      //console.log(newVal);
+      ////console.log(index);
+      ////console.log(newVal);
 
       var itemData = queryArgs.items[index];
 
@@ -424,7 +429,7 @@ registerBlockType("prefix-blocks/post-grid", {
 
       //queryArgs.items.splice(i, 1);
 
-      //console.log(queryArgs);
+      ////console.log(queryArgs);
 
 
     }
@@ -625,10 +630,10 @@ registerBlockType("prefix-blocks/post-grid", {
 
                                 //var term = itemData.val[j].fields[k]
                                 //term.taxonomy = newVal;
-                                console.log(itemData.val[j].relation);
+                                //console.log(itemData.val[j].relation);
 
-                                console.log(newVal);
-                                console.log(j);
+                                //console.log(newVal);
+                                //console.log(j);
 
                                 queryArgs.items[index].val = itemData.val;
                                 setAttributes({ queryArgs: { items: queryArgs.items } });
@@ -800,10 +805,10 @@ registerBlockType("prefix-blocks/post-grid", {
 
                                 //var term = itemData.val[j].terms[k]
                                 //term.taxonomy = newVal;
-                                console.log(itemData.val[j].relation);
+                                //console.log(itemData.val[j].relation);
 
-                                console.log(newVal);
-                                console.log(j);
+                                //console.log(newVal);
+                                //console.log(j);
 
                                 queryArgs.items[index].val = itemData.val;
                                 setAttributes({ queryArgs: { items: queryArgs.items } });
@@ -1082,25 +1087,25 @@ registerBlockType("prefix-blocks/post-grid", {
     function addQueryPram(index) {
 
 
-      // //console.log(queryPrams);
+      // ////console.log(queryPrams);
 
       var attrExist = false;
 
-      //console.log(index);
+      ////console.log(index);
       var data = queryPrams[index];
       var multiple = data.multiple;
-      //console.log(multiple);
+      ////console.log(multiple);
 
       var isExist = queryArgs.items.map((item) => {
-        ////console.log(item);
+        //////console.log(item);
 
         if (item.id == index) {
-          //console.log(item);
+          ////console.log(item);
           return true;
         }
       })
 
-      //console.log(isExist);
+      ////console.log(isExist);
 
 
 
@@ -1230,7 +1235,7 @@ registerBlockType("prefix-blocks/post-grid", {
 
                       }
                       onClose={() => {
-                        ////console.log('onClose')
+                        //////console.log('onClose')
                       }
 
 
@@ -1285,7 +1290,7 @@ registerBlockType("prefix-blocks/post-grid", {
                   <MediaUpload
                     onSelect={(media) => {
                       // media.id
-                      ////console.log(media);
+                      //////console.log(media);
                       updateLazyLoadsrcUrl(media.url, media.id);
                       //updateLazyLoadsrcId(media.id);
 
@@ -1294,7 +1299,7 @@ registerBlockType("prefix-blocks/post-grid", {
 
                     }
                     onClose={() => {
-                      ////console.log('onClose')
+                      //////console.log('onClose')
                     }
 
 
@@ -1329,8 +1334,8 @@ registerBlockType("prefix-blocks/post-grid", {
 
                 {queryArgs.items.map((item, index) => {
 
-                  ////console.log(item);
-                  ////console.log(index);
+                  //////console.log(item);
+                  //////console.log(index);
 
                   return generateQueryArgOptions(item, index);
 
@@ -1406,7 +1411,7 @@ registerBlockType("prefix-blocks/post-grid", {
 
 
                       <div className='my-3'>
-                        <span className={['text-white px-3 py-1 mx-2', x.is_pro ? ' bg-red-600' : ' bg-blue-600'].join('')}>
+                        <span className={['text-white px-3 py-1 mx-2', x.is_pro ? ' bg-amber-400' : ' bg-blue-600'].join('')}>
                           {x.is_pro ? 'Pro' : 'Free'}
                         </span>
                         <span className='mx-2' >#{x.post_id}</span>
@@ -1435,8 +1440,8 @@ registerBlockType("prefix-blocks/post-grid", {
 
 
                 {grid.gridTemplateColumns.map((item, index) => {
-                  ////console.log(item);
-                  ////console.log(index);
+                  //////console.log(item);
+                  //////console.log(index);
 
                   return (
 
@@ -1485,8 +1490,8 @@ registerBlockType("prefix-blocks/post-grid", {
 
 
                 {grid.gridTemplateRows.map((item, index) => {
-                  ////console.log(item);
-                  ////console.log(index);
+                  //////console.log(item);
+                  //////console.log(index);
 
                   return (
 
@@ -1807,7 +1812,7 @@ registerBlockType("prefix-blocks/post-grid", {
                         {JSON.stringify(grid)}
 
                         {JSON.stringify(layout)} */}
-            {/* {JSON.stringify(posts)} */}
+            {JSON.stringify(layout)}
 
 
           </code>
