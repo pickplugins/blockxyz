@@ -310,47 +310,53 @@ registerBlockType("prefix-blocks/post-grid", {
 
 
 
+      var sss = blocks.map((block, i) => {
+
+        if (block.blockName !== null) {
+          console.log(block);
+
+          return (
+            <RawHTML>
+              {
+                (block.innerBlocks.length > 0) ? recursInnerBlocksHtml(block.innerBlocks, i) : block.innerHTML
+              }
+            </RawHTML>)
+        }
+
+
+
+      })
+
 
       return (
         <div className='bg-gray-400 p-3 '>
 
-
-
-
-          {
-            blocks.map((block, i) => {
-              console.log(block);
-
-              if (block.innerBlocks.length > 0) {
-                return recursInnerBlocksHtml(block.innerBlocks, i);
-              }
-
-              return (<RawHTML >{block.innerHTML}</RawHTML>)
-
-
-            })}
-
-
+          {sss}
         </div>
       )
     }
     function recursInnerBlocksHtml(blocks, index = 0) {
 
 
-      blocks.map((block, i) => {
+      console.log('recursInnerBlocksHtml');
+
+
+
+      var xx = blocks.map((block, i) => {
         console.log(block);
 
-        if (block.innerBlocks.length > 0) {
-          return recursInnerBlocksHtml(block.innerBlocks, i);
-        }
-
-        return (<RawHTML >{block.innerHTML}</RawHTML>)
-
+        return (
+          <RawHTML>2nd Block
+            {
+              (block.innerBlocks.length > 0) ? block.innerHTML + recursInnerBlocksHtml(block.innerBlocks, i) : block.innerHTML
+            }
+          </RawHTML>)
 
       })
+      console.log('xx');
+      console.log(xx);
 
-
-
+      return xx;
 
 
 

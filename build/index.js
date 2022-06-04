@@ -1252,30 +1252,27 @@ row-gap: ${props => {
       var content = "<!-- wp:paragraph --><p>paragraph one</p><!-- /wp:paragraph --><!-- wp:paragraph --><p>then two</p><!-- /wp:paragraph -->"; // Parse the serialized content into valid blocks using parse from @wordpress/block-serialization-default-parser
 
       var blocks = savedBlocks.length > 0 ? savedBlocks : parse(content);
+      var sss = blocks.map((block, i) => {
+        if (block.blockName !== null) {
+          console.log(block);
+          return (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_3__.createElement)(RawHTML, null, block.innerBlocks.length > 0 ? recursInnerBlocksHtml(block.innerBlocks, i) : block.innerHTML);
+        }
+      });
       return (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_3__.createElement)("div", {
         className: "bg-gray-400 p-3 "
-      }, blocks.map((block, i) => {
-        console.log(block);
-
-        if (block.innerBlocks.length > 0) {
-          return recursInnerBlocksHtml(block.innerBlocks, i);
-        }
-
-        return (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_3__.createElement)(RawHTML, null, block.innerHTML);
-      }));
+      }, sss);
     }
 
     function recursInnerBlocksHtml(blocks) {
       let index = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 0;
-      blocks.map((block, i) => {
+      console.log('recursInnerBlocksHtml');
+      var xx = blocks.map((block, i) => {
         console.log(block);
-
-        if (block.innerBlocks.length > 0) {
-          return recursInnerBlocksHtml(block.innerBlocks, i);
-        }
-
-        return (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_3__.createElement)(RawHTML, null, block.innerHTML);
+        return (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_3__.createElement)(RawHTML, null, "2nd Block", block.innerBlocks.length > 0 ? block.innerHTML + recursInnerBlocksHtml(block.innerBlocks, i) : block.innerHTML);
       });
+      console.log('xx');
+      console.log(xx);
+      return xx;
     }
 
     function selectLayout(id, post_content) {
