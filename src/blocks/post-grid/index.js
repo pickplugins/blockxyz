@@ -6,6 +6,7 @@ import apiFetch from '@wordpress/api-fetch';
 
 const { parse } = wp.blockSerializationDefaultParser;
 const { RawHTML } = wp.element;
+import { useBlockProps, InnerBlocks } from '@wordpress/block-editor';
 
 import { createElement } from '@wordpress/element'
 import { PanelBody, RangeControl, Button, Panel, PanelRow, Dropdown, DropdownMenu, SelectControl, ColorPicker, ColorPalette, ToolsPanelItem, ComboboxControl } from '@wordpress/components'
@@ -92,6 +93,71 @@ registerBlockType("prefix-blocks/post-grid", {
       default: { gridTemplateColumns: [{ val: 1, unit: 'fr' }, { val: 1, unit: 'fr' }, { val: 1, unit: 'fr' }], gridTemplateRows: [{ val: 1, unit: 'fr' }, { val: 1, unit: 'fr' }], colGap: { val: 1, unit: 'em' }, rowGap: { val: 1, unit: 'em' }, padding: { val: 1, unit: 'em' }, },
     },
 
+
+    filterable: {
+      type: 'object',
+      default: { height: '', bgColor: '', bgImg: '', margin: '', padding: '', },
+    },
+
+    carousel: {
+      type: 'object',
+      default: {
+        type: '',
+        role: '',
+        label: '',
+        labelledby: '',
+        rewind: '',
+        speed: '',
+        rewindSpeed: '',
+        rewindByDrag: '',
+        width: '',
+        height: '',
+        fixedWidth: '',
+        fixedHeight: '',
+        autoWidth: '',
+        heightRatio: '',
+        autoHeight: '',
+        start: '',
+        perPage: '',
+        perMove: '',
+        focus: '',
+        clones: '',
+        cloneStatus: '',
+        gap: '',
+        padding: '',
+        arrows: '',
+        pagination: '',
+        paginationKeyboard: '',
+        paginationDirection: '',
+        easing: '',
+        drag: '',
+        snap: '',
+        noDrag: '',
+        dragMinThreshold: '',
+        flickPower: '',
+        flickMaxPages: '',
+        waitForTransition: '',
+        arrowPath: '',
+        autoplay: '',
+        interval: '',
+        pauseOnHover: '',
+        pauseOnFocus: '',
+        resetProgress: '',
+        lazyLoad: '',
+        preloadPages: '',
+        keyboard: '',
+        wheel: '',
+        wheelMinThreshold: '',
+        wheelSleep: '',
+        releaseWheel: '',
+        direction: '',
+        mediaQuery: '',
+        breakpoints: '',
+
+
+
+      },
+    },
 
 
     layout: {
@@ -313,7 +379,6 @@ registerBlockType("prefix-blocks/post-grid", {
       var sss = blocks.map((block, i) => {
 
         if (block.blockName !== null) {
-          console.log(block);
 
           return (
             <RawHTML>
@@ -338,12 +403,11 @@ registerBlockType("prefix-blocks/post-grid", {
     function recursInnerBlocksHtml(blocks, index = 0) {
 
 
-      console.log('recursInnerBlocksHtml');
 
 
 
       var xx = blocks.map((block, i) => {
-        console.log(block);
+        //console.log(block);
 
         return (
           <RawHTML>2nd Block
@@ -353,8 +417,7 @@ registerBlockType("prefix-blocks/post-grid", {
           </RawHTML>)
 
       })
-      console.log('xx');
-      console.log(xx);
+
 
       return xx;
 
@@ -375,9 +438,15 @@ registerBlockType("prefix-blocks/post-grid", {
       setAttributes({ layout: { id: id, data: blocks, loading: false, keyword: layout.keyword, category: layout.category, categories: layout.categories } })
 
 
-      ////console.log(sss);
-      //wp.data.dispatch('core/editor').insertBlocks(wp.blocks.parse(post_content));
+      //console.log(wp.data.select('core/block-editor').getBlocks());
 
+
+
+
+      //wp.data.dispatch('core/block-editor').insertBlocks(wp.blocks.parse(post_content));
+
+
+      //wp.data.dispatch('core/notices').createNotice('success', 'Here is our notice!');
 
       // var content = "<!-- wp:paragraph --><p>paragraph one</p><!-- /wp:paragraph --><!-- wp:paragraph --><p>then two</p><!-- /wp:paragraph -->";
 
@@ -1708,7 +1777,9 @@ registerBlockType("prefix-blocks/post-grid", {
               <PanelBody title="Glossary" initialOpen={false} className={viewType == 'glossary' ? '' : 'hidden'}>
 
               </PanelBody>
-              <PanelBody title="Carousel" initialOpen={false} className={(viewType == 'carousel') ? '' : 'hidden'}></PanelBody>
+              <PanelBody title="Carousel" initialOpen={false} className={(viewType == 'carousel') ? '' : 'hidden'}>
+
+              </PanelBody>
               <PanelBody title="Masonry" initialOpen={false} className={(viewType == 'carousel' || viewType == 'glossary' || viewType == 'filterable') ? 'hidden' : ''}>
 
                 <SelectControl

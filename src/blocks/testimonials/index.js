@@ -9,7 +9,7 @@ import { InspectorControls, BlockControls, AlignmentToolbar, RichText } from '@w
 
 
 registerBlockType('prefix-blocks/testimonials', {
-    title: __('testimonials Block'),
+    title: __('testimonials Block dfgfg'),
     icon: 'editor-testimonials',
     category: 'common',
     keywords: ['testimonials'],

@@ -21,6 +21,7 @@ class BlockXyz
 
         require_once(PREFIX_PLUGIN_PATH . 'src/blocks/post-grid/index.php');
         require_once(PREFIX_PLUGIN_PATH . 'src/blocks/post-grid/rest.php');
+        require_once(PREFIX_PLUGIN_PATH . 'src/blocks/post-title/index.php');
     }
 
     public function init_plugin()
@@ -38,6 +39,14 @@ class BlockXyz
     public function enqueue_scripts()
     {
         add_action('enqueue_block_editor_assets', [$this, 'register_block_editor_assets']);
+        add_action('wp_enqueue_scripts', [$this, 'register_assets']);
+    }
+
+
+    public function register_assets()
+    {
+
+        wp_register_style('splide', PREFIX_PLUGIN_URL . '/src/blocks/post-grid/splide/css/splide.min.css');
     }
 
     public function register_block_editor_assets()
@@ -50,6 +59,9 @@ class BlockXyz
             false,
             'all'
         );
+
+
+
         wp_enqueue_style(
             'prefix-custom',
             PREFIX_PLUGIN_URL . '/dist/custom.css',
@@ -57,6 +69,8 @@ class BlockXyz
             false,
             'all'
         );
+
+
 
 
         wp_enqueue_script(

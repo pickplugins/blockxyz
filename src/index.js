@@ -2,3 +2,4 @@
 import './blocks/paragraph'
 import './blocks/testimonials'
 import './blocks/post-grid'
+import './blocks/post-title'

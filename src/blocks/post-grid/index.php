@@ -39,10 +39,36 @@ class BlockPostGrid
 
         error_log(serialize($attributes));
 
-        ob_start(); ?>
 
+        $blocks = parse_blocks('<!-- wp:paragraph --><p>paragraph one</p><!-- /wp:paragraph --><!-- wp:paragraph --><p>then two</p><!-- /wp:paragraph -->');
+
+        wp_enqueue_style('splide');
+
+
+        ob_start(); ?>
+        <script src="https://cdn.jsdelivr.net/npm/@splidejs/splide@4.0.6/dist/js/splide.min.js"></script>
         <div class="post-grid-wrap">
-            <code><?php echo serialize($attributes); ?></code>
+            <div class="splide" role="group" aria-label="Splide Basic HTML Example">
+                <div class="splide__track">
+                    <ul class="splide__list">
+                        <li class="splide__slide">Slide 01</li>
+                        <li class="splide__slide">Slide 02</li>
+                        <li class="splide__slide">Slide 03</li>
+                        <li class="splide__slide">Slide 04</li>
+                        <li class="splide__slide">Slide 05</li>
+                        <li class="splide__slide">Slide 06</li>
+                        <li class="splide__slide">Slide 07</li>
+                        <li class="splide__slide">Slide 08</li>
+                        <li class="splide__slide">Slide 09</li>
+                    </ul>
+                </div>
+            </div>
+
+            <script>
+                new Splide('.splide').mount();
+            </script>
+            <code><?php echo serialize($blocks);
+                    ?></code>
         </div>
 
 <?php return ob_get_clean();
