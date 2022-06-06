@@ -24,8 +24,16 @@ class BlockPostTitle
     }
 
     // front-end output from the gutenberg editor 
-    function theHTML($attributes)
+    function theHTML($attributes, $content, $block)
     {
+
+
+        if (!isset($block->context['postId'])) {
+
+
+            return '';
+        }
+
         if (!is_admin()) {
 
 
@@ -33,11 +41,6 @@ class BlockPostTitle
 
             wp_enqueue_style('blk_post_grid', PREFIX_PLUGIN_PATH . 'src/blocks/post-title/index.css');
         }
-
-
-
-
-
 
         ob_start(); ?>
 

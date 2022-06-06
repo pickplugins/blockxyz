@@ -3,17 +3,21 @@ import { __ } from '@wordpress/i18n'
 
 import styled from 'styled-components'
 import apiFetch from '@wordpress/api-fetch';
+import {
+  BlockContextProvider,
+  __experimentalUseBlockPreview as useBlockPreview,
+  useInnerBlocksProps,
 
+} from '@wordpress/block-editor';
 const { parse } = wp.blockSerializationDefaultParser;
 const { RawHTML } = wp.element;
 import { useBlockProps, InnerBlocks } from '@wordpress/block-editor';
 
-import { createElement } from '@wordpress/element'
+import { createElement, memo, useMemo, useState } from '@wordpress/element'
 import { PanelBody, RangeControl, Button, Panel, PanelRow, Dropdown, DropdownMenu, SelectControl, ColorPicker, ColorPalette, ToolsPanelItem, ComboboxControl } from '@wordpress/components'
 import { InspectorControls, BlockControls, AlignmentToolbar, RichText } from '@wordpress/block-editor'
 import { __experimentalInputControl as InputControl } from '@wordpress/components';
 
-import { useState } from '@wordpress/compose';
 import { MediaUpload, MediaUploadCheck } from '@wordpress/block-editor';
 
 import { useSelect } from '@wordpress/data';
@@ -34,6 +38,7 @@ var queryPramsX = queryPrams.map((x, i) => {
 
   return { value: i, label: x.label }
 })
+
 
 
 
@@ -162,7 +167,7 @@ registerBlockType("prefix-blocks/post-grid", {
 
     layout: {
       type: 'object',
-      default: { id: '', data: {}, loading: false, keyword: '', category: '', categories: [] },
+      default: { id: '', data: {}, rawData: '', loading: false, keyword: '', category: '', categories: [] },
     },
     layoutList: {
       type: 'array',
@@ -211,6 +216,8 @@ registerBlockType("prefix-blocks/post-grid", {
   edit: function (props) {
 
 
+    const blockProps = useBlockProps();
+
     var attributes = props.attributes;
     var setAttributes = props.setAttributes;
 
@@ -226,6 +233,9 @@ registerBlockType("prefix-blocks/post-grid", {
     var queryArgs = attributes.queryArgs;
     var layoutList = attributes.layoutList;
     var posts = attributes.posts;
+
+    //console.log(blockProps);
+
 
 
 
@@ -254,9 +264,55 @@ registerBlockType("prefix-blocks/post-grid", {
       (select) => select(coreStore).getPostTypes({ per_page: -1 }), []
     );
 
+
+    const TEMPLATE = [
+      ['core/post-title'],
+      ['core/post-date'],
+      ['core/post-excerpt'],
+    ];
+
+
     //////console.log(postTypes);
     //setAttributes({ dummyName: 'Raju' });
+    function PostTemplateInnerBlocks() {
+      const innerBlocksProps = useInnerBlocksProps(
+        { className: 'wp-block-post' },
+        { template: TEMPLATE }
+      );
+      return <div {...innerBlocksProps} ></div>;
+    }
 
+    function PostTemplateBlockPreview({
+      blocks,
+      blockContextId,
+      isHidden,
+      setActiveBlockContextId,
+    }) {
+      const blockPreviewProps = useBlockPreview({
+        blocks,
+        props: {
+          className: 'wp-block-post',
+        },
+      });
+
+      const handleOnClick = () => {
+        setActiveBlockContextId(blockContextId);
+      };
+
+
+
+      return (
+        <li
+          {...blockPreviewProps}
+          tabIndex={0}
+          // eslint-disable-next-line jsx-a11y/no-noninteractive-element-to-interactive-role
+          role="button"
+
+        />
+      );
+    }
+
+    const MemoizedPostTemplateBlockPreview = memo(PostTemplateBlockPreview);
 
     function updateViewType(val) {
       setAttributes({ viewType: val });
@@ -274,7 +330,10 @@ registerBlockType("prefix-blocks/post-grid", {
 
 
       var arg = queryArgs.items.map(item => {
+
         return { id: item.id, val: item.val }
+
+
       })
 
       //console.log(arg);
@@ -282,11 +341,11 @@ registerBlockType("prefix-blocks/post-grid", {
 
 
       apiFetch({
-        path: '/blockxyz/v2/get_posts',
+        path: '/blockxyz/v2/get_posts_layout',
         method: 'POST',
-        data: { queryArgs: queryArgs.items },
+        data: { queryArgs: arg, rawData: layout.rawData },
       }).then((res) => {
-        //console.log(res);
+        console.log(res);
         setAttributes({ posts: { items: res } });
 
       });
@@ -303,7 +362,7 @@ registerBlockType("prefix-blocks/post-grid", {
       fetchPosts()
 
 
-      setAttributes({ layout: { id: layout.id, data: layout.data, loading: true, keyword: layout.keyword, category: layout.category, categories: layout.categories } })
+      setAttributes({ layout: { id: layout.id, data: layout.data, rawData: layout.rawData, loading: true, keyword: layout.keyword, category: layout.category, categories: layout.categories } })
 
       // wp.apiFetch({ path: '/blockxyz/v2/get_posts' })
       //     .then(items => {
@@ -312,16 +371,19 @@ registerBlockType("prefix-blocks/post-grid", {
       //     });
 
 
+      var args = [{ id: 'postType', val: ['post_grid_layout'] }];
 
+
+      //console.log(args);
 
       apiFetch({
         path: '/blockxyz/v2/get_posts',
         method: 'POST',
-        data: { taxonomy: 'category' },
+        data: { queryArgs: args },
       }).then((res) => {
-        //console.log(res);
+
         setAttributes({ layoutList: res });
-        setAttributes({ layout: { id: layout.id, data: layout.data, data: layout.data, loading: false, keyword: layout.keyword, category: layout.category, categories: layout.categories } })
+        setAttributes({ layout: { id: layout.id, data: layout.data, rawData: layout.rawData, loading: false, keyword: layout.keyword, category: layout.category, categories: layout.categories } })
 
       });
 
@@ -374,6 +436,7 @@ registerBlockType("prefix-blocks/post-grid", {
       // Parse the serialized content into valid blocks using parse from @wordpress/block-serialization-default-parser
       var blocks = (savedBlocks.length > 0) ? savedBlocks : parse(content);
 
+      //console.log(x);
 
 
       var sss = blocks.map((block, i) => {
@@ -385,7 +448,8 @@ registerBlockType("prefix-blocks/post-grid", {
               {
                 (block.innerBlocks.length > 0) ? recursInnerBlocksHtml(block.innerBlocks, i) : block.innerHTML
               }
-            </RawHTML>)
+            </RawHTML>
+          )
         }
 
 
@@ -396,6 +460,7 @@ registerBlockType("prefix-blocks/post-grid", {
       return (
         <div className='bg-gray-400 p-3 '>
 
+          {x.post_title}
           {sss}
         </div>
       )
@@ -435,7 +500,7 @@ registerBlockType("prefix-blocks/post-grid", {
 
       var blocks = parse(post_content);
 
-      setAttributes({ layout: { id: id, data: blocks, loading: false, keyword: layout.keyword, category: layout.category, categories: layout.categories } })
+      setAttributes({ layout: { id: id, data: blocks, rawData: post_content, loading: false, keyword: layout.keyword, category: layout.category, categories: layout.categories } })
 
 
       //console.log(wp.data.select('core/block-editor').getBlocks());
@@ -1437,7 +1502,7 @@ registerBlockType("prefix-blocks/post-grid", {
                     placeholder="Search Here..."
                     onChange={(newVal) => {
 
-                      setAttributes({ layout: { id: layout.id, data: layout.data, loading: false, keyword: newVal, category: layout.category, categories: layout.categories } })
+                      setAttributes({ layout: { id: layout.id, data: layout.data, rawData: layout.rawData, loading: false, keyword: newVal, category: layout.category, categories: layout.categories } })
 
                       fetchLayouts();
                     }}
@@ -1459,7 +1524,7 @@ registerBlockType("prefix-blocks/post-grid", {
                     ]}
                     onChange={(newVal) => {
                       fetchLayouts();
-                      setAttributes({ layout: { id: layout.id, data: layout.data, loading: layout.loading, keyword: layout.keyword, category: newVal, categories: layout.categories } })
+                      setAttributes({ layout: { id: layout.id, data: layout.data, rawData: layout.rawData, loading: layout.loading, keyword: layout.keyword, category: newVal, categories: layout.categories } })
                     }}
                   />
 
@@ -1860,12 +1925,20 @@ registerBlockType("prefix-blocks/post-grid", {
         <div className="my-custom-block">
           <CustomCss cssData={props.attributes}>
 
+
+
+
+
+
+
             {
               posts.items.map((x, i) => {
 
-                return (generateLayout(x, i)
+                return (<div className='border p-3 '><RawHTML>{x.html}</RawHTML></div>)
+                //return (generateLayout(x, i))
 
-                )
+
+
               })
             }
 
@@ -1877,22 +1950,7 @@ registerBlockType("prefix-blocks/post-grid", {
           </CustomCss>
 
 
-          <code>
-            {/* {viewType} */}
-            <br />
-            {/* {JSON.stringify(viewType)}
-                        {JSON.stringify(lazyLoad)}
-                        {JSON.stringify(container)}
-                        {JSON.stringify(pagination)}
-                        {JSON.stringify(masonry)}
-                        {JSON.stringify(search)}
-                        {JSON.stringify(grid)}
 
-                        {JSON.stringify(layout)} */}
-            {JSON.stringify(layout)}
-
-
-          </code>
 
 
 

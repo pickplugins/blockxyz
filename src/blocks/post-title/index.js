@@ -36,6 +36,7 @@ registerBlockType("prefix-blocks/blockxyz-post-title", {
 
     var dummyName = attributes.dummyName;
 
+    const title = wp.data.select("core/editor").getEditedPostAttribute('title');
 
 
 
@@ -67,11 +68,10 @@ registerBlockType("prefix-blocks/blockxyz-post-title", {
         <div className="post-title">
 
 
-          post-title
 
           <code>
 
-            {/* {JSON.stringify(layout)} */}
+            {title}
 
 
           </code>

@@ -22,6 +22,7 @@ class BlockXyz
         require_once(PREFIX_PLUGIN_PATH . 'src/blocks/post-grid/index.php');
         require_once(PREFIX_PLUGIN_PATH . 'src/blocks/post-grid/rest.php');
         require_once(PREFIX_PLUGIN_PATH . 'src/blocks/post-title/index.php');
+        require_once(PREFIX_PLUGIN_PATH . 'src/blocks/recent-posts/index.php');
     }
 
     public function init_plugin()

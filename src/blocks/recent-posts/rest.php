@@ -33,17 +33,6 @@ class BlockPostGridRest
             )
         );
 
-
-        register_rest_route(
-            'blockxyz/v2',
-            '/get_posts_layout',
-            array(
-                'methods'  => 'POST',
-                'callback' => array($this, 'get_posts_layout'),
-                'permission_callback' => '__return_true',
-            )
-        );
-
         register_rest_route(
             'blockxyz/v2',
             '/get_tax_terms',
@@ -55,92 +44,6 @@ class BlockPostGridRest
         );
     }
 
-    /**
-     * Return Posts
-     *
-     * @since 1.0.0
-     * @param WP_REST_Request $post_data Post data.
-     */
-    public function get_posts_layout($post_data)
-    {
-
-        $queryArgs      = isset($post_data['queryArgs']) ? $post_data['queryArgs'] : [];
-        $rawData      = isset($post_data['rawData']) ? $post_data['rawData'] : '';
-
-
-        error_log(serialize($rawData));
-
-
-        $query_args = [];
-
-        foreach ($queryArgs as $item) {
-
-
-
-            $id = isset($item['id']) ? $item['id'] : '';
-            $val = isset($item['val']) ? $item['val'] : '';
-
-            if ($val) {
-                if ($id == 'postType') {
-                    $query_args['post_type'] = $val;
-                }
-            }
-        }
-
-
-
-        $posts = [];
-
-        $post_grid_wp_query = new WP_Query($query_args);
-
-
-        if ($post_grid_wp_query->have_posts()) :
-
-            while ($post_grid_wp_query->have_posts()) : $post_grid_wp_query->the_post();
-
-                global $post;
-
-                $post_id = $post->ID;
-                $post->post_id = $post->ID;
-                $post->post_title = $post->post_title;
-                $post->post_excerpt = wp_kses_post($post->post_excerpt);
-                $post->post_content = $post->post_content;
-                $thumb = wp_get_attachment_image_src(get_post_thumbnail_id($post_id));
-                $thumb_url = isset($thumb[0]) ? $thumb[0] : '';
-                $post->thumb_url = !empty($thumb_url) ? $thumb_url : post_grid_plugin_url . 'assets/frontend/images/placeholder.png';
-
-                $post->is_pro = ($post_id % 2 == 0) ? true : false;
-
-
-                $blocks = parse_blocks($rawData);
-
-                $html = '';
-
-                foreach ($blocks as $block) {
-                    //look to see if your block is in the post content -> if yes continue past it if no then render block as normal
-                    $html .= render_block($block);
-                }
-
-                $post->html = $html;
-
-                $posts[]            = $post;
-
-
-
-
-
-
-            //error_log(serialize($thumb_url));
-
-
-            endwhile;
-            wp_reset_query();
-            wp_reset_postdata();
-        endif;
-
-
-        die(wp_json_encode($posts));
-    }
 
 
     /**
@@ -154,28 +57,15 @@ class BlockPostGridRest
 
         $queryArgs      = isset($post_data['queryArgs']) ? $post_data['queryArgs'] : [];
 
+        error_log(serialize($queryArgs));
+
+
+        $post_types       = isset($post_data['post_types']) ? $post_data['post_types'] : ['post_grid_layout'];
+
         $query_args = [];
-
-        foreach ($queryArgs as $item) {
-
-            error_log(serialize($item));
-
-
-            $id = isset($item['id']) ? $item['id'] : '';
-            $val = isset($item['val']) ? $item['val'] : '';
-
-            if ($val) {
-                if ($id == 'postType') {
-                    $query_args['post_type'] = $val;
-                }
-            }
-        }
-
-
-        error_log(serialize($query_args));
-
         $posts = [];
 
+        $query_args['post_type'] = $post_types;
         $post_grid_wp_query = new WP_Query($query_args);
 
 
