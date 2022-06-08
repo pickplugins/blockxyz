@@ -1,5 +1,5 @@
 const queryPrams = [
-  { val: [], multiple: false, id: 'postType', label: 'Post Types', description: "Select Post Types to Query" },
+  { val: ['post', 'product'], multiple: false, id: 'postType', label: 'Post Types', description: "Select Post Types to Query" },
   { val: [], multiple: false, id: 'taxQuery', label: 'Tax Query', description: "Taxonomies query arguments" },
   { val: 'OR', multiple: false, id: 'taxQueryRelation', label: 'Tax Query Relation', description: "Taxonomies query relation" },
 

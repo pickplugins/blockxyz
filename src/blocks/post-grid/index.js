@@ -2,6 +2,10 @@ import { registerBlockType } from '@wordpress/blocks'
 import { __ } from '@wordpress/i18n'
 
 import styled from 'styled-components'
+import Masonry from 'masonry-layout'
+//var Masonry = require('masonry-layout');
+
+
 import apiFetch from '@wordpress/api-fetch';
 import {
   BlockContextProvider,
@@ -13,7 +17,7 @@ const { parse } = wp.blockSerializationDefaultParser;
 const { RawHTML } = wp.element;
 import { useBlockProps, InnerBlocks } from '@wordpress/block-editor';
 
-import { createElement, memo, useMemo, useState } from '@wordpress/element'
+import { createElement, memo, useMemo, useState, useEffect } from '@wordpress/element'
 import { PanelBody, RangeControl, Button, Panel, PanelRow, Dropdown, DropdownMenu, SelectControl, ColorPicker, ColorPalette, ToolsPanelItem, ComboboxControl } from '@wordpress/components'
 import { InspectorControls, BlockControls, AlignmentToolbar, RichText } from '@wordpress/block-editor'
 import { __experimentalInputControl as InputControl } from '@wordpress/components';
@@ -63,6 +67,28 @@ row-gap: ${(props) => { return props.cssData.grid.rowGap.val + props.cssData.gri
 
 `;
 
+// const CustomCss = styled.div`
+
+// `;
+
+
+
+const CustomCssItem = styled.div`
+
+`;
+
+
+const ContainerCss = styled.div`
+padding: ${(props) => { return props.cssData.container.padding.val + props.cssData.container.padding.unit }};
+margin: ${(props) => { return props.cssData.container.margin.val + props.cssData.container.margin.unit }};
+background-color: ${(props) => { return props.cssData.container.bgColor }};
+background-image: ${(props) => { return 'url(' + props.cssData.container.bgImg.url + ')' }};
+`;
+
+
+
+
+
 
 registerBlockType("prefix-blocks/post-grid", {
   title: "Post Grid",
@@ -75,7 +101,7 @@ registerBlockType("prefix-blocks/post-grid", {
     },
     lazyLoad: {
       type: 'object',
-      default: { enable: '', srcUrl: '', srcId: '' },
+      default: { enable: 'no', srcUrl: '', srcId: '' },
     },
     pagination: {
       type: 'object',
@@ -101,7 +127,7 @@ registerBlockType("prefix-blocks/post-grid", {
 
     filterable: {
       type: 'object',
-      default: { height: '', bgColor: '', bgImg: '', margin: '', padding: '', },
+      default: { filters: [{ groupTitle: '', type: '', logic: '', showPostCount: '', items: [{ id: '', title: '', slug: '', }] }], allText: 'All', activeFilter: '', textColor: '', bgColor: '', activeBgColor: '', margin: { val: '', unit: '' }, padding: { val: '', unit: '' }, },
     },
 
     carousel: {
@@ -173,6 +199,12 @@ registerBlockType("prefix-blocks/post-grid", {
       type: 'array',
       default: [],
     },
+
+    postTypes: {
+      type: 'array',
+      default: [],
+    },
+
     masonry: {
       type: 'object',
       default: { enable: 'no', },
@@ -189,11 +221,10 @@ registerBlockType("prefix-blocks/post-grid", {
       type: 'object',
       default: {
         items: [
-          { val: [], multiple: false, id: 'postType', label: 'Post Types', description: "Select Post Types to Query" },
-          { val: [], multiple: false, id: 'taxQuery', label: 'Tax Query', description: "Taxonomies query arguments" },
-          { val: [], multiple: false, id: 'metaQuery', label: 'Meta Query', description: "Meta field query" },
-          { val: '', multiple: false, id: 's', label: 'Keyword', description: "Search keyword paramater" },
-          { val: [], multiple: false, id: 'postNameIn', label: 'Post Name In', description: "" },
+          { val: ['post', 'product'], multiple: false, id: 'postType', label: 'Post Types', description: "Select Post Types to Query" },
+          { val: [], multiple: false, id: 'postStatus', label: 'Post status', description: "Query post by post status" },
+          { val: '', multiple: false, id: 'order', label: 'Order', description: "Post query order" },
+          { val: [], multiple: false, id: 'orderby', label: 'Orderby', description: "Post query orderby" },
 
         ]
       },
@@ -233,6 +264,7 @@ registerBlockType("prefix-blocks/post-grid", {
     var queryArgs = attributes.queryArgs;
     var layoutList = attributes.layoutList;
     var posts = attributes.posts;
+    var filterable = attributes.filterable;
 
     //console.log(blockProps);
 
@@ -258,11 +290,25 @@ registerBlockType("prefix-blocks/post-grid", {
       { name: 'blue', color: '#00f' },
     ];
 
+    var postTypes = [];
 
-
-    const postTypes = useSelect(
+    const postTypesData = useSelect(
       (select) => select(coreStore).getPostTypes({ per_page: -1 }), []
     );
+
+
+    (
+      postTypesData !== null && postTypesData.map(x => {
+
+        postTypes.push({ value: x.slug, label: x.name })
+
+      })
+    )
+
+
+
+
+
 
 
     const TEMPLATE = [
@@ -322,6 +368,39 @@ registerBlockType("prefix-blocks/post-grid", {
       setAttributes({ lazyLoad: { enable: val, srcUrl: lazyLoad.srcUrl, srcId: lazyLoad.srcId } });
     }
 
+
+
+
+    function enableMasonry(val) {
+
+      //console.log(Masonry)
+
+      const grid = document.querySelector('.masonry-grid')
+      console.log(grid)
+
+
+
+      const msnry = new Masonry(grid, {
+        itemSelector: '.item',
+        columnWidth: 280,
+        gutter: 10,
+        transitionDuration: 0,
+        initLayout: false
+      })
+
+      msnry.once('layoutComplete', () => {
+        grid.classList.add('load')
+      })
+
+      msnry.layout()
+
+
+
+    }
+
+
+
+
     function updateLazyLoadsrcUrl(url, id) {
       setAttributes({ lazyLoad: { enable: lazyLoad.enable, srcUrl: url, srcId: id } });
     }
@@ -338,6 +417,7 @@ registerBlockType("prefix-blocks/post-grid", {
 
       //console.log(arg);
 
+      console.log(props.attributes.layout);
 
 
       apiFetch({
@@ -357,75 +437,6 @@ registerBlockType("prefix-blocks/post-grid", {
       //     });
     }
 
-    function fetchLayouts() {
-
-      fetchPosts()
-
-
-      setAttributes({ layout: { id: layout.id, data: layout.data, rawData: layout.rawData, loading: true, keyword: layout.keyword, category: layout.category, categories: layout.categories } })
-
-      // wp.apiFetch({ path: '/blockxyz/v2/get_posts' })
-      //     .then(items => {
-
-      //         //console.log(items);
-      //     });
-
-
-      var args = [{ id: 'postType', val: ['post_grid_layout'] }];
-
-
-      //console.log(args);
-
-      apiFetch({
-        path: '/blockxyz/v2/get_posts',
-        method: 'POST',
-        data: { queryArgs: args },
-      }).then((res) => {
-
-        setAttributes({ layoutList: res });
-        setAttributes({ layout: { id: layout.id, data: layout.data, rawData: layout.rawData, loading: false, keyword: layout.keyword, category: layout.category, categories: layout.categories } })
-
-      });
-
-
-      // wp.apiFetch({ path: '/wp/v2/post_grid_layout?per_page=100' })
-      //     .then(items => {
-      //         setAttributes({ layoutList: items });
-      //     });
-    }
-
-    function generateQueryFieldAuthorIn(xx) {
-
-      ////console.log(typeof xx);
-
-      var xxts = [12, 24, 32];
-
-
-      var xxt = [1, 2, 3].concat(xxts);
-
-
-      return (
-        xxt.map((x) => {
-          return (
-            <div>{x}</div>
-          )
-        })
-      )
-
-
-
-
-
-
-
-
-    }
-
-    function updateName(content) {
-
-      setAttributes({ dummyName: content });
-
-    }
 
     function generateLayout(x, i) {
 
@@ -493,12 +504,22 @@ registerBlockType("prefix-blocks/post-grid", {
 
     }
 
+    useEffect(() => {
+      //console.log('Listening: ', layout);
+      fetchPosts();
 
+
+
+    }, [layout]);
 
 
     function selectLayout(id, post_content) {
 
       var blocks = parse(post_content);
+
+      // console.log(post_content);
+
+      // console.log(layout);
 
       setAttributes({ layout: { id: id, data: blocks, rawData: post_content, loading: false, keyword: layout.keyword, category: layout.category, categories: layout.categories } })
 
@@ -527,9 +548,119 @@ registerBlockType("prefix-blocks/post-grid", {
     }
 
 
+
+    function fetchPostTypeTerms(keyword) {
+
+      var postTypes = [];
+      queryArgs.items.map(x => {
+
+        if (x.id == 'postType') {
+          postTypes.push(x.val)
+        }
+      })
+
+      console.log(postTypes);
+
+      apiFetch({
+        path: '/blockxyz/v2/post_type_objects',
+        method: 'POST',
+        data: { postTypes: postTypes[0], search: keyword },
+      }).then((res) => {
+
+        console.log(res);
+      });
+
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+    function fetchLayouts() {
+
+
+      fetchPosts()
+
+
+      setAttributes({ layout: { id: layout.id, data: layout.data, rawData: layout.rawData, loading: true, keyword: layout.keyword, category: layout.category, categories: layout.categories } })
+
+      // wp.apiFetch({ path: '/blockxyz/v2/get_posts' })
+      //     .then(items => {
+
+      //         //console.log(items);
+      //     });
+
+
+      var args = [{ id: 'postType', val: ['post_grid_layout'] }];
+
+
+      //console.log(args);
+
+      apiFetch({
+        path: '/blockxyz/v2/get_posts_layout',
+        method: 'POST',
+        data: { queryArgs: args },
+      }).then((res) => {
+
+        console.log(res);
+
+        setAttributes({ layoutList: res });
+        setAttributes({ layout: { id: layout.id, data: layout.data, rawData: layout.rawData, loading: false, keyword: layout.keyword, category: layout.category, categories: layout.categories } })
+
+      });
+
+
+      // wp.apiFetch({ path: '/wp/v2/post_grid_layout?per_page=100' })
+      //     .then(items => {
+      //         setAttributes({ layoutList: items });
+      //     });
+    }
+
+
+    function generateQueryFieldAuthorIn(xx) {
+
+      ////console.log(typeof xx);
+
+      var xxts = [12, 24, 32];
+
+
+      var xxt = [1, 2, 3].concat(xxts);
+
+
+      return (
+        xxt.map((x) => {
+          return (
+            <div>{x}</div>
+          )
+        })
+      )
+
+
+
+
+
+
+
+
+    }
+
+    function updateName(content) {
+
+      setAttributes({ dummyName: content });
+
+    }
+
+
     function removeQueryPram(i) {
 
-      ////console.log(i);
+
       queryArgs.items.splice(i, 1);
 
 
@@ -550,6 +681,10 @@ registerBlockType("prefix-blocks/post-grid", {
       itemData.val = newVal;
       queryArgs.items[index] = itemData;
       setAttributes({ queryArgs: { items: queryArgs.items } });
+
+
+      console.log(queryArgs);
+      fetchPosts();
 
       // if (itemData.id == 's' || itemData.id == 'order'  ) {
       //     itemData.val = newVal;
@@ -603,12 +738,7 @@ registerBlockType("prefix-blocks/post-grid", {
                 label=""
                 multiple
                 value={item.val}
-                options={[
-                  { label: 'Post', value: 'post' },
-                  { label: 'Page', value: 'page' },
-
-
-                ]}
+                options={postTypes}
                 onChange={(newVal) => updateQueryPram(newVal, index)}
               />
 
@@ -1332,17 +1462,46 @@ registerBlockType("prefix-blocks/post-grid", {
                 <div className=''>
                   <div className='py-2 font-bold '>Container Options</div>
 
-                  <label for="">Padding</label>
-                  <InputControl
-                    value={container.padding.val}
-                    onChange={(newVal) => setAttributes({ container: { padding: { val: newVal, unit: container.padding.unit }, margin: container.margin, bgColor: container.bgColor, bgImg: container.bgImg } })}
-                  />
+                  <PanelRow>
+                    <label for="">Padding</label>
+                    <InputControl
+                      value={container.padding.val}
+                      onChange={(newVal) => setAttributes({ container: { padding: { val: newVal, unit: container.padding.unit }, margin: container.margin, bgColor: container.bgColor, bgImg: container.bgImg } })}
+                    />
+                    <SelectControl
+                      label=""
+                      value={container.padding.unit}
+                      options={[
+                        { label: 'px', value: 'px' },
+                        { label: 'em', value: 'em' },
 
-                  <label for="">Margin</label>
-                  <InputControl
-                    value={container.margin.val}
-                    onChange={(newVal) => setAttributes({ container: { padding: container.padding, margin: { val: newVal, unit: container.margin.unit }, bgColor: container.bgColor, bgImg: container.bgImg } })}
-                  />
+                      ]}
+                      onChange={(newVal) => setAttributes({ container: { padding: { val: container.padding.val, unit: newVal }, margin: container.margin, bgColor: container.bgColor, bgImg: container.bgImg } })}
+                    />
+                  </PanelRow>
+
+                  <PanelRow>
+
+                    <label for="">Margin</label>
+                    <InputControl
+                      value={container.margin.val}
+                      onChange={(newVal) => setAttributes({ container: { padding: container.padding, margin: { val: newVal, unit: container.margin.unit }, bgColor: container.bgColor, bgImg: container.bgImg } })}
+                    />
+
+                    <SelectControl
+                      label=""
+                      value={container.margin.unit}
+                      options={[
+                        { label: 'px', value: 'px' },
+                        { label: 'em', value: 'em' },
+
+                      ]}
+                      onChange={(newVal) => setAttributes({ container: { margin: { val: container.padding.val, unit: newVal }, padding: container.padding, bgColor: container.bgColor, bgImg: container.bgImg } })}
+                    />
+
+                  </PanelRow>
+
+
 
 
                   <label for="">Background Color</label>
@@ -1541,9 +1700,14 @@ registerBlockType("prefix-blocks/post-grid", {
 
                 {layoutList.length > 0 && layoutList.map(x => {
                   return (
-                    <div className='my-3  cursor-pointer' >
+                    <div className='my-3  ' >
 
-                      <div className='relative' onClick={(ev) => { selectLayout(x.post_id, x.post_content) }}>
+                      <div className='relative cursor-pointer' onClick={(ev) => {
+                        selectLayout(x.post_id, x.post_content)
+
+
+
+                      }}>
                         <img src={x.thumb_url} />
 
                         <div className='text-[16px] p-2 bg-blue-600 text-white bg-opacity-90 text-bold absolute bottom-0 w-full text-center' >{x.post_title}</div>
@@ -1551,10 +1715,31 @@ registerBlockType("prefix-blocks/post-grid", {
 
 
                       <div className='my-3'>
-                        <span className={['text-white px-3 py-1 mx-2', x.is_pro ? ' bg-amber-400' : ' bg-blue-600'].join('')}>
-                          {x.is_pro ? 'Pro' : 'Free'}
-                        </span>
                         <span className='mx-2' >#{x.post_id}</span>
+
+
+
+
+                        {x.sale_price > 0 &&
+                          (
+                            <span className='mx-2' >Price:
+                              <del className='ml-2' >{x.price} </del>-<span className='' >{x.sale_price}USD </span>
+                            </span>
+                          )
+                        }
+
+                        {x.sale_price == 0 &&
+                          (
+                            <span className='mx-2' >Price:
+                              <span className='' > {x.sale_price}USD</span>
+                            </span>
+                          )
+                        }
+
+
+                        <span title='Buy To Download' className={['text-white px-3 py-1 mx-2', x.is_pro ? ' bg-amber-400' : ' bg-blue-600'].join('')}>
+                          {x.is_pro ? 'Buy Now' : 'Free'}
+                        </span>
 
                       </div>
 
@@ -1574,6 +1759,8 @@ registerBlockType("prefix-blocks/post-grid", {
               </PanelBody>
               <PanelBody title="Grid Settings" initialOpen={false} className={(viewType == 'grid' || viewType == 'filterable' || viewType == 'glossary') ? '' : 'hidden'}>
 
+
+                <Button className='mb-3' variant="secondary" onClick={enableMasonry} >Enable Masonry</Button>
 
                 <Button className='mb-3' variant="secondary" onClick={addGridColumn} >Add Column</Button>
 
@@ -1837,6 +2024,164 @@ registerBlockType("prefix-blocks/post-grid", {
 
               <PanelBody title="Filterable" initialOpen={false} className={viewType == 'filterable' ? '' : 'hidden'}>
 
+
+                <PanelRow>
+
+                  <label for="">Margin</label>
+                  <InputControl
+                    value={filterable.margin.val}
+                    onChange={(newVal) => setAttributes({ filterable: { filters: filterable.filters, allText: filterable.allText, activeFilter: filterable.activeFilter, textColor: filterable.textColor, bgColor: filterable.bgColor, activeBgColor: filterable.activeBgColor, padding: filterable.padding, margin: { val: newVal, unit: filterable.margin.unit }, bgColor: filterable.bgColor, bgImg: filterable.bgImg } })}
+                  />
+
+                  <SelectControl
+                    label=""
+                    value={filterable.margin.unit}
+                    options={[
+                      { label: 'px', value: 'px' },
+                      { label: 'em', value: 'em' },
+
+                    ]}
+                    onChange={(newVal) => setAttributes({ filterable: { filters: filterable.filters, allText: filterable.allText, activeFilter: filterable.activeFilter, textColor: filterable.textColor, bgColor: filterable.bgColor, activeBgColor: filterable.activeBgColor, margin: { val: filterable.padding.val, unit: newVal }, padding: filterable.padding, bgColor: filterable.bgColor, bgImg: filterable.bgImg } })}
+                  />
+
+                </PanelRow>
+
+                <PanelRow>
+
+                  <label for="">padding</label>
+                  <InputControl
+                    value={filterable.padding.val}
+                    onChange={(newVal) => setAttributes({ filterable: { filters: filterable.filters, allText: filterable.allText, activeFilter: filterable.activeFilter, textColor: filterable.textColor, bgColor: filterable.bgColor, activeBgColor: filterable.activeBgColor, margin: filterable.margin, padding: { val: newVal, unit: filterable.padding.unit }, bgColor: filterable.bgColor, bgImg: filterable.bgImg } })}
+                  />
+
+                  <SelectControl
+                    label=""
+                    value={filterable.padding.unit}
+                    options={[
+                      { label: 'px', value: 'px' },
+                      { label: 'em', value: 'em' },
+
+                    ]}
+                    onChange={(newVal) => setAttributes({ filterable: { filters: filterable.filters, allText: filterable.allText, activeFilter: filterable.activeFilter, textColor: filterable.textColor, bgColor: filterable.bgColor, activeBgColor: filterable.activeBgColor, padding: { val: filterable.padding.val, unit: newVal }, margin: filterable.margin, bgColor: filterable.bgColor, bgImg: filterable.bgImg } })}
+                  />
+
+                </PanelRow>
+
+
+                <label for="">Text Color</label>
+                <ColorPalette
+                  color={filterable.textColor}
+                  colors={colors}
+                  enableAlpha
+                  onChange={(newVal) => setAttributes({ filterable: { filters: filterable.filters, allText: filterable.allText, activeFilter: filterable.activeFilter, textColor: newVal, bgColor: filterable.bgColor, activeBgColor: filterable.activeBgColor, padding: { val: filterable.padding.val, unit: filterable.padding.unit }, margin: filterable.margin, bgImg: filterable.bgImg } })}
+                />
+
+
+                <label for="">Background Color</label>
+                <ColorPalette
+                  color={filterable.bgColor}
+                  colors={colors}
+                  enableAlpha
+                  onChange={(newVal) => setAttributes({ filterable: { filters: filterable.filters, allText: filterable.allText, activeFilter: filterable.activeFilter, textColor: filterable.textColor, bgColor: newVal, activeBgColor: filterable.activeBgColor, padding: { val: filterable.padding.val, unit: filterable.padding.unit }, margin: filterable.margin, bgImg: filterable.bgImg } })}
+                />
+
+                <label for="">Active Background Color</label>
+                <ColorPalette
+                  color={filterable.activeBgColor}
+                  colors={colors}
+                  enableAlpha
+                  onChange={(newVal) => setAttributes({ filterable: { filters: filterable.filters, allText: filterable.allText, activeFilter: filterable.activeFilter, textColor: filterable.textColor, bgColor: filterable.bgColor, activeBgColor: newVal, padding: { val: filterable.padding.val, unit: filterable.padding.unit }, margin: filterable.margin, bgImg: filterable.bgImg } })}
+                />
+
+                <div>
+
+                  <Button
+                    variant="secondary"
+                    className='mb-2'
+                    onClick={(ev) => {
+
+                      var filters = filterable.filters.concat({ groupTitle: '', type: '', logic: '', showPostCount: '', items: [] })
+
+                      setAttributes({ filterable: { filters: filters, allText: filterable.allText, activeFilter: filterable.activeFilter, textColor: filterable.textColor, bgColor: filterable.bgColor, activeBgColor: filterable.activeBgColor, padding: { val: filterable.padding.val, unit: filterable.padding.unit }, margin: filterable.margin, bgImg: filterable.bgImg } })
+                    }}
+
+                  >Add Filter Group</Button>
+
+                  {filterable.filters.map((x, i) => {
+
+
+
+                    return (
+
+                      <PanelBody title={(x.groupTitle) ? x.groupTitle : 'Filter Group ' + i} initialOpen={false} >
+
+                        <span
+                          onClick={(ev) => {
+
+                            filterable.filters.splice(i, 1);
+                            setAttributes({ filterable: { filters: filterable.filters, allText: filterable.allText, activeFilter: filterable.activeFilter, textColor: filterable.textColor, bgColor: filterable.bgColor, activeBgColor: filterable.activeBgColor, padding: { val: filterable.padding.val, unit: filterable.padding.unit }, margin: filterable.margin, bgImg: filterable.bgImg } })
+                          }}
+                          className='cursor-pointer px-3 py-1 inline-block text-white bg-red-600 text-sm'><span className='dashicon dashicons dashicons-no-alt'></span> Delete</span>
+
+
+
+                        <span
+                          onClick={(ev) => {
+
+                            var ss = filterable.filters[i].items.concat({ id: '', slug: '', title: '' });
+                            filterable.filters[i].items = ss
+
+
+                            setAttributes({ filterable: { filters: filterable.filters, allText: filterable.allText, activeFilter: filterable.activeFilter, textColor: filterable.textColor, bgColor: filterable.bgColor, activeBgColor: filterable.activeBgColor, padding: { val: filterable.padding.val, unit: filterable.padding.unit }, margin: filterable.margin, bgImg: filterable.bgImg } })
+                          }}
+                          className='cursor-pointer inline-block px-3 py-1 text-white bg-gray-600 text-sm mx-2'> Add</span>
+
+
+
+                        <InputControl
+                          label="Placeholder text"
+
+                          value=''
+                          onChange={(newVal) => {
+                            fetchPostTypeTerms(newVal);
+
+                          }}
+                        />
+
+
+
+                        {x.items.map((y, j) => {
+
+                          return (
+                            <div className='my-2'>
+                              {y.title}
+
+                              <span
+                                onClick={(ev) => {
+
+                                  filterable.filters[i].items.splice(j, 1);
+
+                                  setAttributes({ filterable: { filters: filterable.filters, allText: filterable.allText, activeFilter: filterable.activeFilter, textColor: filterable.textColor, bgColor: filterable.bgColor, activeBgColor: filterable.activeBgColor, padding: { val: filterable.padding.val, unit: filterable.padding.unit }, margin: filterable.margin, bgImg: filterable.bgImg } })
+                                }}
+                                className='cursor-pointer px-3 py-1 inline-block text-white bg-red-600 text-sm'><span className='dashicon dashicons dashicons-no-alt'></span></span>
+                            </div>
+                          )
+
+                        })
+                        }
+
+
+                      </PanelBody>
+
+                    )
+
+                  })
+                  }
+                </div>
+
+
+
+
               </PanelBody>
 
               <PanelBody title="Glossary" initialOpen={false} className={viewType == 'glossary' ? '' : 'hidden'}>
@@ -1923,36 +2268,117 @@ registerBlockType("prefix-blocks/post-grid", {
 
 
         <div className="my-custom-block">
-          <CustomCss cssData={props.attributes}>
+
+          <code>{JSON.stringify(postTypes)}</code>
+          <ContainerCss cssData={props.attributes} className='masonry-grid'>
 
 
+            {lazyLoad.enable == 'yes' &&
+              (
+                <div className='lazyLoad'>lazyLoad</div>
+              )
+            }
 
 
+            {search.enable == 'yes' &&
+              (
+                <div className='search'>search form</div>
+              )
+            }
 
 
+            {viewType == 'filterable' &&
+              (
+                <div className='filterable-navs'>Filterable navs</div>
+              )
+            }
 
-            {
-              posts.items.map((x, i) => {
-
-                return (<div className='border p-3 '><RawHTML>{x.html}</RawHTML></div>)
-                //return (generateLayout(x, i))
-
-
-
-              })
+            {viewType == 'glossary' &&
+              (
+                <div className='filterable-navs'>glossary navs</div>
+              )
             }
 
 
 
 
 
+            <div >
 
-          </CustomCss>
+              {posts.items.length == 0 &&
+
+                (
+                  <div className='no-posts'>No Post found</div>
+
+                )
+              }
+
+
+
+              {posts.items.length > 0 &&
+                (
+                  <CustomCss cssData={props.attributes} className='masonry-grid'>
+                    {
+                      posts.items.map((x, i) => {
+
+                        return (<div className='border p-3 item '><RawHTML>{x.html}</RawHTML></div>)
+                        //return (generateLayout(x, i))
+                      })
+                    }
+                  </CustomCss>
+                )
+              }
 
 
 
 
 
+            </div>
+
+
+            {pagination.type == 'normal' &&
+              (
+                <div className='pagination'>normal Pagination</div>
+
+              )
+            }
+
+            {pagination.type == 'ajax' &&
+              (
+                <div className='pagination'>ajax Pagination</div>
+
+              )
+            }
+
+            {pagination.type == 'next_previous' &&
+              (
+                <div className='pagination'>next_previous Pagination</div>
+
+              )
+            }
+
+            {pagination.type == 'filterable' &&
+              (
+                <div className='pagination'>filterable Pagination</div>
+
+              )
+            }
+
+            {pagination.type == 'loadmore' &&
+              (
+                <div className='pagination'>loadmore Pagination</div>
+
+              )
+            }
+
+            {pagination.type == 'infinite' &&
+              (
+                <div className='pagination'>infinite Pagination</div>
+
+              )
+            }
+
+          </ContainerCss>
 
         </div>
       ]
