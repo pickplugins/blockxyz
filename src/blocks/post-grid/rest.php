@@ -406,15 +406,21 @@ class BlockPostGridRest
 
         foreach ($taxonomies as $taxonomy) {
 
+            //error_log(serialize($taxonomy));
 
             $terms_results = get_terms($taxonomy, array(
                 'hide_empty' => false,
                 'search' => $search,
             ));
 
-            foreach ($terms_results as $term) {
-                error_log($term->name);
-                $terms[] = ['name' => $term->name];
+            if (!empty($terms_results)) {
+
+                $terms[] = ['name' => '--- ' . $taxonomy . ' ---', 'slug' => '', 'term_id' => ''];
+
+                foreach ($terms_results as $term) {
+                    //error_log($term->name);
+                    $terms[] = ['name' => $term->name, 'slug' => $term->slug, 'term_id' => $term->term_id];
+                }
             }
         }
 

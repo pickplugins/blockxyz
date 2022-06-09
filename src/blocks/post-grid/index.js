@@ -127,7 +127,7 @@ registerBlockType("prefix-blocks/post-grid", {
 
     filterable: {
       type: 'object',
-      default: { filters: [{ groupTitle: '', type: '', logic: '', showPostCount: '', items: [{ id: '', title: '', slug: '', }] }], allText: 'All', activeFilter: '', textColor: '', bgColor: '', activeBgColor: '', margin: { val: '', unit: '' }, padding: { val: '', unit: '' }, },
+      default: { filters: [{ groupTitle: '', type: '', logic: '', showPostCount: '', items: [] }], allText: 'All', activeFilter: '', textColor: '', bgColor: '', activeBgColor: '', margin: { val: '', unit: '' }, padding: { val: '', unit: '' }, },
     },
 
     carousel: {
@@ -283,6 +283,8 @@ registerBlockType("prefix-blocks/post-grid", {
 
 
     //////console.log(queryArgs);
+
+    var filterablTermsResults = [];
 
     const colors = [
       { name: 'red', color: '#f00' },
@@ -547,11 +549,17 @@ registerBlockType("prefix-blocks/post-grid", {
 
     }
 
+    const [filterablTerms, setFilterablTerms] = useState([]); // Using the hook.
 
 
     function fetchPostTypeTerms(keyword) {
 
       var postTypes = [];
+
+
+      setFilterablTerms([]);
+
+
       queryArgs.items.map(x => {
 
         if (x.id == 'postType') {
@@ -561,14 +569,21 @@ registerBlockType("prefix-blocks/post-grid", {
 
       console.log(postTypes);
 
-      apiFetch({
+      var sss = apiFetch({
         path: '/blockxyz/v2/post_type_objects',
         method: 'POST',
         data: { postTypes: postTypes[0], search: keyword },
-      }).then((res) => {
+      }).then((result) => {
+        setFilterablTerms(result);
 
-        console.log(res);
+        //return result;
+
+        //console.log(filterablTermsResults);
       });
+
+
+
+
 
     }
 
@@ -2025,6 +2040,219 @@ registerBlockType("prefix-blocks/post-grid", {
               <PanelBody title="Filterable" initialOpen={false} className={viewType == 'filterable' ? '' : 'hidden'}>
 
 
+                <div>
+
+                  <Button
+                    variant="secondary"
+                    className='mb-2'
+                    onClick={(ev) => {
+
+                      var filters = filterable.filters.concat({ groupTitle: '', type: '', logic: '', showPostCount: '', items: [] })
+
+                      setAttributes({ filterable: { filters: filters, allText: filterable.allText, activeFilter: filterable.activeFilter, textColor: filterable.textColor, bgColor: filterable.bgColor, activeBgColor: filterable.activeBgColor, padding: { val: filterable.padding.val, unit: filterable.padding.unit }, margin: filterable.margin, bgImg: filterable.bgImg } })
+                    }}
+
+                  >Add Filter Group</Button>
+
+                  {filterable.filters.map((x, i) => {
+
+
+
+                    return (
+
+                      <PanelBody title={(x.groupTitle) ? x.groupTitle : 'Filter Group ' + i} initialOpen={false} >
+
+                        <span
+                          onClick={(ev) => {
+
+                            filterable.filters.splice(i, 1);
+                            setAttributes({ filterable: { filters: filterable.filters, allText: filterable.allText, activeFilter: filterable.activeFilter, textColor: filterable.textColor, bgColor: filterable.bgColor, activeBgColor: filterable.activeBgColor, padding: { val: filterable.padding.val, unit: filterable.padding.unit }, margin: filterable.margin, bgImg: filterable.bgImg } })
+                          }}
+                          className='cursor-pointer px-3 py-1 inline-block text-white bg-red-600 text-sm mb-2'><span className='dashicon dashicons dashicons-no-alt'></span> Delete Group</span>
+
+
+                        <PanelRow >
+                          <label for="">Group Title</label>
+
+
+
+
+
+
+
+
+
+
+
+
+
+                          <InputControl
+                            value={x.groupTitle}
+                            onChange={(newVal) => {
+                              filterable.filters[i].groupTitle = newVal
+
+                              setAttributes({ filterable: { filters: filterable.filters, allText: filterable.allText, activeFilter: filterable.activeFilter, textColor: filterable.textColor, bgColor: filterable.bgColor, activeBgColor: filterable.activeBgColor, padding: { val: filterable.padding.val, unit: filterable.padding.unit }, margin: filterable.margin, bgImg: filterable.bgImg } })
+
+                            }}
+                          />
+                        </PanelRow>
+
+                        <PanelRow >
+                          <label for="">Group Type</label>
+
+
+
+                          <SelectControl
+                            value={x.type}
+                            options={[
+                              { value: 'inline', label: 'Inline' },
+                              { value: 'dropdown', label: 'Dropdown' },
+                              { value: 'radio', label: 'Radio' },
+                              { value: 'checkbox', label: 'Checkbox' },
+                            ]}
+                            onChange={(newVal) => {
+                              filterable.filters[i].type = newVal
+
+                              setAttributes({ filterable: { filters: filterable.filters, allText: filterable.allText, activeFilter: filterable.activeFilter, textColor: filterable.textColor, bgColor: filterable.bgColor, activeBgColor: filterable.activeBgColor, padding: { val: filterable.padding.val, unit: filterable.padding.unit }, margin: filterable.margin, bgImg: filterable.bgImg } })
+
+                            }}
+                          />
+
+
+
+                        </PanelRow>
+
+
+
+                        <PanelRow >
+                          <label for="">Data Logic</label>
+
+
+
+                          <SelectControl
+                            value={x.logic}
+                            options={[
+                              { value: 'or', label: 'OR' },
+                              { value: 'and', label: 'AND' },
+
+                            ]}
+                            onChange={(newVal) => {
+                              filterable.filters[i].logic = newVal
+
+                              setAttributes({ filterable: { filters: filterable.filters, allText: filterable.allText, activeFilter: filterable.activeFilter, textColor: filterable.textColor, bgColor: filterable.bgColor, activeBgColor: filterable.activeBgColor, padding: { val: filterable.padding.val, unit: filterable.padding.unit }, margin: filterable.margin, bgImg: filterable.bgImg } })
+
+                            }}
+                          />
+
+
+
+                        </PanelRow>
+
+
+
+                        <label for="" className='my-3 font-bold'>Terms</label>
+
+
+
+                        {/* {JSON.stringify(filterablTerms)} */}
+
+                        {x.items.length == 0 && (
+                          <div className='my-1'>No terms added.</div>
+                        )}
+
+                        {x.items.map((y, j) => {
+
+                          return (
+                            <PanelRow className='my-1'>
+                              {y.title}
+
+                              <span
+                                onClick={(ev) => {
+
+                                  filterable.filters[i].items.splice(j, 1);
+
+                                  setAttributes({ filterable: { filters: filterable.filters, allText: filterable.allText, activeFilter: filterable.activeFilter, textColor: filterable.textColor, bgColor: filterable.bgColor, activeBgColor: filterable.activeBgColor, padding: { val: filterable.padding.val, unit: filterable.padding.unit }, margin: filterable.margin, bgImg: filterable.bgImg } })
+                                }}
+                                className='cursor-pointer p-1   inline-block text-white bg-red-600 text-sm'><span className='dashicon dashicons dashicons-no-alt'></span></span>
+                            </PanelRow>
+                          )
+                        })
+                        }
+
+
+
+
+                        <InputControl
+
+                          placeholder="Search Categories or terms"
+
+                          value=''
+                          onChange={(newVal) => {
+                            fetchPostTypeTerms(newVal);
+
+                          }}
+                        />
+
+
+                        {/* {filterablTerms.length == 0 && (
+                          <div className='bg-gray-200 p-2 mt-2'>No Terms Found</div>
+
+                        )} */}
+
+                        {filterablTerms.length > 0 && (
+
+                          <div className='bg-gray-200 p-2 mt-2'>
+                            {filterablTerms.map(x => {
+
+                              return (
+
+                                <div
+                                  title='Click Add terms'
+                                  className='border-b border-gray-400 my-2 pb-1 cursor-pointer'
+
+                                  onClick={(ev) => {
+
+                                    if (x.slug) {
+                                      var ss = filterable.filters[i].items.concat({ id: x.term_id, slug: x.slug, title: x.name });
+                                      filterable.filters[i].items = ss
+
+                                      setAttributes({ filterable: { filters: filterable.filters, allText: filterable.allText, activeFilter: filterable.activeFilter, textColor: filterable.textColor, bgColor: filterable.bgColor, activeBgColor: filterable.activeBgColor, padding: { val: filterable.padding.val, unit: filterable.padding.unit }, margin: filterable.margin, bgImg: filterable.bgImg } })
+                                    }
+
+
+                                  }}
+
+                                >{x.name}</div>
+
+                              )
+
+                            })}
+                          </div>
+                        )
+
+
+                        }
+
+
+
+
+
+
+
+
+
+
+                      </PanelBody>
+
+                    )
+
+                  })
+                  }
+                </div>
+
+
+
+
                 <PanelRow>
 
                   <label for="">Margin</label>
@@ -2093,91 +2321,6 @@ registerBlockType("prefix-blocks/post-grid", {
                   onChange={(newVal) => setAttributes({ filterable: { filters: filterable.filters, allText: filterable.allText, activeFilter: filterable.activeFilter, textColor: filterable.textColor, bgColor: filterable.bgColor, activeBgColor: newVal, padding: { val: filterable.padding.val, unit: filterable.padding.unit }, margin: filterable.margin, bgImg: filterable.bgImg } })}
                 />
 
-                <div>
-
-                  <Button
-                    variant="secondary"
-                    className='mb-2'
-                    onClick={(ev) => {
-
-                      var filters = filterable.filters.concat({ groupTitle: '', type: '', logic: '', showPostCount: '', items: [] })
-
-                      setAttributes({ filterable: { filters: filters, allText: filterable.allText, activeFilter: filterable.activeFilter, textColor: filterable.textColor, bgColor: filterable.bgColor, activeBgColor: filterable.activeBgColor, padding: { val: filterable.padding.val, unit: filterable.padding.unit }, margin: filterable.margin, bgImg: filterable.bgImg } })
-                    }}
-
-                  >Add Filter Group</Button>
-
-                  {filterable.filters.map((x, i) => {
-
-
-
-                    return (
-
-                      <PanelBody title={(x.groupTitle) ? x.groupTitle : 'Filter Group ' + i} initialOpen={false} >
-
-                        <span
-                          onClick={(ev) => {
-
-                            filterable.filters.splice(i, 1);
-                            setAttributes({ filterable: { filters: filterable.filters, allText: filterable.allText, activeFilter: filterable.activeFilter, textColor: filterable.textColor, bgColor: filterable.bgColor, activeBgColor: filterable.activeBgColor, padding: { val: filterable.padding.val, unit: filterable.padding.unit }, margin: filterable.margin, bgImg: filterable.bgImg } })
-                          }}
-                          className='cursor-pointer px-3 py-1 inline-block text-white bg-red-600 text-sm'><span className='dashicon dashicons dashicons-no-alt'></span> Delete</span>
-
-
-
-                        <span
-                          onClick={(ev) => {
-
-                            var ss = filterable.filters[i].items.concat({ id: '', slug: '', title: '' });
-                            filterable.filters[i].items = ss
-
-
-                            setAttributes({ filterable: { filters: filterable.filters, allText: filterable.allText, activeFilter: filterable.activeFilter, textColor: filterable.textColor, bgColor: filterable.bgColor, activeBgColor: filterable.activeBgColor, padding: { val: filterable.padding.val, unit: filterable.padding.unit }, margin: filterable.margin, bgImg: filterable.bgImg } })
-                          }}
-                          className='cursor-pointer inline-block px-3 py-1 text-white bg-gray-600 text-sm mx-2'> Add</span>
-
-
-
-                        <InputControl
-                          label="Placeholder text"
-
-                          value=''
-                          onChange={(newVal) => {
-                            fetchPostTypeTerms(newVal);
-
-                          }}
-                        />
-
-
-
-                        {x.items.map((y, j) => {
-
-                          return (
-                            <div className='my-2'>
-                              {y.title}
-
-                              <span
-                                onClick={(ev) => {
-
-                                  filterable.filters[i].items.splice(j, 1);
-
-                                  setAttributes({ filterable: { filters: filterable.filters, allText: filterable.allText, activeFilter: filterable.activeFilter, textColor: filterable.textColor, bgColor: filterable.bgColor, activeBgColor: filterable.activeBgColor, padding: { val: filterable.padding.val, unit: filterable.padding.unit }, margin: filterable.margin, bgImg: filterable.bgImg } })
-                                }}
-                                className='cursor-pointer px-3 py-1 inline-block text-white bg-red-600 text-sm'><span className='dashicon dashicons dashicons-no-alt'></span></span>
-                            </div>
-                          )
-
-                        })
-                        }
-
-
-                      </PanelBody>
-
-                    )
-
-                  })
-                  }
-                </div>
 
 
 
@@ -2270,7 +2413,7 @@ registerBlockType("prefix-blocks/post-grid", {
         <div className="my-custom-block">
 
           <code>{JSON.stringify(postTypes)}</code>
-          <ContainerCss cssData={props.attributes} className='masonry-grid'>
+          <ContainerCss cssData={props.attributes}>
 
 
             {lazyLoad.enable == 'yes' &&
@@ -2289,7 +2432,49 @@ registerBlockType("prefix-blocks/post-grid", {
 
             {viewType == 'filterable' &&
               (
-                <div className='filterable-navs'>Filterable navs</div>
+
+                <div className='filterable-navs'>
+                  <div className='pg-filter-group mx-3 inline-block'>
+
+                    <div className='filter cusror-pointer px-4 py-2 m-2 inline-block bg-gray-200 filter-34534' data-filter='all'>All</div>
+                  </div>
+                  {
+
+                    filterable.filters.map(x => {
+
+                      return (
+
+                        <div className='pg-filter-group mx-3 inline-block' data-logic={x.logic}>
+                          <div className='filter-group-title px-4 py-2 m-2 inline-block mx-2'>{x.groupTitle}</div>
+
+                          <div className='filter-group-items inline-block'>
+                            {x.items.map(y => {
+
+                              return (
+
+                                <div className='filter cusror-pointer px-4 py-2 m-2 inline-block bg-gray-200 filter-34534' terms-id={y.id} data-filter={'.' + y.slug}>{y.title}</div>
+
+                              )
+
+                            })}
+
+                          </div>
+
+
+                        </div>
+
+                      )
+
+
+                    })
+
+                  }
+                </div>
+
+
+
+
+
               )
             }
 
