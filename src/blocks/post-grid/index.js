@@ -90,6 +90,11 @@ background-image: ${(props) => { return 'url(' + props.cssData.container.bgImg.u
 
 
 
+
+
+
+
+
 registerBlockType("prefix-blocks/post-grid", {
   title: "Post Grid",
   icon: "grid-view",
@@ -121,13 +126,14 @@ registerBlockType("prefix-blocks/post-grid", {
     },
     grid: {
       type: 'object',
-      default: { gridTemplateColumns: [{ val: 1, unit: 'fr' }, { val: 1, unit: 'fr' }, { val: 1, unit: 'fr' }], gridTemplateRows: [{ val: 1, unit: 'fr' }, { val: 1, unit: 'fr' }], colGap: { val: 1, unit: 'em' }, rowGap: { val: 1, unit: 'em' }, padding: { val: 1, unit: 'em' }, },
+      default: { gridTemplateColumns: [{ val: 1, unit: 'fr' }, { val: 1, unit: 'fr' }, { val: 1, unit: 'fr' }], gridTemplateRows: [{ val: 1, unit: 'fr' }, { val: 1, unit: 'fr' }], colGap: { val: 1, unit: 'em' }, rowGap: { val: 1, unit: 'em' }, padding: { val: 1, unit: 'em' }, itemCss: [] },
     },
+
 
 
     filterable: {
       type: 'object',
-      default: { filters: [{ groupTitle: '', type: '', logic: '', showPostCount: '', items: [] }], allText: 'All', activeFilter: '', textColor: '', bgColor: '', activeBgColor: '', margin: { val: '', unit: '' }, padding: { val: '', unit: '' }, },
+      default: { filters: [{ groupTitle: '', type: '', logic: '', showPostCount: '', items: [] }], allText: 'All', showSort: '', activeFilter: '', textColor: '', bgColor: '', activeBgColor: '', padding: { val: '', unit: '' }, margin: { val: '', unit: '' }, },
     },
 
     carousel: {
@@ -243,7 +249,7 @@ registerBlockType("prefix-blocks/post-grid", {
       default: '2.1.20'
     }
   },
-  category: "common",
+  category: "post-grid",
   edit: function (props) {
 
 
@@ -269,6 +275,77 @@ registerBlockType("prefix-blocks/post-grid", {
     //console.log(blockProps);
 
 
+    const gridLayout = [
+      {
+        thumb: 'http://localhost/wp/wp-content/plugins/blockxyz/assets/images/placeholder.png', title: '2 Col, 1 Rows, 0 Gap', data: { "gridTemplateRows": [{ "val": 1, "unit": "fr" }], "gridTemplateColumns": [{ "val": 1, "unit": "fr" }, { "val": 1, "unit": "fr" }], "rowGap": { "val": "0", "unit": "em" }, "colGap": { "val": "0", "unit": "em" }, "padding": { "val": 1, "unit": "em" }, "itemCss": [] }
+      },
+
+      {
+        thumb: 'http://localhost/wp/wp-content/plugins/blockxyz/assets/images/placeholder.png', title: '2 Col, 1 Rows, 1EM Gap', data: { "gridTemplateRows": [{ "val": 1, "unit": "fr" }], "gridTemplateColumns": [{ "val": 1, "unit": "fr" }, { "val": 1, "unit": "fr" }], "rowGap": { "val": "1", "unit": "em" }, "colGap": { "val": "1", "unit": "em" }, "padding": { "val": 1, "unit": "em" }, "itemCss": [] }
+      },
+      {
+        thumb: 'http://localhost/wp/wp-content/plugins/blockxyz/assets/images/placeholder.png', title: '2 Col, 1 Rows, 2EM Gap', data: { "gridTemplateRows": [{ "val": 1, "unit": "fr" }], "gridTemplateColumns": [{ "val": 1, "unit": "fr" }, { "val": 1, "unit": "fr" }], "rowGap": { "val": "2", "unit": "em" }, "colGap": { "val": "2", "unit": "em" }, "padding": { "val": 1, "unit": "em" }, "itemCss": [] }
+      },
+      {
+        thumb: 'http://localhost/wp/wp-content/plugins/blockxyz/assets/images/placeholder.png', title: '2 Col, 1 Rows, 3EM Gap', data: { "gridTemplateRows": [{ "val": 1, "unit": "fr" }], "gridTemplateColumns": [{ "val": 1, "unit": "fr" }, { "val": 1, "unit": "fr" }], "rowGap": { "val": "3", "unit": "em" }, "colGap": { "val": "3", "unit": "em" }, "padding": { "val": 1, "unit": "em" }, "itemCss": [] }
+      },
+      {
+        thumb: 'http://localhost/wp/wp-content/plugins/blockxyz/assets/images/placeholder.png', title: '2 Col, 1 Rows, 3px Gap', data: { "gridTemplateRows": [{ "val": 1, "unit": "fr" }], "gridTemplateColumns": [{ "val": 1, "unit": "fr" }, { "val": 1, "unit": "fr" }], "rowGap": { "val": "3", "unit": "px" }, "colGap": { "val": "3", "unit": "px" }, "padding": { "val": 1, "unit": "em" }, "itemCss": [] }
+      },
+      {
+        thumb: 'http://localhost/wp/wp-content/plugins/blockxyz/assets/images/placeholder.png', title: '2 Col, 1 Rows, 10px Gap', data: { "gridTemplateRows": [{ "val": 1, "unit": "fr" }], "gridTemplateColumns": [{ "val": 1, "unit": "fr" }, { "val": 1, "unit": "fr" }], "rowGap": { "val": "10", "unit": "px" }, "colGap": { "val": "10", "unit": "px" }, "padding": { "val": 1, "unit": "em" }, "itemCss": [] }
+      },
+
+
+      {
+        thumb: 'http://localhost/wp/wp-content/plugins/blockxyz/assets/images/placeholder.png', title: '2 Col, 2 Rows, 1st Spec 10px Gap', data: { "gridTemplateRows": [{ "val": 1, "unit": "fr" }, { "val": 1, "unit": "fr" }], "gridTemplateColumns": [{ "val": "60", "unit": "%" }, { "val": 1, "unit": "fr" }], "rowGap": { "val": "10", "unit": "px" }, "colGap": { "val": "10", "unit": "px" }, "padding": { "val": 1, "unit": "em" }, "itemCss": [{ "grid-column-start": "1", "grid-column-end": "", "grid-row-start": "1", "grid-row-end": "3" }] }
+
+      },
+
+
+
+
+
+      {
+        thumb: 'http://localhost/wp/wp-content/plugins/blockxyz/assets/images/placeholder.png', title: '3 Col, 2 Rows, 0 Gap', data: { "gridTemplateRows": [{ "val": 1, "unit": "fr" }], "gridTemplateColumns": [{ "val": 1, "unit": "fr" }, { "val": 1, "unit": "fr" }, { "val": 1, "unit": "fr" }], "rowGap": { "val": "0", "unit": "em" }, "colGap": { "val": "0", "unit": "em" }, "padding": { "val": 1, "unit": "em" }, "itemCss": [] }
+      },
+      {
+        thumb: 'http://localhost/wp/wp-content/plugins/blockxyz/assets/images/placeholder.png', title: '3 Col, 2 Rows, 1EM Gap', data: { "gridTemplateRows": [{ "val": 1, "unit": "fr" }], "gridTemplateColumns": [{ "val": 1, "unit": "fr" }, { "val": 1, "unit": "fr" }, { "val": 1, "unit": "fr" }], "rowGap": { "val": "1", "unit": "em" }, "colGap": { "val": "1", "unit": "em" }, "padding": { "val": 1, "unit": "em" }, "itemCss": [] }
+      },
+      {
+        thumb: 'http://localhost/wp/wp-content/plugins/blockxyz/assets/images/placeholder.png', title: '3 Col, 2 Rows, 2EM Gap', data: { "gridTemplateRows": [{ "val": 1, "unit": "fr" }], "gridTemplateColumns": [{ "val": 1, "unit": "fr" }, { "val": 1, "unit": "fr" }, { "val": 1, "unit": "fr" }], "rowGap": { "val": "2", "unit": "em" }, "colGap": { "val": "2", "unit": "em" }, "padding": { "val": 1, "unit": "em" }, "itemCss": [] }
+      },
+      {
+        thumb: 'http://localhost/wp/wp-content/plugins/blockxyz/assets/images/placeholder.png', title: '3 Col, 2 Rows, 3EM Gap', data: { "gridTemplateRows": [{ "val": 1, "unit": "fr" }], "gridTemplateColumns": [{ "val": 1, "unit": "fr" }, { "val": 1, "unit": "fr" }, { "val": 1, "unit": "fr" }], "rowGap": { "val": "3", "unit": "em" }, "colGap": { "val": "3", "unit": "em" }, "padding": { "val": 1, "unit": "em" }, "itemCss": [] }
+      },
+      {
+        thumb: 'http://localhost/wp/wp-content/plugins/blockxyz/assets/images/placeholder.png', title: '3 Col, 2 Rows, 3px Gap', data: { "gridTemplateRows": [{ "val": 1, "unit": "fr" }], "gridTemplateColumns": [{ "val": 1, "unit": "fr" }, { "val": 1, "unit": "fr" }, { "val": 1, "unit": "fr" }], "rowGap": { "val": "3", "unit": "px" }, "colGap": { "val": "3", "unit": "px" }, "padding": { "val": 1, "unit": "em" }, "itemCss": [] }
+      },
+      {
+        thumb: 'http://localhost/wp/wp-content/plugins/blockxyz/assets/images/placeholder.png', title: '3 Col, 2 Rows, 10px Gap', data: { "gridTemplateRows": [{ "val": 1, "unit": "fr" }], "gridTemplateColumns": [{ "val": 1, "unit": "fr" }, { "val": 1, "unit": "fr" }, { "val": 1, "unit": "fr" }], "rowGap": { "val": "10", "unit": "px" }, "colGap": { "val": "10", "unit": "px" }, "padding": { "val": 1, "unit": "em" }, "itemCss": [] }
+      },
+
+
+
+      {
+        thumb: 'http://localhost/wp/wp-content/plugins/blockxyz/assets/images/placeholder.png', title: '3 Col, 2nd Large 1 Rows, 1EM Gap', data: { "gridTemplateRows": [{ "val": 1, "unit": "fr" }], "gridTemplateColumns": [{ "val": 1, "unit": "fr" }, { "val": 1, "unit": "fr" }, { "val": 1, "unit": "fr" }, { "val": 1, "unit": "fr" }], "rowGap": { "val": 1, "unit": "em" }, "colGap": { "val": 1, "unit": "em" }, "padding": { "val": 1, "unit": "em" }, "itemCss": [{ "grid-column-start": "", "grid-column-end": "", "grid-row-start": "", "grid-row-end": "" }, { "grid-column-start": "2", "grid-column-end": "4", "grid-row-start": "", "grid-row-end": "" }] }
+
+      },
+
+
+      {
+        thumb: 'http://localhost/wp/wp-content/plugins/blockxyz/assets/images/placeholder.png', title: '3 Col, 1st Large 2 Rows, 0 Gap', data: { "gridTemplateRows": [{ "val": 1, "unit": "fr" }], "gridTemplateColumns": [{ "val": 1, "unit": "fr" }, { "val": 1, "unit": "fr" }, { "val": 1, "unit": "fr" }], "rowGap": { "val": "0", "unit": "em" }, "colGap": { "val": "0", "unit": "em" }, "padding": { "val": 1, "unit": "em" }, "itemCss": [{ "grid-column-start": "1", "grid-column-end": "3", "grid-row-start": "", "grid-row-end": "" }] }
+      },
+
+      {
+        thumb: 'http://localhost/wp/wp-content/plugins/blockxyz/assets/images/placeholder.png', title: '3 Col, 2th Large 2 Rows, 0 Gap', data: { "gridTemplateRows": [{ "val": 1, "unit": "fr" }], "gridTemplateColumns": [{ "val": 1, "unit": "fr" }, { "val": 1, "unit": "fr" }, { "val": 1, "unit": "fr" }], "rowGap": { "val": "0", "unit": "em" }, "colGap": { "val": "0", "unit": "em" }, "padding": { "val": 1, "unit": "em" }, "itemCss": [{ "grid-column-start": "", "grid-column-end": "", "grid-row-start": "", "grid-row-end": "" }, { "grid-column-start": "2", "grid-column-end": "4", "grid-row-start": "", "grid-row-end": "" }] }
+
+      },
+
+
+
+
+    ]
 
 
     // apiFetch({
@@ -280,6 +357,23 @@ registerBlockType("prefix-blocks/post-grid", {
 
     // });
 
+    const ItemNthCssadasdsada1 = `
+<style>
+.item{
+background-color: red;
+}
+</style>`;
+
+
+    var ItemNthCssadasd2 = grid.itemCss.map((x, i) => {
+
+      return (
+
+        `<style>.item:nth-child(${i + 1}){grid-column-start: ${x['grid-column-start']};grid-column-end: ${x['grid-column-end']};grid-row-start: ${x['grid-row-start']};grid-row-end: ${x['grid-row-end']};}</style>`
+
+      )
+
+    });
 
 
     //////console.log(queryArgs);
@@ -1403,7 +1497,7 @@ registerBlockType("prefix-blocks/post-grid", {
 
       var gridTemplateColumns = grid.gridTemplateColumns.concat([{ val: 1, unit: 'fr' }])
 
-      setAttributes({ grid: { gridTemplateColumns: gridTemplateColumns, gridTemplateRows: grid.gridTemplateRows, colGap: grid.colGap, rowGap: grid.rowGap, padding: grid.padding } });
+      setAttributes({ grid: { gridTemplateColumns: gridTemplateColumns, gridTemplateRows: grid.gridTemplateRows, colGap: grid.colGap, rowGap: grid.rowGap, padding: grid.padding, itemCss: grid.itemCss, } });
 
 
 
@@ -1420,7 +1514,7 @@ registerBlockType("prefix-blocks/post-grid", {
 
       var gridTemplateRows = grid.gridTemplateRows.concat([{ val: 1, unit: 'fr' }])
 
-      setAttributes({ grid: { gridTemplateColumns: grid.gridTemplateColumns, gridTemplateRows: gridTemplateRows, colGap: grid.colGap, rowGap: grid.rowGap, padding: grid.padding } });
+      setAttributes({ grid: { gridTemplateColumns: grid.gridTemplateColumns, gridTemplateRows: gridTemplateRows, colGap: grid.colGap, rowGap: grid.rowGap, padding: grid.padding, itemCss: grid.itemCss, } });
 
     }
 
@@ -1431,7 +1525,7 @@ registerBlockType("prefix-blocks/post-grid", {
 
       grid.gridTemplateColumns.splice(i, 1)
 
-      setAttributes({ grid: { gridTemplateColumns: grid.gridTemplateColumns, gridTemplateRows: grid.gridTemplateRows, colGap: grid.colGap, rowGap: grid.rowGap, padding: grid.padding, } })
+      setAttributes({ grid: { gridTemplateColumns: grid.gridTemplateColumns, gridTemplateRows: grid.gridTemplateRows, colGap: grid.colGap, rowGap: grid.rowGap, padding: grid.padding, itemCss: grid.itemCss, } })
 
     }
 
@@ -1440,7 +1534,7 @@ registerBlockType("prefix-blocks/post-grid", {
 
       grid.gridTemplateRows.splice(i, 1)
 
-      setAttributes({ grid: { gridTemplateColumns: grid.gridTemplateColumns, gridTemplateRows: grid.gridTemplateRows, colGap: grid.colGap, rowGap: grid.rowGap, padding: grid.padding, } })
+      setAttributes({ grid: { gridTemplateColumns: grid.gridTemplateColumns, gridTemplateRows: grid.gridTemplateRows, colGap: grid.colGap, rowGap: grid.rowGap, padding: grid.padding, itemCss: grid.itemCss, } })
 
     }
 
@@ -1775,7 +1869,7 @@ registerBlockType("prefix-blocks/post-grid", {
               <PanelBody title="Grid Settings" initialOpen={false} className={(viewType == 'grid' || viewType == 'filterable' || viewType == 'glossary') ? '' : 'hidden'}>
 
 
-                <Button className='mb-3' variant="secondary" onClick={enableMasonry} >Enable Masonry</Button>
+                <Button className='mb-3 hidden' variant="secondary" onClick={enableMasonry} >Enable Masonry</Button>
 
                 <Button className='mb-3' variant="secondary" onClick={addGridColumn} >Add Column</Button>
 
@@ -1792,7 +1886,7 @@ registerBlockType("prefix-blocks/post-grid", {
                       <InputControl
                         value={item.val}
                         type="number"
-                        onChange={(newVal) => setAttributes({ grid: { gridTemplateColumns: grid.gridTemplateColumns.map((x, i) => { return (index == i) ? { val: newVal, unit: x.unit } : x }), gridTemplateRows: grid.gridTemplateRows, colGap: grid.colGap, rowGap: grid.rowGap, padding: grid.padding, } })}
+                        onChange={(newVal) => setAttributes({ grid: { gridTemplateColumns: grid.gridTemplateColumns.map((x, i) => { return (index == i) ? { val: newVal, unit: x.unit } : x }), gridTemplateRows: grid.gridTemplateRows, colGap: grid.colGap, rowGap: grid.rowGap, padding: grid.padding, itemCss: grid.itemCss, } })}
 
                       />
                       <SelectControl
@@ -1809,7 +1903,7 @@ registerBlockType("prefix-blocks/post-grid", {
 
 
                         ]}
-                        onChange={(newVal) => setAttributes({ grid: { gridTemplateColumns: grid.gridTemplateColumns.map((x, i) => { return (index == i) ? { val: x.val, unit: newVal } : x }), gridTemplateRows: grid.gridTemplateRows, colGap: grid.colGap, rowGap: grid.rowGap, padding: grid.padding, } })}
+                        onChange={(newVal) => setAttributes({ grid: { gridTemplateColumns: grid.gridTemplateColumns.map((x, i) => { return (index == i) ? { val: x.val, unit: newVal } : x }), gridTemplateRows: grid.gridTemplateRows, colGap: grid.colGap, rowGap: grid.rowGap, padding: grid.padding, itemCss: grid.itemCss, } })}
                       />
 
 
@@ -1842,7 +1936,7 @@ registerBlockType("prefix-blocks/post-grid", {
                       <InputControl
                         value={item.val}
                         type="number"
-                        onChange={(newVal) => setAttributes({ grid: { gridTemplateRows: grid.gridTemplateRows.map((x, i) => { return (index == i) ? { val: newVal, unit: x.unit } : x }), gridTemplateColumns: grid.gridTemplateColumns, colGap: grid.colGap, rowGap: grid.rowGap, padding: grid.padding, } })}
+                        onChange={(newVal) => setAttributes({ grid: { gridTemplateRows: grid.gridTemplateRows.map((x, i) => { return (index == i) ? { val: newVal, unit: x.unit } : x }), gridTemplateColumns: grid.gridTemplateColumns, colGap: grid.colGap, rowGap: grid.rowGap, padding: grid.padding, itemCss: grid.itemCss, } })}
 
                       />
                       <SelectControl className='mb-0'
@@ -1857,7 +1951,7 @@ registerBlockType("prefix-blocks/post-grid", {
 
 
                         ]}
-                        onChange={(newVal) => setAttributes({ grid: { gridTemplateRows: grid.gridTemplateRows.map((x, i) => { return (index == i) ? { val: x.val, unit: newVal } : x }), gridTemplateColumns: grid.gridTemplateColumns, colGap: grid.colGap, rowGap: grid.rowGap, padding: grid.padding, } })}
+                        onChange={(newVal) => setAttributes({ grid: { gridTemplateRows: grid.gridTemplateRows.map((x, i) => { return (index == i) ? { val: x.val, unit: newVal } : x }), gridTemplateColumns: grid.gridTemplateColumns, colGap: grid.colGap, rowGap: grid.rowGap, padding: grid.padding, itemCss: grid.itemCss, } })}
                       />
                       <Button icon="no-alt"
                         onClick={(ev) => { deleteGridRow(index) }}
@@ -1877,7 +1971,7 @@ registerBlockType("prefix-blocks/post-grid", {
                   <InputControl
                     value={grid.colGap.val}
                     type="number"
-                    onChange={(newVal) => setAttributes({ grid: { gridTemplateRows: grid.gridTemplateRows, gridTemplateColumns: grid.gridTemplateColumns, colGap: { val: newVal, unit: grid.colGap.unit }, rowGap: grid.rowGap, padding: grid.padding, } })}
+                    onChange={(newVal) => setAttributes({ grid: { gridTemplateRows: grid.gridTemplateRows, gridTemplateColumns: grid.gridTemplateColumns, colGap: { val: newVal, unit: grid.colGap.unit }, rowGap: grid.rowGap, padding: grid.padding, itemCss: grid.itemCss, } })}
 
                   />
                   <SelectControl className='mb-0'
@@ -1888,7 +1982,7 @@ registerBlockType("prefix-blocks/post-grid", {
                       { label: '%', value: '%' },
                       { label: 'em', value: 'em' },
                     ]}
-                    onChange={(newVal) => setAttributes({ grid: { gridTemplateRows: grid.gridTemplateRows, gridTemplateColumns: grid.gridTemplateColumns, colGap: { val: grid.colGap.val, unit: newVal }, rowGap: grid.rowGap, padding: grid.padding, } })}
+                    onChange={(newVal) => setAttributes({ grid: { gridTemplateRows: grid.gridTemplateRows, gridTemplateColumns: grid.gridTemplateColumns, colGap: { val: grid.colGap.val, unit: newVal }, rowGap: grid.rowGap, padding: grid.padding, itemCss: grid.itemCss, } })}
                   />
 
 
@@ -1904,7 +1998,7 @@ registerBlockType("prefix-blocks/post-grid", {
                   <InputControl
                     value={grid.rowGap.val}
                     type="number"
-                    onChange={(newVal) => setAttributes({ grid: { gridTemplateRows: grid.gridTemplateRows, gridTemplateColumns: grid.gridTemplateColumns, rowGap: { val: newVal, unit: grid.rowGap.unit }, colGap: grid.colGap, padding: grid.padding, } })}
+                    onChange={(newVal) => setAttributes({ grid: { gridTemplateRows: grid.gridTemplateRows, gridTemplateColumns: grid.gridTemplateColumns, rowGap: { val: newVal, unit: grid.rowGap.unit }, colGap: grid.colGap, padding: grid.padding, itemCss: grid.itemCss, } })}
 
                   />
                   <SelectControl className='mb-0'
@@ -1915,15 +2009,137 @@ registerBlockType("prefix-blocks/post-grid", {
                       { label: '%', value: '%' },
                       { label: 'em', value: 'em' },
                     ]}
-                    onChange={(newVal) => setAttributes({ grid: { gridTemplateRows: grid.gridTemplateRows, gridTemplateColumns: grid.gridTemplateColumns, rowGap: { val: grid.rowGap.val, unit: newVal }, colGap: grid.colGap, padding: grid.padding, } })}
+                    onChange={(newVal) => setAttributes({ grid: { gridTemplateRows: grid.gridTemplateRows, gridTemplateColumns: grid.gridTemplateColumns, rowGap: { val: grid.rowGap.val, unit: newVal }, colGap: grid.colGap, padding: grid.padding, itemCss: grid.itemCss, } })}
                   />
 
 
                 </PanelRow>
 
+                <PanelRow>
+
+                  <label for="">N'th Item CSS</label>
+                  <Button className='my-3' variant="secondary"
+                    onClick={(newVal) => {
+
+                      var itemCss = grid.itemCss.concat({ 'grid-column-start': '', 'grid-column-end': '', 'grid-row-start': '', 'grid-row-end': '' })
+
+                      setAttributes({ grid: { gridTemplateRows: grid.gridTemplateRows, gridTemplateColumns: grid.gridTemplateColumns, rowGap: grid.rowGap, colGap: grid.colGap, padding: grid.padding, itemCss: itemCss, } })
+
+                    }}
+
+                  >Add</Button>
+                </PanelRow>
 
 
 
+
+
+                {
+                  grid.itemCss.map((x, i) => {
+
+                    return (
+
+                      <PanelBody title={(i + 1) + '\'th Item'} initialOpen={false} >
+
+                        <Button icon="no-alt" variant="secondary"
+                          onClick={(ev) => {
+
+                            grid.itemCss.splice(i, 1);
+                            setAttributes({ grid: { gridTemplateRows: grid.gridTemplateRows, gridTemplateColumns: grid.gridTemplateColumns, rowGap: grid.rowGap, colGap: grid.colGap, padding: grid.padding, itemCss: grid.itemCss, } })
+
+                          }}
+
+                        >Delete</Button>
+
+                        <PanelRow>
+                          <label for="">grid-column-start</label>
+                          <InputControl
+                            value={x['grid-column-start']}
+                            type="number"
+                            onChange={(newVal) => {
+                              grid.itemCss[i]['grid-column-start'] = newVal;
+                              setAttributes({ grid: { gridTemplateRows: grid.gridTemplateRows, gridTemplateColumns: grid.gridTemplateColumns, rowGap: grid.rowGap, colGap: grid.colGap, padding: grid.padding, itemCss: grid.itemCss, } })
+                            }}
+                          />
+                        </PanelRow>
+
+
+                        <PanelRow>
+                          <label for="">grid-column-end</label>
+                          <InputControl
+                            value={x['grid-column-end']}
+                            type="number"
+                            onChange={(newVal) => {
+                              grid.itemCss[i]['grid-column-end'] = newVal;
+                              setAttributes({ grid: { gridTemplateRows: grid.gridTemplateRows, gridTemplateColumns: grid.gridTemplateColumns, rowGap: grid.rowGap, colGap: grid.colGap, padding: grid.padding, itemCss: grid.itemCss, } })
+                            }}
+                          />
+                        </PanelRow>
+
+                        <PanelRow>
+                          <label for="">grid-row-start</label>
+                          <InputControl
+                            value={x['grid-row-start']}
+                            type="number"
+                            onChange={(newVal) => {
+                              grid.itemCss[i]['grid-row-start'] = newVal;
+                              setAttributes({ grid: { gridTemplateRows: grid.gridTemplateRows, gridTemplateColumns: grid.gridTemplateColumns, rowGap: grid.rowGap, colGap: grid.colGap, padding: grid.padding, itemCss: grid.itemCss, } })
+                            }}
+                          />
+                        </PanelRow>
+
+
+                        <PanelRow>
+                          <label for="">grid-row-end</label>
+                          <InputControl
+                            value={x['grid-row-end']}
+                            type="number"
+                            onChange={(newVal) => {
+                              grid.itemCss[i]['grid-row-end'] = newVal;
+                              setAttributes({ grid: { gridTemplateRows: grid.gridTemplateRows, gridTemplateColumns: grid.gridTemplateColumns, rowGap: grid.rowGap, colGap: grid.colGap, padding: grid.padding, itemCss: grid.itemCss, } })
+                            }}
+                          />
+                        </PanelRow>
+
+
+
+
+
+
+
+                      </PanelBody>
+
+                    )
+
+                  })
+
+                }
+
+
+
+                {
+
+                  gridLayout.map((x, i) => {
+
+                    return (
+
+                      <div className='cursor-pointer relative my-3' onClick={(ev) => {
+
+                        setAttributes({ grid: x.data })
+
+                      }}>
+
+
+                        <img src={x.thumb} />
+                        <div className='text-[16px] p-2 bg-blue-600 text-white bg-opacity-90 text-bold absolute bottom-0 w-full text-center'>{x.title}</div>
+                      </div>
+
+                    )
+
+                  })
+
+
+                }
 
 
 
@@ -2049,7 +2265,7 @@ registerBlockType("prefix-blocks/post-grid", {
 
                       var filters = filterable.filters.concat({ groupTitle: '', type: '', logic: '', showPostCount: '', items: [] })
 
-                      setAttributes({ filterable: { filters: filters, allText: filterable.allText, activeFilter: filterable.activeFilter, textColor: filterable.textColor, bgColor: filterable.bgColor, activeBgColor: filterable.activeBgColor, padding: { val: filterable.padding.val, unit: filterable.padding.unit }, margin: filterable.margin, bgImg: filterable.bgImg } })
+                      setAttributes({ filterable: { filters: filters, allText: filterable.allText, showSort: filterable.showSort, activeFilter: filterable.activeFilter, textColor: filterable.textColor, bgColor: filterable.bgColor, activeBgColor: filterable.activeBgColor, padding: { val: filterable.padding.val, unit: filterable.padding.unit }, margin: filterable.margin, bgImg: filterable.bgImg } })
                     }}
 
                   >Add Filter Group</Button>
@@ -2066,7 +2282,7 @@ registerBlockType("prefix-blocks/post-grid", {
                           onClick={(ev) => {
 
                             filterable.filters.splice(i, 1);
-                            setAttributes({ filterable: { filters: filterable.filters, allText: filterable.allText, activeFilter: filterable.activeFilter, textColor: filterable.textColor, bgColor: filterable.bgColor, activeBgColor: filterable.activeBgColor, padding: { val: filterable.padding.val, unit: filterable.padding.unit }, margin: filterable.margin, bgImg: filterable.bgImg } })
+                            setAttributes({ filterable: { filters: filterable.filters, allText: filterable.allText, showSort: filterable.showSort, activeFilter: filterable.activeFilter, textColor: filterable.textColor, bgColor: filterable.bgColor, activeBgColor: filterable.activeBgColor, padding: { val: filterable.padding.val, unit: filterable.padding.unit }, margin: filterable.margin, bgImg: filterable.bgImg } })
                           }}
                           className='cursor-pointer px-3 py-1 inline-block text-white bg-red-600 text-sm mb-2'><span className='dashicon dashicons dashicons-no-alt'></span> Delete Group</span>
 
@@ -2091,7 +2307,7 @@ registerBlockType("prefix-blocks/post-grid", {
                             onChange={(newVal) => {
                               filterable.filters[i].groupTitle = newVal
 
-                              setAttributes({ filterable: { filters: filterable.filters, allText: filterable.allText, activeFilter: filterable.activeFilter, textColor: filterable.textColor, bgColor: filterable.bgColor, activeBgColor: filterable.activeBgColor, padding: { val: filterable.padding.val, unit: filterable.padding.unit }, margin: filterable.margin, bgImg: filterable.bgImg } })
+                              setAttributes({ filterable: { filters: filterable.filters, allText: filterable.allText, showSort: filterable.showSort, activeFilter: filterable.activeFilter, textColor: filterable.textColor, bgColor: filterable.bgColor, activeBgColor: filterable.activeBgColor, padding: { val: filterable.padding.val, unit: filterable.padding.unit }, margin: filterable.margin, bgImg: filterable.bgImg } })
 
                             }}
                           />
@@ -2113,7 +2329,7 @@ registerBlockType("prefix-blocks/post-grid", {
                             onChange={(newVal) => {
                               filterable.filters[i].type = newVal
 
-                              setAttributes({ filterable: { filters: filterable.filters, allText: filterable.allText, activeFilter: filterable.activeFilter, textColor: filterable.textColor, bgColor: filterable.bgColor, activeBgColor: filterable.activeBgColor, padding: { val: filterable.padding.val, unit: filterable.padding.unit }, margin: filterable.margin, bgImg: filterable.bgImg } })
+                              setAttributes({ filterable: { filters: filterable.filters, allText: filterable.allText, showSort: filterable.showSort, activeFilter: filterable.activeFilter, textColor: filterable.textColor, bgColor: filterable.bgColor, activeBgColor: filterable.activeBgColor, padding: { val: filterable.padding.val, unit: filterable.padding.unit }, margin: filterable.margin, bgImg: filterable.bgImg } })
 
                             }}
                           />
@@ -2127,8 +2343,6 @@ registerBlockType("prefix-blocks/post-grid", {
                         <PanelRow >
                           <label for="">Data Logic</label>
 
-
-
                           <SelectControl
                             value={x.logic}
                             options={[
@@ -2139,12 +2353,31 @@ registerBlockType("prefix-blocks/post-grid", {
                             onChange={(newVal) => {
                               filterable.filters[i].logic = newVal
 
-                              setAttributes({ filterable: { filters: filterable.filters, allText: filterable.allText, activeFilter: filterable.activeFilter, textColor: filterable.textColor, bgColor: filterable.bgColor, activeBgColor: filterable.activeBgColor, padding: { val: filterable.padding.val, unit: filterable.padding.unit }, margin: filterable.margin, bgImg: filterable.bgImg } })
+                              setAttributes({ filterable: { filters: filterable.filters, allText: filterable.allText, showSort: filterable.showSort, activeFilter: filterable.activeFilter, textColor: filterable.textColor, bgColor: filterable.bgColor, activeBgColor: filterable.activeBgColor, padding: { val: filterable.padding.val, unit: filterable.padding.unit }, margin: filterable.margin, bgImg: filterable.bgImg } })
 
                             }}
                           />
 
+                        </PanelRow>
 
+
+                        <PanelRow >
+                          <label for="">Show Post Count </label>
+
+                          <SelectControl
+                            value={x.showPostCount}
+                            options={[
+                              { value: 'no', label: 'No' },
+                              { value: 'yes', label: 'Yes' },
+
+                            ]}
+                            onChange={(newVal) => {
+                              filterable.filters[i].showPostCount = newVal
+
+                              setAttributes({ filterable: { filters: filterable.filters, allText: filterable.allText, showSort: filterable.showSort, activeFilter: filterable.activeFilter, textColor: filterable.textColor, bgColor: filterable.bgColor, activeBgColor: filterable.activeBgColor, padding: { val: filterable.padding.val, unit: filterable.padding.unit }, margin: filterable.margin, bgImg: filterable.bgImg } })
+
+                            }}
+                          />
 
                         </PanelRow>
 
@@ -2171,7 +2404,7 @@ registerBlockType("prefix-blocks/post-grid", {
 
                                   filterable.filters[i].items.splice(j, 1);
 
-                                  setAttributes({ filterable: { filters: filterable.filters, allText: filterable.allText, activeFilter: filterable.activeFilter, textColor: filterable.textColor, bgColor: filterable.bgColor, activeBgColor: filterable.activeBgColor, padding: { val: filterable.padding.val, unit: filterable.padding.unit }, margin: filterable.margin, bgImg: filterable.bgImg } })
+                                  setAttributes({ filterable: { filters: filterable.filters, allText: filterable.allText, showSort: filterable.showSort, activeFilter: filterable.activeFilter, textColor: filterable.textColor, bgColor: filterable.bgColor, activeBgColor: filterable.activeBgColor, padding: { val: filterable.padding.val, unit: filterable.padding.unit }, margin: filterable.margin, bgImg: filterable.bgImg } })
                                 }}
                                 className='cursor-pointer p-1   inline-block text-white bg-red-600 text-sm'><span className='dashicon dashicons dashicons-no-alt'></span></span>
                             </PanelRow>
@@ -2213,16 +2446,16 @@ registerBlockType("prefix-blocks/post-grid", {
                                   onClick={(ev) => {
 
                                     if (x.slug) {
-                                      var ss = filterable.filters[i].items.concat({ id: x.term_id, slug: x.slug, title: x.name });
+                                      var ss = filterable.filters[i].items.concat({ id: x.term_id, slug: x.slug, title: x.name, count: x.count });
                                       filterable.filters[i].items = ss
 
-                                      setAttributes({ filterable: { filters: filterable.filters, allText: filterable.allText, activeFilter: filterable.activeFilter, textColor: filterable.textColor, bgColor: filterable.bgColor, activeBgColor: filterable.activeBgColor, padding: { val: filterable.padding.val, unit: filterable.padding.unit }, margin: filterable.margin, bgImg: filterable.bgImg } })
+                                      setAttributes({ filterable: { filters: filterable.filters, allText: filterable.allText, showSort: filterable.showSort, activeFilter: filterable.activeFilter, textColor: filterable.textColor, bgColor: filterable.bgColor, activeBgColor: filterable.activeBgColor, padding: { val: filterable.padding.val, unit: filterable.padding.unit }, margin: filterable.margin, bgImg: filterable.bgImg } })
                                     }
 
 
                                   }}
 
-                                >{x.name}</div>
+                                >{x.name} ({x.count})</div>
 
                               )
 
@@ -2251,6 +2484,27 @@ registerBlockType("prefix-blocks/post-grid", {
                 </div>
 
 
+                <PanelRow >
+                  <label for="">Show Sort Filter </label>
+
+
+                  <SelectControl
+                    label=""
+                    value={filterable.showSort}
+                    options={[
+                      { label: 'No', value: 'no' },
+                      { label: 'Yes', value: 'yes' },
+
+                    ]}
+                    onChange={(newVal) => setAttributes({ filterable: { filters: filterable.filters, allText: filterable.allText, showSort: newVal, activeFilter: filterable.activeFilter, textColor: filterable.textColor, bgColor: filterable.bgColor, activeBgColor: filterable.activeBgColor, padding: filterable.padding, margin: filterable.margin, bgColor: filterable.bgColor, bgImg: filterable.bgImg } })}
+
+                  />
+
+
+
+
+                </PanelRow>
+
 
 
                 <PanelRow>
@@ -2258,7 +2512,7 @@ registerBlockType("prefix-blocks/post-grid", {
                   <label for="">Margin</label>
                   <InputControl
                     value={filterable.margin.val}
-                    onChange={(newVal) => setAttributes({ filterable: { filters: filterable.filters, allText: filterable.allText, activeFilter: filterable.activeFilter, textColor: filterable.textColor, bgColor: filterable.bgColor, activeBgColor: filterable.activeBgColor, padding: filterable.padding, margin: { val: newVal, unit: filterable.margin.unit }, bgColor: filterable.bgColor, bgImg: filterable.bgImg } })}
+                    onChange={(newVal) => setAttributes({ filterable: { filters: filterable.filters, allText: filterable.allText, showSort: filterable.showSort, activeFilter: filterable.activeFilter, textColor: filterable.textColor, bgColor: filterable.bgColor, activeBgColor: filterable.activeBgColor, padding: filterable.padding, margin: { val: newVal, unit: filterable.margin.unit }, bgColor: filterable.bgColor, bgImg: filterable.bgImg } })}
                   />
 
                   <SelectControl
@@ -2269,17 +2523,17 @@ registerBlockType("prefix-blocks/post-grid", {
                       { label: 'em', value: 'em' },
 
                     ]}
-                    onChange={(newVal) => setAttributes({ filterable: { filters: filterable.filters, allText: filterable.allText, activeFilter: filterable.activeFilter, textColor: filterable.textColor, bgColor: filterable.bgColor, activeBgColor: filterable.activeBgColor, margin: { val: filterable.padding.val, unit: newVal }, padding: filterable.padding, bgColor: filterable.bgColor, bgImg: filterable.bgImg } })}
+                    onChange={(newVal) => setAttributes({ filterable: { filters: filterable.filters, allText: filterable.allText, showSort: filterable.showSort, activeFilter: filterable.activeFilter, textColor: filterable.textColor, bgColor: filterable.bgColor, activeBgColor: filterable.activeBgColor, margin: { val: filterable.padding.val, unit: newVal }, padding: filterable.padding, bgColor: filterable.bgColor, bgImg: filterable.bgImg } })}
                   />
 
                 </PanelRow>
 
                 <PanelRow>
 
-                  <label for="">padding</label>
+                  <label for="">Padding</label>
                   <InputControl
                     value={filterable.padding.val}
-                    onChange={(newVal) => setAttributes({ filterable: { filters: filterable.filters, allText: filterable.allText, activeFilter: filterable.activeFilter, textColor: filterable.textColor, bgColor: filterable.bgColor, activeBgColor: filterable.activeBgColor, margin: filterable.margin, padding: { val: newVal, unit: filterable.padding.unit }, bgColor: filterable.bgColor, bgImg: filterable.bgImg } })}
+                    onChange={(newVal) => setAttributes({ filterable: { filters: filterable.filters, allText: filterable.allText, showSort: filterable.showSort, activeFilter: filterable.activeFilter, textColor: filterable.textColor, bgColor: filterable.bgColor, activeBgColor: filterable.activeBgColor, margin: filterable.margin, padding: { val: newVal, unit: filterable.padding.unit }, bgColor: filterable.bgColor, bgImg: filterable.bgImg } })}
                   />
 
                   <SelectControl
@@ -2290,7 +2544,7 @@ registerBlockType("prefix-blocks/post-grid", {
                       { label: 'em', value: 'em' },
 
                     ]}
-                    onChange={(newVal) => setAttributes({ filterable: { filters: filterable.filters, allText: filterable.allText, activeFilter: filterable.activeFilter, textColor: filterable.textColor, bgColor: filterable.bgColor, activeBgColor: filterable.activeBgColor, padding: { val: filterable.padding.val, unit: newVal }, margin: filterable.margin, bgColor: filterable.bgColor, bgImg: filterable.bgImg } })}
+                    onChange={(newVal) => setAttributes({ filterable: { filters: filterable.filters, allText: filterable.allText, showSort: filterable.showSort, activeFilter: filterable.activeFilter, textColor: filterable.textColor, bgColor: filterable.bgColor, activeBgColor: filterable.activeBgColor, padding: { val: filterable.padding.val, unit: newVal }, margin: filterable.margin, bgColor: filterable.bgColor, bgImg: filterable.bgImg } })}
                   />
 
                 </PanelRow>
@@ -2301,7 +2555,7 @@ registerBlockType("prefix-blocks/post-grid", {
                   color={filterable.textColor}
                   colors={colors}
                   enableAlpha
-                  onChange={(newVal) => setAttributes({ filterable: { filters: filterable.filters, allText: filterable.allText, activeFilter: filterable.activeFilter, textColor: newVal, bgColor: filterable.bgColor, activeBgColor: filterable.activeBgColor, padding: { val: filterable.padding.val, unit: filterable.padding.unit }, margin: filterable.margin, bgImg: filterable.bgImg } })}
+                  onChange={(newVal) => setAttributes({ filterable: { filters: filterable.filters, allText: filterable.allText, showSort: filterable.showSort, activeFilter: filterable.activeFilter, textColor: newVal, bgColor: filterable.bgColor, activeBgColor: filterable.activeBgColor, padding: { val: filterable.padding.val, unit: filterable.padding.unit }, margin: filterable.margin, bgImg: filterable.bgImg } })}
                 />
 
 
@@ -2310,7 +2564,7 @@ registerBlockType("prefix-blocks/post-grid", {
                   color={filterable.bgColor}
                   colors={colors}
                   enableAlpha
-                  onChange={(newVal) => setAttributes({ filterable: { filters: filterable.filters, allText: filterable.allText, activeFilter: filterable.activeFilter, textColor: filterable.textColor, bgColor: newVal, activeBgColor: filterable.activeBgColor, padding: { val: filterable.padding.val, unit: filterable.padding.unit }, margin: filterable.margin, bgImg: filterable.bgImg } })}
+                  onChange={(newVal) => setAttributes({ filterable: { filters: filterable.filters, allText: filterable.allText, showSort: filterable.showSort, activeFilter: filterable.activeFilter, textColor: filterable.textColor, bgColor: newVal, activeBgColor: filterable.activeBgColor, padding: { val: filterable.padding.val, unit: filterable.padding.unit }, margin: filterable.margin, bgImg: filterable.bgImg } })}
                 />
 
                 <label for="">Active Background Color</label>
@@ -2318,7 +2572,7 @@ registerBlockType("prefix-blocks/post-grid", {
                   color={filterable.activeBgColor}
                   colors={colors}
                   enableAlpha
-                  onChange={(newVal) => setAttributes({ filterable: { filters: filterable.filters, allText: filterable.allText, activeFilter: filterable.activeFilter, textColor: filterable.textColor, bgColor: filterable.bgColor, activeBgColor: newVal, padding: { val: filterable.padding.val, unit: filterable.padding.unit }, margin: filterable.margin, bgImg: filterable.bgImg } })}
+                  onChange={(newVal) => setAttributes({ filterable: { filters: filterable.filters, allText: filterable.allText, showSort: filterable.showSort, activeFilter: filterable.activeFilter, textColor: filterable.textColor, bgColor: filterable.bgColor, activeBgColor: newVal, padding: { val: filterable.padding.val, unit: filterable.padding.unit }, margin: filterable.margin, bgImg: filterable.bgImg } })}
                 />
 
 
@@ -2405,14 +2659,19 @@ registerBlockType("prefix-blocks/post-grid", {
 
             </div>
 
-          </InspectorControls>
-        </div>
+          </InspectorControls >
+        </div >
         ,
 
 
         <div className="my-custom-block">
 
-          <code>{JSON.stringify(postTypes)}</code>
+
+
+          <RawHTML>{ItemNthCssadasd2}</RawHTML>
+
+          {JSON.stringify(grid)}
+
           <ContainerCss cssData={props.attributes}>
 
 
@@ -2445,14 +2704,18 @@ registerBlockType("prefix-blocks/post-grid", {
                       return (
 
                         <div className='pg-filter-group mx-3 inline-block' data-logic={x.logic}>
-                          <div className='filter-group-title px-4 py-2 m-2 inline-block mx-2'>{x.groupTitle}</div>
+
+                          {x.groupTitle && (
+                            <div className='filter-group-title px-4 py-2 m-2 inline-block mx-2'>{x.groupTitle}</div>
+                          )}
+
 
                           <div className='filter-group-items inline-block'>
                             {x.items.map(y => {
 
                               return (
 
-                                <div className='filter cusror-pointer px-4 py-2 m-2 inline-block bg-gray-200 filter-34534' terms-id={y.id} data-filter={'.' + y.slug}>{y.title}</div>
+                                <div className='filter cursor-pointer cusror-pointer px-4 py-2 m-2 inline-block bg-gray-200 filter-34534' terms-id={y.id} data-filter={'.' + y.slug}>{y.title} {x.showPostCount == 'yes' ? '(' + y.count + ')' : ''}</div>
 
                               )
 
@@ -2564,6 +2827,9 @@ registerBlockType("prefix-blocks/post-grid", {
             }
 
           </ContainerCss>
+
+
+
 
         </div>
       ]
