@@ -2,8 +2,8 @@ import { registerBlockType } from '@wordpress/blocks'
 import { __ } from '@wordpress/i18n'
 
 import styled from 'styled-components'
-import Masonry from 'masonry-layout'
-//var Masonry = require('masonry-layout');
+const { select, subscribe } = wp.data;
+
 
 
 import apiFetch from '@wordpress/api-fetch';
@@ -18,7 +18,7 @@ const { RawHTML } = wp.element;
 import { useBlockProps, InnerBlocks } from '@wordpress/block-editor';
 
 import { createElement, memo, useMemo, useState, useEffect } from '@wordpress/element'
-import { PanelBody, RangeControl, Button, Panel, PanelRow, Dropdown, DropdownMenu, SelectControl, ColorPicker, ColorPalette, ToolsPanelItem, ComboboxControl } from '@wordpress/components'
+import { PanelBody, RangeControl, Button, Panel, PanelRow, Dropdown, DropdownMenu, SelectControl, ColorPicker, ColorPalette, ToolsPanelItem, ComboboxControl, Spinner } from '@wordpress/components'
 import { InspectorControls, BlockControls, AlignmentToolbar, RichText } from '@wordpress/block-editor'
 import { __experimentalInputControl as InputControl } from '@wordpress/components';
 
@@ -199,11 +199,7 @@ registerBlockType("prefix-blocks/post-grid", {
 
     layout: {
       type: 'object',
-      default: { id: '', data: {}, rawData: '', loading: false, keyword: '', category: '', categories: [] },
-    },
-    layoutList: {
-      type: 'array',
-      default: [],
+      default: { id: '', data: {}, rawData: '', keyword: '', category: '', categories: [] },
     },
 
     postTypes: {
@@ -211,18 +207,11 @@ registerBlockType("prefix-blocks/post-grid", {
       default: [],
     },
 
-    masonry: {
-      type: 'object',
-      default: { enable: 'no', },
-    },
     scripts: {
       type: 'object',
       default: { js: '', css: '' },
     },
-    posts: {
-      type: 'object',
-      default: { items: [] },
-    },
+
     queryArgs: {
       type: 'object',
       default: {
@@ -236,18 +225,7 @@ registerBlockType("prefix-blocks/post-grid", {
       },
     },
 
-    dummyName: {
-      type: 'string',
-      default: 'Post Grid'
-    },
-    dummyAuthor: {
-      type: 'string',
-      default: 'author'
-    },
-    dummyVersion: {
-      type: 'string',
-      default: '2.1.20'
-    }
+
   },
   category: "post-grid",
   edit: function (props) {
@@ -258,18 +236,14 @@ registerBlockType("prefix-blocks/post-grid", {
     var attributes = props.attributes;
     var setAttributes = props.setAttributes;
 
-    var dummyName = attributes.dummyName;
     var viewType = attributes.viewType;
     var lazyLoad = attributes.lazyLoad;
     var container = attributes.container;
     var pagination = attributes.pagination;
-    var masonry = attributes.masonry;
     var search = attributes.search;
     var grid = attributes.grid;
     var layout = attributes.layout;
     var queryArgs = attributes.queryArgs;
-    var layoutList = attributes.layoutList;
-    var posts = attributes.posts;
     var filterable = attributes.filterable;
 
     //console.log(blockProps);
@@ -348,14 +322,7 @@ registerBlockType("prefix-blocks/post-grid", {
     ]
 
 
-    // apiFetch({
-    //     path: '/wp/v2/posts/',
-    //     method: 'POST',
-    //     data: { title: 'Categories' },
-    // }).then((res) => {
-    //     //console.log(res);
 
-    // });
 
     const ItemNthCssadasdsada1 = `
 <style>
@@ -415,7 +382,7 @@ background-color: red;
 
 
     //////console.log(postTypes);
-    //setAttributes({ dummyName: 'Raju' });
+    //setAttributes({ : 'Raju' });
     function PostTemplateInnerBlocks() {
       const innerBlocksProps = useInnerBlocksProps(
         { className: 'wp-block-post' },
@@ -467,32 +434,6 @@ background-color: red;
 
 
 
-    function enableMasonry(val) {
-
-      //console.log(Masonry)
-
-      const grid = document.querySelector('.masonry-grid')
-      console.log(grid)
-
-
-
-      const msnry = new Masonry(grid, {
-        itemSelector: '.item',
-        columnWidth: 280,
-        gutter: 10,
-        transitionDuration: 0,
-        initLayout: false
-      })
-
-      msnry.once('layoutComplete', () => {
-        grid.classList.add('load')
-      })
-
-      msnry.layout()
-
-
-
-    }
 
 
 
@@ -501,36 +442,31 @@ background-color: red;
       setAttributes({ lazyLoad: { enable: lazyLoad.enable, srcUrl: url, srcId: id } });
     }
 
+    const [posts, setPosts] = useState([]); // Using the hook.
+    const [postsQuery, setPostsQuery] = useState(false); // Using the hook.
+
+
     function fetchPosts() {
 
+      setPostsQuery(true);
 
       var arg = queryArgs.items.map(item => {
 
         return { id: item.id, val: item.val }
-
-
       })
-
-      //console.log(arg);
-
-      console.log(props.attributes.layout);
-
 
       apiFetch({
         path: '/blockxyz/v2/get_posts_layout',
         method: 'POST',
         data: { queryArgs: arg, rawData: layout.rawData },
       }).then((res) => {
-        console.log(res);
-        setAttributes({ posts: { items: res } });
+
+        setPostsQuery(false);
+
+        setPosts(res)
 
       });
 
-
-      // wp.apiFetch({ path: '/wp/v2/post_grid_layout?per_page=100' })
-      //     .then(items => {
-      //         setAttributes({ layoutList: items });
-      //     });
     }
 
 
@@ -608,6 +544,19 @@ background-color: red;
 
     }, [layout]);
 
+    useEffect(() => {
+      //console.log('Listening: ', grid);
+      fetchLayouts();
+
+      //console.log('asdasd');
+
+
+    }, [container]);
+
+
+
+
+
 
     function selectLayout(id, post_content) {
 
@@ -617,7 +566,7 @@ background-color: red;
 
       // console.log(layout);
 
-      setAttributes({ layout: { id: id, data: blocks, rawData: post_content, loading: false, keyword: layout.keyword, category: layout.category, categories: layout.categories } })
+      setAttributes({ layout: { id: id, data: blocks, rawData: post_content, keyword: layout.keyword, category: layout.category, categories: layout.categories } })
 
 
       //console.log(wp.data.select('core/block-editor').getBlocks());
@@ -688,6 +637,8 @@ background-color: red;
 
 
 
+    const [queryLayouts, setQueryLayouts] = useState(false); // Using the hook.
+    var [layoutList, setLayoutList] = useState([]); // Using the hook.
 
 
 
@@ -696,21 +647,8 @@ background-color: red;
 
 
       fetchPosts()
-
-
-      setAttributes({ layout: { id: layout.id, data: layout.data, rawData: layout.rawData, loading: true, keyword: layout.keyword, category: layout.category, categories: layout.categories } })
-
-      // wp.apiFetch({ path: '/blockxyz/v2/get_posts' })
-      //     .then(items => {
-
-      //         //console.log(items);
-      //     });
-
-
+      setQueryLayouts(true);
       var args = [{ id: 'postType', val: ['post_grid_layout'] }];
-
-
-      //console.log(args);
 
       apiFetch({
         path: '/blockxyz/v2/get_posts_layout',
@@ -718,20 +656,14 @@ background-color: red;
         data: { queryArgs: args },
       }).then((res) => {
 
-        console.log(res);
 
-        setAttributes({ layoutList: res });
-        setAttributes({ layout: { id: layout.id, data: layout.data, rawData: layout.rawData, loading: false, keyword: layout.keyword, category: layout.category, categories: layout.categories } })
+        setLayoutList(res)
+        setQueryLayouts(false);
+
 
       });
 
-
-      // wp.apiFetch({ path: '/wp/v2/post_grid_layout?per_page=100' })
-      //     .then(items => {
-      //         setAttributes({ layoutList: items });
-      //     });
     }
-
 
     function generateQueryFieldAuthorIn(xx) {
 
@@ -760,11 +692,7 @@ background-color: red;
 
     }
 
-    function updateName(content) {
 
-      setAttributes({ dummyName: content });
-
-    }
 
 
     function removeQueryPram(i) {
@@ -792,7 +720,7 @@ background-color: red;
       setAttributes({ queryArgs: { items: queryArgs.items } });
 
 
-      console.log(queryArgs);
+      //console.log(queryArgs);
       fetchPosts();
 
       // if (itemData.id == 's' || itemData.id == 'order'  ) {
@@ -1668,8 +1596,7 @@ background-color: red;
 
 
 
-                {/* <RichText key="editable2" tagName="p" placeholder="Keep writing..." value={attributes.dummyName} onChange={updateName} >
-                                </RichText> */}
+
 
               </PanelBody>
 
@@ -1770,7 +1697,7 @@ background-color: red;
                     placeholder="Search Here..."
                     onChange={(newVal) => {
 
-                      setAttributes({ layout: { id: layout.id, data: layout.data, rawData: layout.rawData, loading: false, keyword: newVal, category: layout.category, categories: layout.categories } })
+                      setAttributes({ layout: { id: layout.id, data: layout.data, rawData: layout.rawData, keyword: newVal, category: layout.category, categories: layout.categories } })
 
                       fetchLayouts();
                     }}
@@ -1792,7 +1719,7 @@ background-color: red;
                     ]}
                     onChange={(newVal) => {
                       fetchLayouts();
-                      setAttributes({ layout: { id: layout.id, data: layout.data, rawData: layout.rawData, loading: layout.loading, keyword: layout.keyword, category: newVal, categories: layout.categories } })
+                      setAttributes({ layout: { id: layout.id, data: layout.data, rawData: layout.rawData, keyword: layout.keyword, category: newVal, categories: layout.categories } })
                     }}
                   />
 
@@ -1804,8 +1731,10 @@ background-color: red;
 
 
 
-                {layout.loading == true && <div>Loading
+
+                {queryLayouts == true && <div>Loading
                 </div>}
+
 
                 {layoutList.length > 0 && layoutList.map(x => {
                   return (
@@ -1869,7 +1798,7 @@ background-color: red;
               <PanelBody title="Grid Settings" initialOpen={false} className={(viewType == 'grid' || viewType == 'filterable' || viewType == 'glossary') ? '' : 'hidden'}>
 
 
-                <Button className='mb-3 hidden' variant="secondary" onClick={enableMasonry} >Enable Masonry</Button>
+
 
                 <Button className='mb-3' variant="secondary" onClick={addGridColumn} >Add Column</Button>
 
@@ -2587,21 +2516,7 @@ background-color: red;
               <PanelBody title="Carousel" initialOpen={false} className={(viewType == 'carousel') ? '' : 'hidden'}>
 
               </PanelBody>
-              <PanelBody title="Masonry" initialOpen={false} className={(viewType == 'carousel' || viewType == 'glossary' || viewType == 'filterable') ? 'hidden' : ''}>
 
-                <SelectControl
-                  label="Enable"
-                  value={masonry.enable}
-
-                  options={[
-                    { label: 'No', value: 'no' },
-                    { label: 'Yes', value: 'yes' },
-                  ]}
-                  onChange={(newVal) => setAttributes({ masonry: { enable: newVal, } })}
-                />
-
-
-              </PanelBody>
               <PanelBody title="Search" initialOpen={false} className={(viewType == 'grid' || viewType == 'filterable') ? '' : 'hidden'}>
 
                 <SelectControl
@@ -2670,7 +2585,10 @@ background-color: red;
 
           <RawHTML>{ItemNthCssadasd2}</RawHTML>
 
-          {JSON.stringify(grid)}
+          {/* {JSON.stringify(postTypesData)} */}
+
+
+
 
           <ContainerCss cssData={props.attributes}>
 
@@ -2753,21 +2671,31 @@ background-color: red;
 
             <div >
 
-              {posts.items.length == 0 &&
+
+
+              {postsQuery == false && posts.length == 0 &&
 
                 (
-                  <div className='no-posts'>No Post found</div>
+                  <div className='no-posts text-center'>No Post found</div>
 
                 )
               }
 
+              {postsQuery &&
 
-
-              {posts.items.length > 0 &&
                 (
-                  <CustomCss cssData={props.attributes} className='masonry-grid'>
+                  <div className='text-center'><Spinner /></div>
+                )
+
+              }
+
+
+
+              {postsQuery == false && posts.length > 0 &&
+                (
+                  <CustomCss cssData={props.attributes} className=''>
                     {
-                      posts.items.map((x, i) => {
+                      posts.map((x, i) => {
 
                         return (<div className='border p-3 item '><RawHTML>{x.html}</RawHTML></div>)
                         //return (generateLayout(x, i))
