@@ -936,11 +936,6 @@ background-image: ${props => {
   title: "Post Grid",
   icon: "grid-view",
   attributes: {
-    viewType: {
-      type: 'string',
-      default: 'grid' // filterable, carousel
-
-    },
     lazyLoad: {
       type: 'object',
       default: {
@@ -1038,97 +1033,45 @@ background-image: ${props => {
         itemCss: []
       }
     },
-    filterable: {
-      type: 'object',
-      default: {
-        filters: [{
-          groupTitle: '',
-          type: '',
-          logic: '',
-          showPostCount: '',
-          items: []
-        }],
-        allText: 'All',
-        showSort: '',
-        activeFilter: '',
-        textColor: '',
-        bgColor: '',
-        activeBgColor: '',
-        padding: {
-          val: '',
-          unit: ''
-        },
-        margin: {
-          val: '',
-          unit: ''
-        }
-      }
-    },
-    carousel: {
-      type: 'object',
-      default: {
-        type: '',
-        role: '',
-        label: '',
-        labelledby: '',
-        rewind: '',
-        speed: '',
-        rewindSpeed: '',
-        rewindByDrag: '',
-        width: '',
-        height: '',
-        fixedWidth: '',
-        fixedHeight: '',
-        autoWidth: '',
-        heightRatio: '',
-        autoHeight: '',
-        start: '',
-        perPage: '',
-        perMove: '',
-        focus: '',
-        clones: '',
-        cloneStatus: '',
-        gap: '',
-        padding: '',
-        arrows: '',
-        pagination: '',
-        paginationKeyboard: '',
-        paginationDirection: '',
-        easing: '',
-        drag: '',
-        snap: '',
-        noDrag: '',
-        dragMinThreshold: '',
-        flickPower: '',
-        flickMaxPages: '',
-        waitForTransition: '',
-        arrowPath: '',
-        autoplay: '',
-        interval: '',
-        pauseOnHover: '',
-        pauseOnFocus: '',
-        resetProgress: '',
-        lazyLoad: '',
-        preloadPages: '',
-        keyboard: '',
-        wheel: '',
-        wheelMinThreshold: '',
-        wheelSleep: '',
-        releaseWheel: '',
-        direction: '',
-        mediaQuery: '',
-        breakpoints: ''
-      }
-    },
     layout: {
       type: 'object',
       default: {
         id: '',
-        data: {},
-        rawData: '',
-        keyword: '',
-        category: '',
-        categories: []
+        data: [{
+          "blockName": "core/post-title",
+          "attrs": {},
+          "innerBlocks": [],
+          "innerHTML": "",
+          "innerContent": []
+        }, {
+          "blockName": null,
+          "attrs": {},
+          "innerBlocks": [],
+          "innerHTML": "\n\n",
+          "innerContent": ["\n\n"]
+        }, {
+          "blockName": "core/post-date",
+          "attrs": {},
+          "innerBlocks": [],
+          "innerHTML": "",
+          "innerContent": []
+        }, {
+          "blockName": null,
+          "attrs": {},
+          "innerBlocks": [],
+          "innerHTML": "\n\n",
+          "innerContent": ["\n\n"]
+        }, {
+          "blockName": "core/post-excerpt",
+          "attrs": {
+            "moreText": "",
+            "textColor": "primary"
+          },
+          "innerBlocks": [],
+          "innerHTML": "",
+          "innerContent": []
+        }],
+        "rawData": "<!-- wp:post-title /-->\n\n<!-- wp:post-date /-->\n\n<!-- wp:post-excerpt {\"moreText\":\"\",\"textColor\":\"primary\"} /-->"
       }
     },
     postTypes: {
@@ -1178,15 +1121,346 @@ background-image: ${props => {
     const blockProps = (0,_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_4__.useBlockProps)();
     var attributes = props.attributes;
     var setAttributes = props.setAttributes;
-    var viewType = attributes.viewType;
     var lazyLoad = attributes.lazyLoad;
     var container = attributes.container;
     var pagination = attributes.pagination;
     var search = attributes.search;
     var grid = attributes.grid;
     var layout = attributes.layout;
-    var queryArgs = attributes.queryArgs;
-    var filterable = attributes.filterable; //console.log(blockProps);
+    var queryArgs = attributes.queryArgs; //console.log(blockProps);
+
+    const postQueryPresets = [{
+      name: 'Latest Posts by Publish Date',
+      key: 'preset1',
+      value: {
+        "items": [{
+          "val": ["post"],
+          "multiple": false,
+          "id": "postType",
+          "label": "Post Types",
+          "description": "Select Post Types to Query"
+        }, {
+          "val": ["publish"],
+          "multiple": false,
+          "id": "postStatus",
+          "label": "Post status",
+          "description": "Query post by post status"
+        }, {
+          "val": "DESC",
+          "multiple": false,
+          "id": "order",
+          "label": "Order",
+          "description": "Post query order"
+        }, {
+          "val": ["date"],
+          "multiple": false,
+          "id": "orderby",
+          "label": "Orderby",
+          "description": "Post query orderby"
+        }, {
+          "val": "10",
+          "multiple": false,
+          "id": "postsPerPage",
+          "label": "Posts Per Page",
+          "description": ""
+        }]
+      }
+    }, {
+      name: 'Oldest Posts by Publish Date',
+      key: 'preset2',
+      value: {
+        "items": [{
+          "val": ["post"],
+          "multiple": false,
+          "id": "postType",
+          "label": "Post Types",
+          "description": "Select Post Types to Query"
+        }, {
+          "val": ["publish"],
+          "multiple": false,
+          "id": "postStatus",
+          "label": "Post status",
+          "description": "Query post by post status"
+        }, {
+          "val": "ASC",
+          "multiple": false,
+          "id": "order",
+          "label": "Order",
+          "description": "Post query order"
+        }, {
+          "val": ["date"],
+          "multiple": false,
+          "id": "orderby",
+          "label": "Orderby",
+          "description": "Post query orderby"
+        }, {
+          "val": "10",
+          "multiple": false,
+          "id": "postsPerPage",
+          "label": "Posts Per Page",
+          "description": ""
+        }]
+      }
+    }, {
+      name: 'Latest Posts by Modified Date',
+      key: 'preset3',
+      value: {
+        "items": [{
+          "val": ["post"],
+          "multiple": false,
+          "id": "postType",
+          "label": "Post Types",
+          "description": "Select Post Types to Query"
+        }, {
+          "val": ["publish"],
+          "multiple": false,
+          "id": "postStatus",
+          "label": "Post status",
+          "description": "Query post by post status"
+        }, {
+          "val": "DESC",
+          "multiple": false,
+          "id": "order",
+          "label": "Order",
+          "description": "Post query order"
+        }, {
+          "val": ["modified"],
+          "multiple": false,
+          "id": "orderby",
+          "label": "Orderby",
+          "description": "Post query orderby"
+        }, {
+          "val": "10",
+          "multiple": false,
+          "id": "postsPerPage",
+          "label": "Posts Per Page",
+          "description": ""
+        }]
+      }
+    }, {
+      name: 'Oldest Posts by Modified Date',
+      key: 'preset4',
+      value: {
+        "items": [{
+          "val": ["post"],
+          "multiple": false,
+          "id": "postType",
+          "label": "Post Types",
+          "description": "Select Post Types to Query"
+        }, {
+          "val": ["publish"],
+          "multiple": false,
+          "id": "postStatus",
+          "label": "Post status",
+          "description": "Query post by post status"
+        }, {
+          "val": "ASC",
+          "multiple": false,
+          "id": "order",
+          "label": "Order",
+          "description": "Post query order"
+        }, {
+          "val": ["modified"],
+          "multiple": false,
+          "id": "orderby",
+          "label": "Orderby",
+          "description": "Post query orderby"
+        }, {
+          "val": "10",
+          "multiple": false,
+          "id": "postsPerPage",
+          "label": "Posts Per Page",
+          "description": ""
+        }]
+      }
+    }, {
+      name: 'Alphabetical Order A-Z',
+      key: 'preset5',
+      value: {
+        "items": [{
+          "val": ["post"],
+          "multiple": false,
+          "id": "postType",
+          "label": "Post Types",
+          "description": "Select Post Types to Query"
+        }, {
+          "val": ["publish"],
+          "multiple": false,
+          "id": "postStatus",
+          "label": "Post status",
+          "description": "Query post by post status"
+        }, {
+          "val": "ASC",
+          "multiple": false,
+          "id": "order",
+          "label": "Order",
+          "description": "Post query order"
+        }, {
+          "val": ["name"],
+          "multiple": false,
+          "id": "orderby",
+          "label": "Orderby",
+          "description": "Post query orderby"
+        }, {
+          "val": "10",
+          "multiple": false,
+          "id": "postsPerPage",
+          "label": "Posts Per Page",
+          "description": ""
+        }]
+      }
+    }, {
+      name: 'Alphabetical Order Z-A',
+      key: 'preset6',
+      value: {
+        "items": [{
+          "val": ["post"],
+          "multiple": false,
+          "id": "postType",
+          "label": "Post Types",
+          "description": "Select Post Types to Query"
+        }, {
+          "val": ["publish"],
+          "multiple": false,
+          "id": "postStatus",
+          "label": "Post status",
+          "description": "Query post by post status"
+        }, {
+          "val": "DESC",
+          "multiple": false,
+          "id": "order",
+          "label": "Order",
+          "description": "Post query order"
+        }, {
+          "val": ["name"],
+          "multiple": false,
+          "id": "orderby",
+          "label": "Orderby",
+          "description": "Post query orderby"
+        }, {
+          "val": "10",
+          "multiple": false,
+          "id": "postsPerPage",
+          "label": "Posts Per Page",
+          "description": ""
+        }]
+      }
+    }, {
+      name: 'Most Commented Posts',
+      key: 'preset7',
+      value: {
+        "items": [{
+          "val": ["post"],
+          "multiple": false,
+          "id": "postType",
+          "label": "Post Types",
+          "description": "Select Post Types to Query"
+        }, {
+          "val": ["publish"],
+          "multiple": false,
+          "id": "postStatus",
+          "label": "Post status",
+          "description": "Query post by post status"
+        }, {
+          "val": "DESC",
+          "multiple": false,
+          "id": "order",
+          "label": "Order",
+          "description": "Post query order"
+        }, {
+          "val": ["name"],
+          "multiple": false,
+          "id": "orderby",
+          "label": "Orderby",
+          "description": "Post query orderby"
+        }, {
+          "val": "10",
+          "multiple": false,
+          "id": "postsPerPage",
+          "label": "Posts Per Page",
+          "description": ""
+        }]
+      }
+    }, {
+      name: 'Random 10 Posts',
+      key: 'preset8',
+      value: {
+        "items": [{
+          "val": ["post"],
+          "multiple": false,
+          "id": "postType",
+          "label": "Post Types",
+          "description": "Select Post Types to Query"
+        }, {
+          "val": ["publish"],
+          "multiple": false,
+          "id": "postStatus",
+          "label": "Post status",
+          "description": "Query post by post status"
+        }, {
+          "val": "DESC",
+          "multiple": false,
+          "id": "order",
+          "label": "Order",
+          "description": "Post query order"
+        }, {
+          "val": ["rand"],
+          "multiple": false,
+          "id": "orderby",
+          "label": "Orderby",
+          "description": "Post query orderby"
+        }, {
+          "val": "10",
+          "multiple": false,
+          "id": "postsPerPage",
+          "label": "Posts Per Page",
+          "description": ""
+        }]
+      }
+    }];
+
+    function MyCustomSelectControl() {
+      const [fontSize, setFontSize] = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_5__.useState)(postQueryPresets[0]);
+      return (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_5__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_6__.CustomSelectControl, {
+        label: "Font Size",
+        options: postQueryPresets,
+        onChange: _ref => {
+          let {
+            selectedItem
+          } = _ref;
+          setAttributes({
+            queryArgs: {
+              items: selectedItem.value.items
+            }
+          });
+          setFontSize(selectedItem);
+          console.log(selectedItem);
+        },
+        value: postQueryPresets.find(option => option.key === fontSize.key)
+      });
+    }
+
+    function MyCustomSelectControladas() {
+      const [fontSize, setFontSize] = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_5__.useState)(postQueryPresets[0]);
+      return (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_5__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_6__.CustomSelectControl, {
+        className: "w-full",
+        label: "Query Presets",
+        options: postQueryPresets,
+        onChange: newVal => {
+          console.log(newVal.selectedItem);
+          queryArgs.items = newVal.selectedItem.value.items;
+          setAttributes({
+            queryArgs: {
+              items: queryArgs.items
+            }
+          });
+          setFontSize(newVal.selectedItem); // fetchPosts()
+
+          console.log(postQueryPresets.find(option => option.key === fontSize.key));
+        },
+        value: postQueryPresets.find(option => option.key === fontSize.key)
+      });
+    }
 
     const gridLayout = [{
       thumb: 'http://localhost/wp/wp-content/plugins/blockxyz/assets/images/placeholder.png',
@@ -1726,7 +2000,6 @@ background-color: red;
       return `<style>.item:nth-child(${i + 1}){grid-column-start: ${x['grid-column-start']};grid-column-end: ${x['grid-column-end']};grid-row-start: ${x['grid-row-start']};grid-row-end: ${x['grid-row-end']};}</style>`;
     }); //////console.log(queryArgs);
 
-    var filterablTermsResults = [];
     const colors = [{
       name: 'red',
       color: '#f00'
@@ -1759,13 +2032,13 @@ background-color: red;
       return (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_5__.createElement)("div", innerBlocksProps);
     }
 
-    function PostTemplateBlockPreview(_ref) {
+    function PostTemplateBlockPreview(_ref2) {
       let {
         blocks,
         blockContextId,
         isHidden,
         setActiveBlockContextId
-      } = _ref;
+      } = _ref2;
       const blockPreviewProps = (0,_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_4__.__experimentalUseBlockPreview)({
         blocks,
         props: {
@@ -1785,12 +2058,6 @@ background-color: red;
     }
 
     const MemoizedPostTemplateBlockPreview = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_5__.memo)(PostTemplateBlockPreview);
-
-    function updateViewType(val) {
-      setAttributes({
-        viewType: val
-      });
-    }
 
     function updateLazyLoadEnable(val) {
       setAttributes({
@@ -1825,7 +2092,7 @@ background-color: red;
         };
       });
       _wordpress_api_fetch__WEBPACK_IMPORTED_MODULE_3___default()({
-        path: '/blockxyz/v2/get_posts_layout',
+        path: '/blockxyz/v2/get_posts',
         method: 'POST',
         data: {
           queryArgs: arg,
@@ -1833,6 +2100,7 @@ background-color: red;
         }
       }).then(res => {
         setPostsQuery(false);
+        console.log(res);
         setPosts(res);
       });
     }
@@ -1863,12 +2131,13 @@ background-color: red;
     }
 
     (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_5__.useEffect)(() => {
-      //console.log('Listening: ', layout);
+      console.log('Listening layout: ', layout);
       fetchPosts();
     }, [layout]);
     (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_5__.useEffect)(() => {
-      //console.log('Listening: ', grid);
-      fetchLayouts(); //console.log('asdasd');
+      //console.log('Listening container: ', container);
+      fetchLayouts();
+      fetchLayoutData(); //console.log('asdasd');
     }, [container]);
 
     function selectLayout(id, post_content) {
@@ -1879,10 +2148,7 @@ background-color: red;
         layout: {
           id: id,
           data: blocks,
-          rawData: post_content,
-          keyword: layout.keyword,
-          category: layout.category,
-          categories: layout.categories
+          rawData: post_content
         }
       }); //console.log(wp.data.select('core/block-editor').getBlocks());
       //wp.data.dispatch('core/block-editor').insertBlocks(wp.blocks.parse(post_content));
@@ -1893,49 +2159,65 @@ background-color: red;
       //console.log(blocks)
     }
 
-    const [filterablTerms, setFilterablTerms] = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_5__.useState)([]); // Using the hook.
+    const [queryLayouts, setQueryLayouts] = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_5__.useState)(false);
+    var [layoutList, setLayoutList] = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_5__.useState)({
+      items: []
+    });
+    var [layoutData, setLayoutData] = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_5__.useState)({
+      keyword: '',
+      category: '',
+      categories: []
+    });
+    (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_5__.useEffect)(() => {
+      var keywordLength = layoutData.keyword.length;
 
-    function fetchPostTypeTerms(keyword) {
-      var postTypes = [];
-      setFilterablTerms([]);
-      queryArgs.items.map(x => {
-        if (x.id == 'postType') {
-          postTypes.push(x.val);
-        }
-      });
-      console.log(postTypes);
-      var sss = _wordpress_api_fetch__WEBPACK_IMPORTED_MODULE_3___default()({
-        path: '/blockxyz/v2/post_type_objects',
-        method: 'POST',
-        data: {
-          postTypes: postTypes[0],
-          search: keyword
-        }
-      }).then(result => {
-        setFilterablTerms(result); //return result;
-        //console.log(filterablTermsResults);
-      });
-    }
+      if (keywordLength != 0) {
+        //console.log('Listening layoutData: ', layoutData);
+        //console.log('Gretter');
+        if (keywordLength >= 4) {
+          fetchLayouts();
+        } else {}
+      } else {
+        //console.log('Gretter: 0');
+        fetchLayouts();
+      } //console.log('asdasd');
 
-    const [queryLayouts, setQueryLayouts] = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_5__.useState)(false); // Using the hook.
-
-    var [layoutList, setLayoutList] = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_5__.useState)([]); // Using the hook.
+    }, [layoutData]);
 
     function fetchLayouts() {
-      fetchPosts();
       setQueryLayouts(true);
-      var args = [{
-        id: 'postType',
-        val: ['post_grid_layout']
-      }];
       _wordpress_api_fetch__WEBPACK_IMPORTED_MODULE_3___default()({
         path: '/blockxyz/v2/get_posts_layout',
         method: 'POST',
         data: {
-          queryArgs: args
+          category: layoutData.category,
+          keyword: layoutData.keyword
         }
       }).then(res => {
-        setLayoutList(res);
+        //console.log(res);
+        setLayoutList({
+          items: res.posts
+        });
+        setQueryLayouts(false);
+      });
+    }
+
+    function fetchLayoutData() {
+      setQueryLayouts(true);
+      _wordpress_api_fetch__WEBPACK_IMPORTED_MODULE_3___default()({
+        path: '/blockxyz/v2/get_posts_layout',
+        method: 'POST',
+        data: {
+          category: layoutData.category,
+          keyword: layoutData.keyword
+        }
+      }).then(res => {
+        console.log(res);
+        setLayoutData({
+          keyword: layoutData.keyword,
+          category: layoutData.category,
+          categories: res.terms
+        });
         setQueryLayouts(false);
       });
     }
@@ -2707,28 +2989,7 @@ background-color: red;
       key: "general"
     }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_5__.createElement)("div", {
       className: "blockxyz"
-    }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_5__.createElement)("div", {
-      className: "px-3"
-    }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_5__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_6__.SelectControl, {
-      label: "View Type",
-      value: viewType,
-      options: [{
-        label: 'Grid',
-        value: 'grid'
-      }, {
-        label: 'Filterable',
-        value: 'filterable'
-      }, {
-        label: 'Carousel',
-        value: 'carousel'
-      }, {
-        label: 'Glossary',
-        value: 'glossary'
-      }],
-      onChange: newSize => setAttributes({
-        viewType: newSize
-      })
-    })), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_5__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_6__.PanelBody, {
+    }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_5__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_6__.PanelBody, {
       title: "General",
       initialOpen: false
     }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_5__.createElement)("div", {
@@ -2845,10 +3106,10 @@ background-color: red;
       },
       allowedTypes: ALLOWED_MEDIA_TYPES,
       value: container.bgImg,
-      render: _ref2 => {
+      render: _ref3 => {
         let {
           open
-        } = _ref2;
+        } = _ref3;
         return (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_5__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_6__.Button, {
           onClick: open
         }, "Open Media Library");
@@ -2882,10 +3143,10 @@ background-color: red;
       },
       allowedTypes: ALLOWED_MEDIA_TYPES,
       value: lazyLoad.srcId,
-      render: _ref3 => {
+      render: _ref4 => {
         let {
           open
-        } = _ref3;
+        } = _ref4;
         return (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_5__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_6__.Button, {
           onClick: open
         }, "Open Media Library");
@@ -2893,7 +3154,9 @@ background-color: red;
     }))), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_5__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_6__.PanelBody, {
       title: "Query Post",
       initialOpen: false
-    }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_5__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_6__.SelectControl, {
+    }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_5__.createElement)("div", {
+      className: "mb-5"
+    }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_5__.createElement)(MyCustomSelectControl, null)), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_5__.createElement)("label", null, "Add Query Parameters"), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_5__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_6__.SelectControl, {
       label: "",
       options: queryPramsX,
       onChange: newVal => addQueryPram(newVal)
@@ -2905,55 +3168,35 @@ background-color: red;
       title: "Layouts",
       initialOpen: false
     }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_5__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_6__.PanelRow, null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_5__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_6__.__experimentalInputControl, {
-      value: layout.keyword,
+      value: layoutData.keyword,
       type: "text",
       placeholder: "Search Here...",
       onChange: newVal => {
-        setAttributes({
-          layout: {
-            id: layout.id,
-            data: layout.data,
-            rawData: layout.rawData,
-            keyword: newVal,
-            category: layout.category,
-            categories: layout.categories
-          }
-        });
-        fetchLayouts();
+        console.log(newVal);
+        setLayoutData({
+          keyword: newVal,
+          category: layoutData.category,
+          categories: layoutData.categories
+        }); //fetchLayouts();
       }
     }), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_5__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_6__.SelectControl, {
       style: {
         margin: 0
       },
       label: "",
-      value: layout.category,
-      options: [{
-        label: 'fr',
-        value: 'fr'
-      }, {
-        label: 'px',
-        value: 'px'
-      }, {
-        label: '%',
-        value: '%'
-      }, {
-        label: 'em',
-        value: 'em'
-      }],
+      value: layoutData.category,
+      options: layoutData.categories,
       onChange: newVal => {
-        fetchLayouts();
-        setAttributes({
-          layout: {
-            id: layout.id,
-            data: layout.data,
-            rawData: layout.rawData,
-            keyword: layout.keyword,
-            category: newVal,
-            categories: layout.categories
-          }
-        });
+        console.log(newVal);
+        setLayoutData({
+          keyword: layoutData.keyword,
+          category: newVal,
+          categories: layoutData.categories
+        }); //fetchLayouts();
       }
-    })), queryLayouts == true && (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_5__.createElement)("div", null, "Loading"), layoutList.length > 0 && layoutList.map(x => {
+    })), queryLayouts == true && (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_5__.createElement)("div", {
+      className: "text-center"
+    }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_5__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_6__.Spinner, null)), queryLayouts == false && layoutList.items.length > 0 && layoutList.items.map(x => {
       return (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_5__.createElement)("div", {
         className: "my-3  "
       }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_5__.createElement)("div", {
@@ -2985,8 +3228,7 @@ background-color: red;
       }, x.is_pro ? 'Buy Now' : 'Free')));
     }), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_5__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_6__.PanelRow, null)), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_5__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_6__.PanelBody, {
       title: "Grid Settings",
-      initialOpen: false,
-      className: viewType == 'grid' || viewType == 'filterable' || viewType == 'glossary' ? '' : 'hidden'
+      initialOpen: false
     }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_5__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_6__.Button, {
       className: "mb-3",
       variant: "secondary",
@@ -3339,8 +3581,7 @@ background-color: red;
       }, x.title));
     })), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_5__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_6__.PanelBody, {
       title: "Pagination",
-      initialOpen: false,
-      className: viewType == 'carousel' ? 'hidden' : ''
+      initialOpen: false
     }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_5__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_6__.SelectControl, {
       label: "Enable",
       value: pagination.type,
@@ -3356,9 +3597,6 @@ background-color: red;
       }, {
         label: 'Next-Previous',
         value: 'next_previous'
-      }, {
-        label: 'Filterable Pagination',
-        value: 'filterable'
       }, {
         label: 'Load More',
         value: 'loadmore'
@@ -3561,472 +3799,8 @@ background-color: red;
         }
       })
     }))), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_5__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_6__.PanelBody, {
-      title: "Filterable",
-      initialOpen: false,
-      className: viewType == 'filterable' ? '' : 'hidden'
-    }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_5__.createElement)("div", null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_5__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_6__.Button, {
-      variant: "secondary",
-      className: "mb-2",
-      onClick: ev => {
-        var filters = filterable.filters.concat({
-          groupTitle: '',
-          type: '',
-          logic: '',
-          showPostCount: '',
-          items: []
-        });
-        setAttributes({
-          filterable: {
-            filters: filters,
-            allText: filterable.allText,
-            showSort: filterable.showSort,
-            activeFilter: filterable.activeFilter,
-            textColor: filterable.textColor,
-            bgColor: filterable.bgColor,
-            activeBgColor: filterable.activeBgColor,
-            padding: {
-              val: filterable.padding.val,
-              unit: filterable.padding.unit
-            },
-            margin: filterable.margin,
-            bgImg: filterable.bgImg
-          }
-        });
-      }
-    }, "Add Filter Group"), filterable.filters.map((x, i) => {
-      return (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_5__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_6__.PanelBody, {
-        title: x.groupTitle ? x.groupTitle : 'Filter Group ' + i,
-        initialOpen: false
-      }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_5__.createElement)("span", {
-        onClick: ev => {
-          filterable.filters.splice(i, 1);
-          setAttributes({
-            filterable: {
-              filters: filterable.filters,
-              allText: filterable.allText,
-              showSort: filterable.showSort,
-              activeFilter: filterable.activeFilter,
-              textColor: filterable.textColor,
-              bgColor: filterable.bgColor,
-              activeBgColor: filterable.activeBgColor,
-              padding: {
-                val: filterable.padding.val,
-                unit: filterable.padding.unit
-              },
-              margin: filterable.margin,
-              bgImg: filterable.bgImg
-            }
-          });
-        },
-        className: "cursor-pointer px-3 py-1 inline-block text-white bg-red-600 text-sm mb-2"
-      }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_5__.createElement)("span", {
-        className: "dashicon dashicons dashicons-no-alt"
-      }), " Delete Group"), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_5__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_6__.PanelRow, null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_5__.createElement)("label", {
-        for: ""
-      }, "Group Title"), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_5__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_6__.__experimentalInputControl, {
-        value: x.groupTitle,
-        onChange: newVal => {
-          filterable.filters[i].groupTitle = newVal;
-          setAttributes({
-            filterable: {
-              filters: filterable.filters,
-              allText: filterable.allText,
-              showSort: filterable.showSort,
-              activeFilter: filterable.activeFilter,
-              textColor: filterable.textColor,
-              bgColor: filterable.bgColor,
-              activeBgColor: filterable.activeBgColor,
-              padding: {
-                val: filterable.padding.val,
-                unit: filterable.padding.unit
-              },
-              margin: filterable.margin,
-              bgImg: filterable.bgImg
-            }
-          });
-        }
-      })), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_5__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_6__.PanelRow, null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_5__.createElement)("label", {
-        for: ""
-      }, "Group Type"), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_5__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_6__.SelectControl, {
-        value: x.type,
-        options: [{
-          value: 'inline',
-          label: 'Inline'
-        }, {
-          value: 'dropdown',
-          label: 'Dropdown'
-        }, {
-          value: 'radio',
-          label: 'Radio'
-        }, {
-          value: 'checkbox',
-          label: 'Checkbox'
-        }],
-        onChange: newVal => {
-          filterable.filters[i].type = newVal;
-          setAttributes({
-            filterable: {
-              filters: filterable.filters,
-              allText: filterable.allText,
-              showSort: filterable.showSort,
-              activeFilter: filterable.activeFilter,
-              textColor: filterable.textColor,
-              bgColor: filterable.bgColor,
-              activeBgColor: filterable.activeBgColor,
-              padding: {
-                val: filterable.padding.val,
-                unit: filterable.padding.unit
-              },
-              margin: filterable.margin,
-              bgImg: filterable.bgImg
-            }
-          });
-        }
-      })), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_5__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_6__.PanelRow, null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_5__.createElement)("label", {
-        for: ""
-      }, "Data Logic"), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_5__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_6__.SelectControl, {
-        value: x.logic,
-        options: [{
-          value: 'or',
-          label: 'OR'
-        }, {
-          value: 'and',
-          label: 'AND'
-        }],
-        onChange: newVal => {
-          filterable.filters[i].logic = newVal;
-          setAttributes({
-            filterable: {
-              filters: filterable.filters,
-              allText: filterable.allText,
-              showSort: filterable.showSort,
-              activeFilter: filterable.activeFilter,
-              textColor: filterable.textColor,
-              bgColor: filterable.bgColor,
-              activeBgColor: filterable.activeBgColor,
-              padding: {
-                val: filterable.padding.val,
-                unit: filterable.padding.unit
-              },
-              margin: filterable.margin,
-              bgImg: filterable.bgImg
-            }
-          });
-        }
-      })), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_5__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_6__.PanelRow, null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_5__.createElement)("label", {
-        for: ""
-      }, "Show Post Count "), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_5__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_6__.SelectControl, {
-        value: x.showPostCount,
-        options: [{
-          value: 'no',
-          label: 'No'
-        }, {
-          value: 'yes',
-          label: 'Yes'
-        }],
-        onChange: newVal => {
-          filterable.filters[i].showPostCount = newVal;
-          setAttributes({
-            filterable: {
-              filters: filterable.filters,
-              allText: filterable.allText,
-              showSort: filterable.showSort,
-              activeFilter: filterable.activeFilter,
-              textColor: filterable.textColor,
-              bgColor: filterable.bgColor,
-              activeBgColor: filterable.activeBgColor,
-              padding: {
-                val: filterable.padding.val,
-                unit: filterable.padding.unit
-              },
-              margin: filterable.margin,
-              bgImg: filterable.bgImg
-            }
-          });
-        }
-      })), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_5__.createElement)("label", {
-        for: "",
-        className: "my-3 font-bold"
-      }, "Terms"), x.items.length == 0 && (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_5__.createElement)("div", {
-        className: "my-1"
-      }, "No terms added."), x.items.map((y, j) => {
-        return (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_5__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_6__.PanelRow, {
-          className: "my-1"
-        }, y.title, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_5__.createElement)("span", {
-          onClick: ev => {
-            filterable.filters[i].items.splice(j, 1);
-            setAttributes({
-              filterable: {
-                filters: filterable.filters,
-                allText: filterable.allText,
-                showSort: filterable.showSort,
-                activeFilter: filterable.activeFilter,
-                textColor: filterable.textColor,
-                bgColor: filterable.bgColor,
-                activeBgColor: filterable.activeBgColor,
-                padding: {
-                  val: filterable.padding.val,
-                  unit: filterable.padding.unit
-                },
-                margin: filterable.margin,
-                bgImg: filterable.bgImg
-              }
-            });
-          },
-          className: "cursor-pointer p-1   inline-block text-white bg-red-600 text-sm"
-        }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_5__.createElement)("span", {
-          className: "dashicon dashicons dashicons-no-alt"
-        })));
-      }), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_5__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_6__.__experimentalInputControl, {
-        placeholder: "Search Categories or terms",
-        value: "",
-        onChange: newVal => {
-          fetchPostTypeTerms(newVal);
-        }
-      }), filterablTerms.length > 0 && (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_5__.createElement)("div", {
-        className: "bg-gray-200 p-2 mt-2"
-      }, filterablTerms.map(x => {
-        return (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_5__.createElement)("div", {
-          title: "Click Add terms",
-          className: "border-b border-gray-400 my-2 pb-1 cursor-pointer",
-          onClick: ev => {
-            if (x.slug) {
-              var ss = filterable.filters[i].items.concat({
-                id: x.term_id,
-                slug: x.slug,
-                title: x.name,
-                count: x.count
-              });
-              filterable.filters[i].items = ss;
-              setAttributes({
-                filterable: {
-                  filters: filterable.filters,
-                  allText: filterable.allText,
-                  showSort: filterable.showSort,
-                  activeFilter: filterable.activeFilter,
-                  textColor: filterable.textColor,
-                  bgColor: filterable.bgColor,
-                  activeBgColor: filterable.activeBgColor,
-                  padding: {
-                    val: filterable.padding.val,
-                    unit: filterable.padding.unit
-                  },
-                  margin: filterable.margin,
-                  bgImg: filterable.bgImg
-                }
-              });
-            }
-          }
-        }, x.name, " (", x.count, ")");
-      })));
-    })), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_5__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_6__.PanelRow, null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_5__.createElement)("label", {
-      for: ""
-    }, "Show Sort Filter "), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_5__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_6__.SelectControl, {
-      label: "",
-      value: filterable.showSort,
-      options: [{
-        label: 'No',
-        value: 'no'
-      }, {
-        label: 'Yes',
-        value: 'yes'
-      }],
-      onChange: newVal => setAttributes({
-        filterable: {
-          filters: filterable.filters,
-          allText: filterable.allText,
-          showSort: newVal,
-          activeFilter: filterable.activeFilter,
-          textColor: filterable.textColor,
-          bgColor: filterable.bgColor,
-          activeBgColor: filterable.activeBgColor,
-          padding: filterable.padding,
-          margin: filterable.margin,
-          bgColor: filterable.bgColor,
-          bgImg: filterable.bgImg
-        }
-      })
-    })), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_5__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_6__.PanelRow, null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_5__.createElement)("label", {
-      for: ""
-    }, "Margin"), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_5__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_6__.__experimentalInputControl, {
-      value: filterable.margin.val,
-      onChange: newVal => setAttributes({
-        filterable: {
-          filters: filterable.filters,
-          allText: filterable.allText,
-          showSort: filterable.showSort,
-          activeFilter: filterable.activeFilter,
-          textColor: filterable.textColor,
-          bgColor: filterable.bgColor,
-          activeBgColor: filterable.activeBgColor,
-          padding: filterable.padding,
-          margin: {
-            val: newVal,
-            unit: filterable.margin.unit
-          },
-          bgColor: filterable.bgColor,
-          bgImg: filterable.bgImg
-        }
-      })
-    }), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_5__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_6__.SelectControl, {
-      label: "",
-      value: filterable.margin.unit,
-      options: [{
-        label: 'px',
-        value: 'px'
-      }, {
-        label: 'em',
-        value: 'em'
-      }],
-      onChange: newVal => setAttributes({
-        filterable: {
-          filters: filterable.filters,
-          allText: filterable.allText,
-          showSort: filterable.showSort,
-          activeFilter: filterable.activeFilter,
-          textColor: filterable.textColor,
-          bgColor: filterable.bgColor,
-          activeBgColor: filterable.activeBgColor,
-          margin: {
-            val: filterable.padding.val,
-            unit: newVal
-          },
-          padding: filterable.padding,
-          bgColor: filterable.bgColor,
-          bgImg: filterable.bgImg
-        }
-      })
-    })), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_5__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_6__.PanelRow, null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_5__.createElement)("label", {
-      for: ""
-    }, "Padding"), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_5__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_6__.__experimentalInputControl, {
-      value: filterable.padding.val,
-      onChange: newVal => setAttributes({
-        filterable: {
-          filters: filterable.filters,
-          allText: filterable.allText,
-          showSort: filterable.showSort,
-          activeFilter: filterable.activeFilter,
-          textColor: filterable.textColor,
-          bgColor: filterable.bgColor,
-          activeBgColor: filterable.activeBgColor,
-          margin: filterable.margin,
-          padding: {
-            val: newVal,
-            unit: filterable.padding.unit
-          },
-          bgColor: filterable.bgColor,
-          bgImg: filterable.bgImg
-        }
-      })
-    }), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_5__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_6__.SelectControl, {
-      label: "",
-      value: filterable.padding.unit,
-      options: [{
-        label: 'px',
-        value: 'px'
-      }, {
-        label: 'em',
-        value: 'em'
-      }],
-      onChange: newVal => setAttributes({
-        filterable: {
-          filters: filterable.filters,
-          allText: filterable.allText,
-          showSort: filterable.showSort,
-          activeFilter: filterable.activeFilter,
-          textColor: filterable.textColor,
-          bgColor: filterable.bgColor,
-          activeBgColor: filterable.activeBgColor,
-          padding: {
-            val: filterable.padding.val,
-            unit: newVal
-          },
-          margin: filterable.margin,
-          bgColor: filterable.bgColor,
-          bgImg: filterable.bgImg
-        }
-      })
-    })), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_5__.createElement)("label", {
-      for: ""
-    }, "Text Color"), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_5__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_6__.ColorPalette, {
-      color: filterable.textColor,
-      colors: colors,
-      enableAlpha: true,
-      onChange: newVal => setAttributes({
-        filterable: {
-          filters: filterable.filters,
-          allText: filterable.allText,
-          showSort: filterable.showSort,
-          activeFilter: filterable.activeFilter,
-          textColor: newVal,
-          bgColor: filterable.bgColor,
-          activeBgColor: filterable.activeBgColor,
-          padding: {
-            val: filterable.padding.val,
-            unit: filterable.padding.unit
-          },
-          margin: filterable.margin,
-          bgImg: filterable.bgImg
-        }
-      })
-    }), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_5__.createElement)("label", {
-      for: ""
-    }, "Background Color"), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_5__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_6__.ColorPalette, {
-      color: filterable.bgColor,
-      colors: colors,
-      enableAlpha: true,
-      onChange: newVal => setAttributes({
-        filterable: {
-          filters: filterable.filters,
-          allText: filterable.allText,
-          showSort: filterable.showSort,
-          activeFilter: filterable.activeFilter,
-          textColor: filterable.textColor,
-          bgColor: newVal,
-          activeBgColor: filterable.activeBgColor,
-          padding: {
-            val: filterable.padding.val,
-            unit: filterable.padding.unit
-          },
-          margin: filterable.margin,
-          bgImg: filterable.bgImg
-        }
-      })
-    }), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_5__.createElement)("label", {
-      for: ""
-    }, "Active Background Color"), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_5__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_6__.ColorPalette, {
-      color: filterable.activeBgColor,
-      colors: colors,
-      enableAlpha: true,
-      onChange: newVal => setAttributes({
-        filterable: {
-          filters: filterable.filters,
-          allText: filterable.allText,
-          showSort: filterable.showSort,
-          activeFilter: filterable.activeFilter,
-          textColor: filterable.textColor,
-          bgColor: filterable.bgColor,
-          activeBgColor: newVal,
-          padding: {
-            val: filterable.padding.val,
-            unit: filterable.padding.unit
-          },
-          margin: filterable.margin,
-          bgImg: filterable.bgImg
-        }
-      })
-    })), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_5__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_6__.PanelBody, {
-      title: "Glossary",
-      initialOpen: false,
-      className: viewType == 'glossary' ? '' : 'hidden'
-    }), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_5__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_6__.PanelBody, {
-      title: "Carousel",
-      initialOpen: false,
-      className: viewType == 'carousel' ? '' : 'hidden'
-    }), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_5__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_6__.PanelBody, {
       title: "Search",
-      initialOpen: false,
-      className: viewType == 'grid' || viewType == 'filterable' ? '' : 'hidden'
+      initialOpen: false
     }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_5__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_6__.SelectControl, {
       label: "Enable",
       value: search.enable,
@@ -4106,37 +3880,13 @@ background-color: red;
       initialOpen: false
     })))), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_5__.createElement)("div", {
       className: "my-custom-block"
-    }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_5__.createElement)(RawHTML, null, ItemNthCssadasd2), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_5__.createElement)(ContainerCss, {
+    }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_5__.createElement)(RawHTML, null, ItemNthCssadasd2), JSON.stringify(queryArgs), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_5__.createElement)(ContainerCss, {
       cssData: props.attributes
     }, lazyLoad.enable == 'yes' && (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_5__.createElement)("div", {
       className: "lazyLoad"
     }, "lazyLoad"), search.enable == 'yes' && (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_5__.createElement)("div", {
       className: "search"
-    }, "search form"), viewType == 'filterable' && (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_5__.createElement)("div", {
-      className: "filterable-navs"
-    }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_5__.createElement)("div", {
-      className: "pg-filter-group mx-3 inline-block"
-    }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_5__.createElement)("div", {
-      className: "filter cusror-pointer px-4 py-2 m-2 inline-block bg-gray-200 filter-34534",
-      "data-filter": "all"
-    }, "All")), filterable.filters.map(x => {
-      return (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_5__.createElement)("div", {
-        className: "pg-filter-group mx-3 inline-block",
-        "data-logic": x.logic
-      }, x.groupTitle && (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_5__.createElement)("div", {
-        className: "filter-group-title px-4 py-2 m-2 inline-block mx-2"
-      }, x.groupTitle), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_5__.createElement)("div", {
-        className: "filter-group-items inline-block"
-      }, x.items.map(y => {
-        return (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_5__.createElement)("div", {
-          className: "filter cursor-pointer cusror-pointer px-4 py-2 m-2 inline-block bg-gray-200 filter-34534",
-          "terms-id": y.id,
-          "data-filter": '.' + y.slug
-        }, y.title, " ", x.showPostCount == 'yes' ? '(' + y.count + ')' : '');
-      })));
-    })), viewType == 'glossary' && (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_5__.createElement)("div", {
-      className: "filterable-navs"
-    }, "glossary navs"), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_5__.createElement)("div", null, postsQuery == false && posts.length == 0 && (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_5__.createElement)("div", {
+    }, "search form"), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_5__.createElement)("div", null, postsQuery == false && posts.length == 0 && (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_5__.createElement)("div", {
       className: "no-posts text-center"
     }, "No Post found"), postsQuery && (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_5__.createElement)("div", {
       className: "text-center"
@@ -4153,9 +3903,7 @@ background-color: red;
       className: "pagination"
     }, "ajax Pagination"), pagination.type == 'next_previous' && (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_5__.createElement)("div", {
       className: "pagination"
-    }, "next_previous Pagination"), pagination.type == 'filterable' && (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_5__.createElement)("div", {
-      className: "pagination"
-    }, "filterable Pagination"), pagination.type == 'loadmore' && (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_5__.createElement)("div", {
+    }, "next_previous Pagination"), pagination.type == 'loadmore' && (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_5__.createElement)("div", {
       className: "pagination"
     }, "loadmore Pagination"), pagination.type == 'infinite' && (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_5__.createElement)("div", {
       className: "pagination"

@@ -18,7 +18,7 @@ const { RawHTML } = wp.element;
 import { useBlockProps, InnerBlocks } from '@wordpress/block-editor';
 
 import { createElement, memo, useMemo, useState, useEffect } from '@wordpress/element'
-import { PanelBody, RangeControl, Button, Panel, PanelRow, Dropdown, DropdownMenu, SelectControl, ColorPicker, ColorPalette, ToolsPanelItem, ComboboxControl, Spinner } from '@wordpress/components'
+import { PanelBody, RangeControl, Button, Panel, PanelRow, Dropdown, DropdownMenu, SelectControl, ColorPicker, ColorPalette, ToolsPanelItem, ComboboxControl, Spinner, CustomSelectControl } from '@wordpress/components'
 import { InspectorControls, BlockControls, AlignmentToolbar, RichText } from '@wordpress/block-editor'
 import { __experimentalInputControl as InputControl } from '@wordpress/components';
 
@@ -100,10 +100,7 @@ registerBlockType("prefix-blocks/post-grid", {
   icon: "grid-view",
   attributes: {
 
-    viewType: {
-      type: 'string',
-      default: 'grid' // filterable, carousel
-    },
+
     lazyLoad: {
       type: 'object',
       default: { enable: 'no', srcUrl: '', srcId: '' },
@@ -131,75 +128,9 @@ registerBlockType("prefix-blocks/post-grid", {
 
 
 
-    filterable: {
-      type: 'object',
-      default: { filters: [{ groupTitle: '', type: '', logic: '', showPostCount: '', items: [] }], allText: 'All', showSort: '', activeFilter: '', textColor: '', bgColor: '', activeBgColor: '', padding: { val: '', unit: '' }, margin: { val: '', unit: '' }, },
-    },
-
-    carousel: {
-      type: 'object',
-      default: {
-        type: '',
-        role: '',
-        label: '',
-        labelledby: '',
-        rewind: '',
-        speed: '',
-        rewindSpeed: '',
-        rewindByDrag: '',
-        width: '',
-        height: '',
-        fixedWidth: '',
-        fixedHeight: '',
-        autoWidth: '',
-        heightRatio: '',
-        autoHeight: '',
-        start: '',
-        perPage: '',
-        perMove: '',
-        focus: '',
-        clones: '',
-        cloneStatus: '',
-        gap: '',
-        padding: '',
-        arrows: '',
-        pagination: '',
-        paginationKeyboard: '',
-        paginationDirection: '',
-        easing: '',
-        drag: '',
-        snap: '',
-        noDrag: '',
-        dragMinThreshold: '',
-        flickPower: '',
-        flickMaxPages: '',
-        waitForTransition: '',
-        arrowPath: '',
-        autoplay: '',
-        interval: '',
-        pauseOnHover: '',
-        pauseOnFocus: '',
-        resetProgress: '',
-        lazyLoad: '',
-        preloadPages: '',
-        keyboard: '',
-        wheel: '',
-        wheelMinThreshold: '',
-        wheelSleep: '',
-        releaseWheel: '',
-        direction: '',
-        mediaQuery: '',
-        breakpoints: '',
-
-
-
-      },
-    },
-
-
     layout: {
       type: 'object',
-      default: { id: '', data: {}, rawData: '', keyword: '', category: '', categories: [] },
+      default: { id: '', data: [{ "blockName": "core/post-title", "attrs": {}, "innerBlocks": [], "innerHTML": "", "innerContent": [] }, { "blockName": null, "attrs": {}, "innerBlocks": [], "innerHTML": "\n\n", "innerContent": ["\n\n"] }, { "blockName": "core/post-date", "attrs": {}, "innerBlocks": [], "innerHTML": "", "innerContent": [] }, { "blockName": null, "attrs": {}, "innerBlocks": [], "innerHTML": "\n\n", "innerContent": ["\n\n"] }, { "blockName": "core/post-excerpt", "attrs": { "moreText": "", "textColor": "primary" }, "innerBlocks": [], "innerHTML": "", "innerContent": [] }], "rawData": "<!-- wp:post-title /-->\n\n<!-- wp:post-date /-->\n\n<!-- wp:post-excerpt {\"moreText\":\"\",\"textColor\":\"primary\"} /-->" },
     },
 
     postTypes: {
@@ -236,7 +167,6 @@ registerBlockType("prefix-blocks/post-grid", {
     var attributes = props.attributes;
     var setAttributes = props.setAttributes;
 
-    var viewType = attributes.viewType;
     var lazyLoad = attributes.lazyLoad;
     var container = attributes.container;
     var pagination = attributes.pagination;
@@ -244,9 +174,114 @@ registerBlockType("prefix-blocks/post-grid", {
     var grid = attributes.grid;
     var layout = attributes.layout;
     var queryArgs = attributes.queryArgs;
-    var filterable = attributes.filterable;
 
     //console.log(blockProps);
+
+    const postQueryPresets = [
+      {
+        name: 'Latest Posts by Publish Date', key: 'preset1', value: { "items": [{ "val": ["post"], "multiple": false, "id": "postType", "label": "Post Types", "description": "Select Post Types to Query" }, { "val": ["publish"], "multiple": false, "id": "postStatus", "label": "Post status", "description": "Query post by post status" }, { "val": "DESC", "multiple": false, "id": "order", "label": "Order", "description": "Post query order" }, { "val": ["date"], "multiple": false, "id": "orderby", "label": "Orderby", "description": "Post query orderby" }, { "val": "10", "multiple": false, "id": "postsPerPage", "label": "Posts Per Page", "description": "" }] }
+      },
+
+
+      {
+        name: 'Oldest Posts by Publish Date', key: 'preset2', value: { "items": [{ "val": ["post"], "multiple": false, "id": "postType", "label": "Post Types", "description": "Select Post Types to Query" }, { "val": ["publish"], "multiple": false, "id": "postStatus", "label": "Post status", "description": "Query post by post status" }, { "val": "ASC", "multiple": false, "id": "order", "label": "Order", "description": "Post query order" }, { "val": ["date"], "multiple": false, "id": "orderby", "label": "Orderby", "description": "Post query orderby" }, { "val": "10", "multiple": false, "id": "postsPerPage", "label": "Posts Per Page", "description": "" }] }
+
+      },
+      {
+        name: 'Latest Posts by Modified Date', key: 'preset3', value: { "items": [{ "val": ["post"], "multiple": false, "id": "postType", "label": "Post Types", "description": "Select Post Types to Query" }, { "val": ["publish"], "multiple": false, "id": "postStatus", "label": "Post status", "description": "Query post by post status" }, { "val": "DESC", "multiple": false, "id": "order", "label": "Order", "description": "Post query order" }, { "val": ["modified"], "multiple": false, "id": "orderby", "label": "Orderby", "description": "Post query orderby" }, { "val": "10", "multiple": false, "id": "postsPerPage", "label": "Posts Per Page", "description": "" }] }
+
+      },
+
+      {
+        name: 'Oldest Posts by Modified Date', key: 'preset4', value: { "items": [{ "val": ["post"], "multiple": false, "id": "postType", "label": "Post Types", "description": "Select Post Types to Query" }, { "val": ["publish"], "multiple": false, "id": "postStatus", "label": "Post status", "description": "Query post by post status" }, { "val": "ASC", "multiple": false, "id": "order", "label": "Order", "description": "Post query order" }, { "val": ["modified"], "multiple": false, "id": "orderby", "label": "Orderby", "description": "Post query orderby" }, { "val": "10", "multiple": false, "id": "postsPerPage", "label": "Posts Per Page", "description": "" }] }
+      },
+
+
+      {
+        name: 'Alphabetical Order A-Z', key: 'preset5', value: { "items": [{ "val": ["post"], "multiple": false, "id": "postType", "label": "Post Types", "description": "Select Post Types to Query" }, { "val": ["publish"], "multiple": false, "id": "postStatus", "label": "Post status", "description": "Query post by post status" }, { "val": "ASC", "multiple": false, "id": "order", "label": "Order", "description": "Post query order" }, { "val": ["name"], "multiple": false, "id": "orderby", "label": "Orderby", "description": "Post query orderby" }, { "val": "10", "multiple": false, "id": "postsPerPage", "label": "Posts Per Page", "description": "" }] }
+
+      },
+
+      {
+        name: 'Alphabetical Order Z-A', key: 'preset6', value: { "items": [{ "val": ["post"], "multiple": false, "id": "postType", "label": "Post Types", "description": "Select Post Types to Query" }, { "val": ["publish"], "multiple": false, "id": "postStatus", "label": "Post status", "description": "Query post by post status" }, { "val": "DESC", "multiple": false, "id": "order", "label": "Order", "description": "Post query order" }, { "val": ["name"], "multiple": false, "id": "orderby", "label": "Orderby", "description": "Post query orderby" }, { "val": "10", "multiple": false, "id": "postsPerPage", "label": "Posts Per Page", "description": "" }] }
+
+
+      },
+
+
+      {
+        name: 'Most Commented Posts', key: 'preset7', value: { "items": [{ "val": ["post"], "multiple": false, "id": "postType", "label": "Post Types", "description": "Select Post Types to Query" }, { "val": ["publish"], "multiple": false, "id": "postStatus", "label": "Post status", "description": "Query post by post status" }, { "val": "DESC", "multiple": false, "id": "order", "label": "Order", "description": "Post query order" }, { "val": ["name"], "multiple": false, "id": "orderby", "label": "Orderby", "description": "Post query orderby" }, { "val": "10", "multiple": false, "id": "postsPerPage", "label": "Posts Per Page", "description": "" }] }
+
+
+      },
+
+
+      {
+        name: 'Random 10 Posts', key: 'preset8', value: { "items": [{ "val": ["post"], "multiple": false, "id": "postType", "label": "Post Types", "description": "Select Post Types to Query" }, { "val": ["publish"], "multiple": false, "id": "postStatus", "label": "Post status", "description": "Query post by post status" }, { "val": "DESC", "multiple": false, "id": "order", "label": "Order", "description": "Post query order" }, { "val": ["rand"], "multiple": false, "id": "orderby", "label": "Orderby", "description": "Post query orderby" }, { "val": "10", "multiple": false, "id": "postsPerPage", "label": "Posts Per Page", "description": "" }] }
+
+      },
+
+    ];
+
+
+
+
+
+    function MyCustomSelectControl() {
+      const [fontSize, setFontSize] = useState(postQueryPresets[0]);
+      return (
+        <CustomSelectControl
+          label="Font Size"
+          options={postQueryPresets}
+          onChange={({ selectedItem }) => {
+            setAttributes({ queryArgs: { items: selectedItem.value.items } })
+
+            setFontSize(selectedItem)
+            console.log(selectedItem)
+          }}
+          value={postQueryPresets.find((option) => option.key === fontSize.key)}
+        />
+      );
+    }
+
+
+    function MyCustomSelectControladas() {
+
+      const [fontSize, setFontSize] = useState(postQueryPresets[0]);
+
+
+
+      return (
+        <CustomSelectControl
+          className='w-full'
+          label="Query Presets"
+          options={postQueryPresets}
+
+          onChange={(newVal) => {
+
+            console.log(newVal.selectedItem)
+
+
+            queryArgs.items = newVal.selectedItem.value.items;
+            setAttributes({ queryArgs: { items: queryArgs.items } })
+            setFontSize(newVal.selectedItem)
+            // fetchPosts()
+
+            console.log(postQueryPresets.find((option) => option.key === fontSize.key))
+
+
+          }}
+          value={postQueryPresets.find((option) => option.key === fontSize.key)}
+        />
+      );
+    }
+
+
+
+
+
+
+
 
 
     const gridLayout = [
@@ -345,7 +380,6 @@ background-color: red;
 
     //////console.log(queryArgs);
 
-    var filterablTermsResults = [];
 
     const colors = [
       { name: 'red', color: '#f00' },
@@ -367,9 +401,6 @@ background-color: red;
 
       })
     )
-
-
-
 
 
 
@@ -423,9 +454,7 @@ background-color: red;
 
     const MemoizedPostTemplateBlockPreview = memo(PostTemplateBlockPreview);
 
-    function updateViewType(val) {
-      setAttributes({ viewType: val });
-    }
+
 
     function updateLazyLoadEnable(val) {
       setAttributes({ lazyLoad: { enable: val, srcUrl: lazyLoad.srcUrl, srcId: lazyLoad.srcId } });
@@ -456,12 +485,14 @@ background-color: red;
       })
 
       apiFetch({
-        path: '/blockxyz/v2/get_posts_layout',
+        path: '/blockxyz/v2/get_posts',
         method: 'POST',
         data: { queryArgs: arg, rawData: layout.rawData },
       }).then((res) => {
 
         setPostsQuery(false);
+
+        console.log(res)
 
         setPosts(res)
 
@@ -537,7 +568,7 @@ background-color: red;
     }
 
     useEffect(() => {
-      //console.log('Listening: ', layout);
+      console.log('Listening layout: ', layout);
       fetchPosts();
 
 
@@ -545,13 +576,17 @@ background-color: red;
     }, [layout]);
 
     useEffect(() => {
-      //console.log('Listening: ', grid);
+      //console.log('Listening container: ', container);
       fetchLayouts();
-
+      fetchLayoutData();
       //console.log('asdasd');
 
 
     }, [container]);
+
+
+
+
 
 
 
@@ -566,7 +601,7 @@ background-color: red;
 
       // console.log(layout);
 
-      setAttributes({ layout: { id: id, data: blocks, rawData: post_content, keyword: layout.keyword, category: layout.category, categories: layout.categories } })
+      setAttributes({ layout: { id: id, data: blocks, rawData: post_content } })
 
 
       //console.log(wp.data.select('core/block-editor').getBlocks());
@@ -592,78 +627,93 @@ background-color: red;
 
     }
 
-    const [filterablTerms, setFilterablTerms] = useState([]); // Using the hook.
 
 
-    function fetchPostTypeTerms(keyword) {
-
-      var postTypes = [];
 
 
-      setFilterablTerms([]);
 
 
-      queryArgs.items.map(x => {
 
-        if (x.id == 'postType') {
-          postTypes.push(x.val)
+
+
+    const [queryLayouts, setQueryLayouts] = useState(false);
+    var [layoutList, setLayoutList] = useState({ items: [] });
+    var [layoutData, setLayoutData] = useState({ keyword: '', category: '', categories: [] });
+
+    useEffect(() => {
+
+      var keywordLength = layoutData.keyword.length;
+
+
+
+      if (keywordLength != 0) {
+        //console.log('Listening layoutData: ', layoutData);
+        //console.log('Gretter');
+
+        if (keywordLength >= 4) {
+          fetchLayouts();
+        } else {
         }
-      })
-
-      console.log(postTypes);
-
-      var sss = apiFetch({
-        path: '/blockxyz/v2/post_type_objects',
-        method: 'POST',
-        data: { postTypes: postTypes[0], search: keyword },
-      }).then((result) => {
-        setFilterablTerms(result);
-
-        //return result;
-
-        //console.log(filterablTermsResults);
-      });
 
 
 
+      } else {
+        //console.log('Gretter: 0');
 
-
-    }
-
-
-
-
-
+        fetchLayouts();
+      }
 
 
 
-    const [queryLayouts, setQueryLayouts] = useState(false); // Using the hook.
-    var [layoutList, setLayoutList] = useState([]); // Using the hook.
+      //console.log('asdasd');
 
 
+    }, [layoutData]);
 
 
     function fetchLayouts() {
 
-
-      fetchPosts()
       setQueryLayouts(true);
-      var args = [{ id: 'postType', val: ['post_grid_layout'] }];
 
       apiFetch({
         path: '/blockxyz/v2/get_posts_layout',
         method: 'POST',
-        data: { queryArgs: args },
+        data: { category: layoutData.category, keyword: layoutData.keyword },
       }).then((res) => {
 
+        //console.log(res);
 
-        setLayoutList(res)
+        setLayoutList({ items: res.posts })
+
         setQueryLayouts(false);
 
 
       });
 
     }
+
+    function fetchLayoutData() {
+
+      setQueryLayouts(true);
+
+      apiFetch({
+        path: '/blockxyz/v2/get_posts_layout',
+        method: 'POST',
+        data: { category: layoutData.category, keyword: layoutData.keyword },
+      }).then((res) => {
+
+        console.log(res);
+
+        setLayoutData({ keyword: layoutData.keyword, category: layoutData.category, categories: res.terms })
+        setQueryLayouts(false);
+
+
+      });
+
+    }
+
+
+
 
     function generateQueryFieldAuthorIn(xx) {
 
@@ -1480,19 +1530,6 @@ background-color: red;
 
             <div className='blockxyz'>
 
-              <div className='px-3'>
-                <SelectControl
-                  label="View Type"
-                  value={viewType}
-                  options={[
-                    { label: 'Grid', value: 'grid' },
-                    { label: 'Filterable', value: 'filterable' },
-                    { label: 'Carousel', value: 'carousel' },
-                    { label: 'Glossary', value: 'glossary' },
-                  ]}
-                  onChange={(newSize) => setAttributes({ viewType: newSize })}
-                />
-              </div>
 
               <PanelBody title="General" initialOpen={false}>
 
@@ -1654,8 +1691,18 @@ background-color: red;
 
 
               <PanelBody title="Query Post" initialOpen={false}>
+                <div className='mb-5'>
 
 
+                  <MyCustomSelectControl />
+
+
+
+
+                </div>
+
+
+                <label>Add Query Parameters</label>
 
                 <SelectControl
                   label=""
@@ -1692,34 +1739,36 @@ background-color: red;
 
                 <PanelRow>
                   <InputControl
-                    value={layout.keyword}
+                    value={layoutData.keyword}
                     type="text"
                     placeholder="Search Here..."
                     onChange={(newVal) => {
 
-                      setAttributes({ layout: { id: layout.id, data: layout.data, rawData: layout.rawData, keyword: newVal, category: layout.category, categories: layout.categories } })
+                      console.log(newVal);
 
-                      fetchLayouts();
+
+                      setLayoutData({ keyword: newVal, category: layoutData.category, categories: layoutData.categories })
+                      //fetchLayouts();
                     }}
 
                   />
                   <SelectControl
                     style={{ margin: 0 }}
                     label=""
-                    value={layout.category}
-                    options={[
-                      { label: 'fr', value: 'fr' },
-                      { label: 'px', value: 'px' },
-                      { label: '%', value: '%' },
-                      { label: 'em', value: 'em' },
-
-
-
-
-                    ]}
+                    value={layoutData.category}
+                    options={layoutData.categories}
                     onChange={(newVal) => {
-                      fetchLayouts();
-                      setAttributes({ layout: { id: layout.id, data: layout.data, rawData: layout.rawData, keyword: layout.keyword, category: newVal, categories: layout.categories } })
+
+                      console.log(newVal);
+
+
+                      setLayoutData({ keyword: layoutData.keyword, category: newVal, categories: layoutData.categories })
+
+
+
+                      //fetchLayouts();
+
+
                     }}
                   />
 
@@ -1732,11 +1781,13 @@ background-color: red;
 
 
 
-                {queryLayouts == true && <div>Loading
+                {queryLayouts == true && <div className='text-center'>
+
+                  <Spinner />
                 </div>}
 
 
-                {layoutList.length > 0 && layoutList.map(x => {
+                {queryLayouts == false && layoutList.items.length > 0 && layoutList.items.map(x => {
                   return (
                     <div className='my-3  ' >
 
@@ -1795,7 +1846,7 @@ background-color: red;
 
 
               </PanelBody>
-              <PanelBody title="Grid Settings" initialOpen={false} className={(viewType == 'grid' || viewType == 'filterable' || viewType == 'glossary') ? '' : 'hidden'}>
+              <PanelBody title="Grid Settings" initialOpen={false}>
 
 
 
@@ -2075,7 +2126,7 @@ background-color: red;
 
               </PanelBody>
 
-              <PanelBody title="Pagination" initialOpen={false} className={viewType == 'carousel' ? 'hidden' : ''}>
+              <PanelBody title="Pagination" initialOpen={false} >
 
                 <SelectControl
                   label="Enable"
@@ -2085,7 +2136,6 @@ background-color: red;
                     { label: 'Normal Pagination', value: 'normal' },
                     { label: 'Ajax Pagination', value: 'ajax' },
                     { label: 'Next-Previous', value: 'next_previous' },
-                    { label: 'Filterable Pagination', value: 'filterable' },
                     { label: 'Load More', value: 'loadmore' },
                     { label: 'Infinite Load', value: 'infinite' },
 
@@ -2182,342 +2232,9 @@ background-color: red;
               </PanelBody>
 
 
-              <PanelBody title="Filterable" initialOpen={false} className={viewType == 'filterable' ? '' : 'hidden'}>
 
 
-                <div>
-
-                  <Button
-                    variant="secondary"
-                    className='mb-2'
-                    onClick={(ev) => {
-
-                      var filters = filterable.filters.concat({ groupTitle: '', type: '', logic: '', showPostCount: '', items: [] })
-
-                      setAttributes({ filterable: { filters: filters, allText: filterable.allText, showSort: filterable.showSort, activeFilter: filterable.activeFilter, textColor: filterable.textColor, bgColor: filterable.bgColor, activeBgColor: filterable.activeBgColor, padding: { val: filterable.padding.val, unit: filterable.padding.unit }, margin: filterable.margin, bgImg: filterable.bgImg } })
-                    }}
-
-                  >Add Filter Group</Button>
-
-                  {filterable.filters.map((x, i) => {
-
-
-
-                    return (
-
-                      <PanelBody title={(x.groupTitle) ? x.groupTitle : 'Filter Group ' + i} initialOpen={false} >
-
-                        <span
-                          onClick={(ev) => {
-
-                            filterable.filters.splice(i, 1);
-                            setAttributes({ filterable: { filters: filterable.filters, allText: filterable.allText, showSort: filterable.showSort, activeFilter: filterable.activeFilter, textColor: filterable.textColor, bgColor: filterable.bgColor, activeBgColor: filterable.activeBgColor, padding: { val: filterable.padding.val, unit: filterable.padding.unit }, margin: filterable.margin, bgImg: filterable.bgImg } })
-                          }}
-                          className='cursor-pointer px-3 py-1 inline-block text-white bg-red-600 text-sm mb-2'><span className='dashicon dashicons dashicons-no-alt'></span> Delete Group</span>
-
-
-                        <PanelRow >
-                          <label for="">Group Title</label>
-
-
-
-
-
-
-
-
-
-
-
-
-
-                          <InputControl
-                            value={x.groupTitle}
-                            onChange={(newVal) => {
-                              filterable.filters[i].groupTitle = newVal
-
-                              setAttributes({ filterable: { filters: filterable.filters, allText: filterable.allText, showSort: filterable.showSort, activeFilter: filterable.activeFilter, textColor: filterable.textColor, bgColor: filterable.bgColor, activeBgColor: filterable.activeBgColor, padding: { val: filterable.padding.val, unit: filterable.padding.unit }, margin: filterable.margin, bgImg: filterable.bgImg } })
-
-                            }}
-                          />
-                        </PanelRow>
-
-                        <PanelRow >
-                          <label for="">Group Type</label>
-
-
-
-                          <SelectControl
-                            value={x.type}
-                            options={[
-                              { value: 'inline', label: 'Inline' },
-                              { value: 'dropdown', label: 'Dropdown' },
-                              { value: 'radio', label: 'Radio' },
-                              { value: 'checkbox', label: 'Checkbox' },
-                            ]}
-                            onChange={(newVal) => {
-                              filterable.filters[i].type = newVal
-
-                              setAttributes({ filterable: { filters: filterable.filters, allText: filterable.allText, showSort: filterable.showSort, activeFilter: filterable.activeFilter, textColor: filterable.textColor, bgColor: filterable.bgColor, activeBgColor: filterable.activeBgColor, padding: { val: filterable.padding.val, unit: filterable.padding.unit }, margin: filterable.margin, bgImg: filterable.bgImg } })
-
-                            }}
-                          />
-
-
-
-                        </PanelRow>
-
-
-
-                        <PanelRow >
-                          <label for="">Data Logic</label>
-
-                          <SelectControl
-                            value={x.logic}
-                            options={[
-                              { value: 'or', label: 'OR' },
-                              { value: 'and', label: 'AND' },
-
-                            ]}
-                            onChange={(newVal) => {
-                              filterable.filters[i].logic = newVal
-
-                              setAttributes({ filterable: { filters: filterable.filters, allText: filterable.allText, showSort: filterable.showSort, activeFilter: filterable.activeFilter, textColor: filterable.textColor, bgColor: filterable.bgColor, activeBgColor: filterable.activeBgColor, padding: { val: filterable.padding.val, unit: filterable.padding.unit }, margin: filterable.margin, bgImg: filterable.bgImg } })
-
-                            }}
-                          />
-
-                        </PanelRow>
-
-
-                        <PanelRow >
-                          <label for="">Show Post Count </label>
-
-                          <SelectControl
-                            value={x.showPostCount}
-                            options={[
-                              { value: 'no', label: 'No' },
-                              { value: 'yes', label: 'Yes' },
-
-                            ]}
-                            onChange={(newVal) => {
-                              filterable.filters[i].showPostCount = newVal
-
-                              setAttributes({ filterable: { filters: filterable.filters, allText: filterable.allText, showSort: filterable.showSort, activeFilter: filterable.activeFilter, textColor: filterable.textColor, bgColor: filterable.bgColor, activeBgColor: filterable.activeBgColor, padding: { val: filterable.padding.val, unit: filterable.padding.unit }, margin: filterable.margin, bgImg: filterable.bgImg } })
-
-                            }}
-                          />
-
-                        </PanelRow>
-
-
-
-                        <label for="" className='my-3 font-bold'>Terms</label>
-
-
-
-                        {/* {JSON.stringify(filterablTerms)} */}
-
-                        {x.items.length == 0 && (
-                          <div className='my-1'>No terms added.</div>
-                        )}
-
-                        {x.items.map((y, j) => {
-
-                          return (
-                            <PanelRow className='my-1'>
-                              {y.title}
-
-                              <span
-                                onClick={(ev) => {
-
-                                  filterable.filters[i].items.splice(j, 1);
-
-                                  setAttributes({ filterable: { filters: filterable.filters, allText: filterable.allText, showSort: filterable.showSort, activeFilter: filterable.activeFilter, textColor: filterable.textColor, bgColor: filterable.bgColor, activeBgColor: filterable.activeBgColor, padding: { val: filterable.padding.val, unit: filterable.padding.unit }, margin: filterable.margin, bgImg: filterable.bgImg } })
-                                }}
-                                className='cursor-pointer p-1   inline-block text-white bg-red-600 text-sm'><span className='dashicon dashicons dashicons-no-alt'></span></span>
-                            </PanelRow>
-                          )
-                        })
-                        }
-
-
-
-
-                        <InputControl
-
-                          placeholder="Search Categories or terms"
-
-                          value=''
-                          onChange={(newVal) => {
-                            fetchPostTypeTerms(newVal);
-
-                          }}
-                        />
-
-
-                        {/* {filterablTerms.length == 0 && (
-                          <div className='bg-gray-200 p-2 mt-2'>No Terms Found</div>
-
-                        )} */}
-
-                        {filterablTerms.length > 0 && (
-
-                          <div className='bg-gray-200 p-2 mt-2'>
-                            {filterablTerms.map(x => {
-
-                              return (
-
-                                <div
-                                  title='Click Add terms'
-                                  className='border-b border-gray-400 my-2 pb-1 cursor-pointer'
-
-                                  onClick={(ev) => {
-
-                                    if (x.slug) {
-                                      var ss = filterable.filters[i].items.concat({ id: x.term_id, slug: x.slug, title: x.name, count: x.count });
-                                      filterable.filters[i].items = ss
-
-                                      setAttributes({ filterable: { filters: filterable.filters, allText: filterable.allText, showSort: filterable.showSort, activeFilter: filterable.activeFilter, textColor: filterable.textColor, bgColor: filterable.bgColor, activeBgColor: filterable.activeBgColor, padding: { val: filterable.padding.val, unit: filterable.padding.unit }, margin: filterable.margin, bgImg: filterable.bgImg } })
-                                    }
-
-
-                                  }}
-
-                                >{x.name} ({x.count})</div>
-
-                              )
-
-                            })}
-                          </div>
-                        )
-
-
-                        }
-
-
-
-
-
-
-
-
-
-
-                      </PanelBody>
-
-                    )
-
-                  })
-                  }
-                </div>
-
-
-                <PanelRow >
-                  <label for="">Show Sort Filter </label>
-
-
-                  <SelectControl
-                    label=""
-                    value={filterable.showSort}
-                    options={[
-                      { label: 'No', value: 'no' },
-                      { label: 'Yes', value: 'yes' },
-
-                    ]}
-                    onChange={(newVal) => setAttributes({ filterable: { filters: filterable.filters, allText: filterable.allText, showSort: newVal, activeFilter: filterable.activeFilter, textColor: filterable.textColor, bgColor: filterable.bgColor, activeBgColor: filterable.activeBgColor, padding: filterable.padding, margin: filterable.margin, bgColor: filterable.bgColor, bgImg: filterable.bgImg } })}
-
-                  />
-
-
-
-
-                </PanelRow>
-
-
-
-                <PanelRow>
-
-                  <label for="">Margin</label>
-                  <InputControl
-                    value={filterable.margin.val}
-                    onChange={(newVal) => setAttributes({ filterable: { filters: filterable.filters, allText: filterable.allText, showSort: filterable.showSort, activeFilter: filterable.activeFilter, textColor: filterable.textColor, bgColor: filterable.bgColor, activeBgColor: filterable.activeBgColor, padding: filterable.padding, margin: { val: newVal, unit: filterable.margin.unit }, bgColor: filterable.bgColor, bgImg: filterable.bgImg } })}
-                  />
-
-                  <SelectControl
-                    label=""
-                    value={filterable.margin.unit}
-                    options={[
-                      { label: 'px', value: 'px' },
-                      { label: 'em', value: 'em' },
-
-                    ]}
-                    onChange={(newVal) => setAttributes({ filterable: { filters: filterable.filters, allText: filterable.allText, showSort: filterable.showSort, activeFilter: filterable.activeFilter, textColor: filterable.textColor, bgColor: filterable.bgColor, activeBgColor: filterable.activeBgColor, margin: { val: filterable.padding.val, unit: newVal }, padding: filterable.padding, bgColor: filterable.bgColor, bgImg: filterable.bgImg } })}
-                  />
-
-                </PanelRow>
-
-                <PanelRow>
-
-                  <label for="">Padding</label>
-                  <InputControl
-                    value={filterable.padding.val}
-                    onChange={(newVal) => setAttributes({ filterable: { filters: filterable.filters, allText: filterable.allText, showSort: filterable.showSort, activeFilter: filterable.activeFilter, textColor: filterable.textColor, bgColor: filterable.bgColor, activeBgColor: filterable.activeBgColor, margin: filterable.margin, padding: { val: newVal, unit: filterable.padding.unit }, bgColor: filterable.bgColor, bgImg: filterable.bgImg } })}
-                  />
-
-                  <SelectControl
-                    label=""
-                    value={filterable.padding.unit}
-                    options={[
-                      { label: 'px', value: 'px' },
-                      { label: 'em', value: 'em' },
-
-                    ]}
-                    onChange={(newVal) => setAttributes({ filterable: { filters: filterable.filters, allText: filterable.allText, showSort: filterable.showSort, activeFilter: filterable.activeFilter, textColor: filterable.textColor, bgColor: filterable.bgColor, activeBgColor: filterable.activeBgColor, padding: { val: filterable.padding.val, unit: newVal }, margin: filterable.margin, bgColor: filterable.bgColor, bgImg: filterable.bgImg } })}
-                  />
-
-                </PanelRow>
-
-
-                <label for="">Text Color</label>
-                <ColorPalette
-                  color={filterable.textColor}
-                  colors={colors}
-                  enableAlpha
-                  onChange={(newVal) => setAttributes({ filterable: { filters: filterable.filters, allText: filterable.allText, showSort: filterable.showSort, activeFilter: filterable.activeFilter, textColor: newVal, bgColor: filterable.bgColor, activeBgColor: filterable.activeBgColor, padding: { val: filterable.padding.val, unit: filterable.padding.unit }, margin: filterable.margin, bgImg: filterable.bgImg } })}
-                />
-
-
-                <label for="">Background Color</label>
-                <ColorPalette
-                  color={filterable.bgColor}
-                  colors={colors}
-                  enableAlpha
-                  onChange={(newVal) => setAttributes({ filterable: { filters: filterable.filters, allText: filterable.allText, showSort: filterable.showSort, activeFilter: filterable.activeFilter, textColor: filterable.textColor, bgColor: newVal, activeBgColor: filterable.activeBgColor, padding: { val: filterable.padding.val, unit: filterable.padding.unit }, margin: filterable.margin, bgImg: filterable.bgImg } })}
-                />
-
-                <label for="">Active Background Color</label>
-                <ColorPalette
-                  color={filterable.activeBgColor}
-                  colors={colors}
-                  enableAlpha
-                  onChange={(newVal) => setAttributes({ filterable: { filters: filterable.filters, allText: filterable.allText, showSort: filterable.showSort, activeFilter: filterable.activeFilter, textColor: filterable.textColor, bgColor: filterable.bgColor, activeBgColor: newVal, padding: { val: filterable.padding.val, unit: filterable.padding.unit }, margin: filterable.margin, bgImg: filterable.bgImg } })}
-                />
-
-
-
-
-
-              </PanelBody>
-
-              <PanelBody title="Glossary" initialOpen={false} className={viewType == 'glossary' ? '' : 'hidden'}>
-
-              </PanelBody>
-              <PanelBody title="Carousel" initialOpen={false} className={(viewType == 'carousel') ? '' : 'hidden'}>
-
-              </PanelBody>
-
-              <PanelBody title="Search" initialOpen={false} className={(viewType == 'grid' || viewType == 'filterable') ? '' : 'hidden'}>
+              <PanelBody title="Search" initialOpen={false} >
 
                 <SelectControl
                   label="Enable"
@@ -2585,9 +2302,8 @@ background-color: red;
 
           <RawHTML>{ItemNthCssadasd2}</RawHTML>
 
-          {/* {JSON.stringify(postTypesData)} */}
 
-
+          {JSON.stringify(queryArgs)}
 
 
           <ContainerCss cssData={props.attributes}>
@@ -2605,67 +2321,6 @@ background-color: red;
                 <div className='search'>search form</div>
               )
             }
-
-
-            {viewType == 'filterable' &&
-              (
-
-                <div className='filterable-navs'>
-                  <div className='pg-filter-group mx-3 inline-block'>
-
-                    <div className='filter cusror-pointer px-4 py-2 m-2 inline-block bg-gray-200 filter-34534' data-filter='all'>All</div>
-                  </div>
-                  {
-
-                    filterable.filters.map(x => {
-
-                      return (
-
-                        <div className='pg-filter-group mx-3 inline-block' data-logic={x.logic}>
-
-                          {x.groupTitle && (
-                            <div className='filter-group-title px-4 py-2 m-2 inline-block mx-2'>{x.groupTitle}</div>
-                          )}
-
-
-                          <div className='filter-group-items inline-block'>
-                            {x.items.map(y => {
-
-                              return (
-
-                                <div className='filter cursor-pointer cusror-pointer px-4 py-2 m-2 inline-block bg-gray-200 filter-34534' terms-id={y.id} data-filter={'.' + y.slug}>{y.title} {x.showPostCount == 'yes' ? '(' + y.count + ')' : ''}</div>
-
-                              )
-
-                            })}
-
-                          </div>
-
-
-                        </div>
-
-                      )
-
-
-                    })
-
-                  }
-                </div>
-
-
-
-
-
-              )
-            }
-
-            {viewType == 'glossary' &&
-              (
-                <div className='filterable-navs'>glossary navs</div>
-              )
-            }
-
-
 
 
 
@@ -2733,12 +2388,6 @@ background-color: red;
               )
             }
 
-            {pagination.type == 'filterable' &&
-              (
-                <div className='pagination'>filterable Pagination</div>
-
-              )
-            }
 
             {pagination.type == 'loadmore' &&
               (

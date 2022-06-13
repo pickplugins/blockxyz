@@ -87,19 +87,142 @@ class BlockPostGridRest
     public function get_posts_layout($post_data)
     {
 
+        $category      = isset($post_data['category']) ? $post_data['category'] : '';
+        $keyword     = isset($post_data['keyword']) ? $post_data['keyword'] : '';
+
+        $response = [];
+        $tax_query = [];
+
+
+
+        error_log(serialize($category));
+        error_log(serialize($keyword));
+
+
+        $query_args = [];
+        $query_args['post_type'] = 'post_grid_layout';
+
+        if (!empty($keyword)) {
+            $query_args['s'] = $keyword;
+        }
+
+
+        if (!empty($category)) {
+            $tax_query[] = array(
+                'taxonomy' => 'layout_cat',
+                'field'    => 'term_id',
+                'terms'    => $category,
+            );
+
+            $query_args['tax_query'] = $tax_query;
+        }
+
+
+
+
+
+        error_log(serialize($query_args));
+
+
+        $posts = [];
+
+        $wp_query = new WP_Query($query_args);
+
+
+        if ($wp_query->have_posts()) :
+
+            while ($wp_query->have_posts()) : $wp_query->the_post();
+
+                $post = get_post(get_the_id());
+
+                $post_id = $post->ID;
+                $post->post_id = $post->ID;
+                $post->post_title = $post->post_title;
+
+                $post->post_content = $post->post_content;
+                $thumb = wp_get_attachment_image_src(get_post_thumbnail_id($post_id));
+                $thumb_url = isset($thumb[0]) ? $thumb[0] : '';
+                $post->thumb_url = !empty($thumb_url) ? $thumb_url : post_grid_plugin_url . 'assets/frontend/images/placeholder.png';
+
+                $post->is_pro = ($post_id % 2 == 0) ? true : false;
+
+
+                $price = get_post_meta($post_id, 'price', true);
+                $post->price = !empty($price) ? $price : 5;
+
+                $sale_price = get_post_meta($post_id, 'sale_price', true);
+                $post->sale_price = !empty($sale_price) ? $sale_price : 0;
+
+
+
+                $post->buy_link = '#';
+
+
+
+
+
+                $posts[]            = $post;
+
+
+
+            //error_log(serialize($thumb_url));
+
+
+            endwhile;
+            wp_reset_query();
+            wp_reset_postdata();
+
+            error_log('################');
+
+
+        endif;
+
+        $response['posts'] = $posts;
+
+
+
+        $terms = get_terms(
+            array(
+                'taxonomy'   => 'layout_cat',
+                'hide_empty' => true,
+                'post_type'  => 'post_grid_layout',
+            )
+        );
+
+        $termsList = [];
+
+        foreach ($terms as $term) {
+
+            $termsList[] = ['label' => $term->name, 'value' => $term->term_id];
+        }
+
+
+
+
+
+
+        $response['terms'] = $termsList;
+
+
+
+        die(wp_json_encode($response));
+    }
+
+
+    /**
+     * Return Posts
+     *
+     * @since 1.0.0
+     * @param WP_REST_Request $post_data Post data.
+     */
+    public function get_posts($post_data)
+    {
         $queryArgs      = isset($post_data['queryArgs']) ? $post_data['queryArgs'] : [];
-
-
         $rawData = '<!-- wp:post-title /-->
 <!-- wp:post-excerpt {"moreText":"Read more","textColor":"primary"} /-->
 <!-- wp:post-featured-image /-->';
 
         $rawData      = isset($post_data['rawData']) ? $post_data['rawData'] : $rawData;
-
-
-        //error_log(serialize($queryArgs));
-
-
         $query_args = [];
 
         foreach ($queryArgs as $item) {
@@ -234,110 +357,8 @@ class BlockPostGridRest
             }
         }
 
-        error_log(serialize($query_args));
+        //error_log(serialize($query_args));
 
-
-        $posts = [];
-
-        $wp_query = new WP_Query($query_args);
-
-
-        if ($wp_query->have_posts()) :
-
-            while ($wp_query->have_posts()) : $wp_query->the_post();
-
-                $post = get_post(get_the_id());
-
-                $post_id = $post->ID;
-                $post->post_id = $post->ID;
-                $post->post_title = $post->post_title;
-
-                $post->post_content = $post->post_content;
-                $thumb = wp_get_attachment_image_src(get_post_thumbnail_id($post_id));
-                $thumb_url = isset($thumb[0]) ? $thumb[0] : '';
-                $post->thumb_url = !empty($thumb_url) ? $thumb_url : post_grid_plugin_url . 'assets/frontend/images/placeholder.png';
-
-                $post->is_pro = ($post_id % 2 == 0) ? true : false;
-
-
-                $price = get_post_meta($post_id, 'price', true);
-                $post->price = !empty($price) ? $price : 5;
-
-                $sale_price = get_post_meta($post_id, 'sale_price', true);
-                $post->sale_price = !empty($sale_price) ? $sale_price : 0;
-
-
-
-                $post->buy_link = '#';
-
-
-
-                error_log(get_the_title(get_the_id()));
-
-
-
-                $blocks = parse_blocks($rawData);
-
-                $html = '';
-
-                foreach ($blocks as $block) {
-                    //look to see if your block is in the post content -> if yes continue past it if no then render block as normal
-                    $html .= render_block($block);
-                }
-
-                $post->html = $html;
-
-                $posts[]            = $post;
-
-
-
-            //error_log(serialize($thumb_url));
-
-
-            endwhile;
-            wp_reset_query();
-            wp_reset_postdata();
-
-            error_log('################');
-
-
-        endif;
-
-
-        die(wp_json_encode($posts));
-    }
-
-
-    /**
-     * Return Posts
-     *
-     * @since 1.0.0
-     * @param WP_REST_Request $post_data Post data.
-     */
-    public function get_posts($post_data)
-    {
-
-        $queryArgs      = isset($post_data['queryArgs']) ? $post_data['queryArgs'] : [];
-
-        $query_args = [];
-
-        foreach ($queryArgs as $item) {
-
-            error_log(serialize($item));
-
-
-            $id = isset($item['id']) ? $item['id'] : '';
-            $val = isset($item['val']) ? $item['val'] : '';
-
-            if ($val) {
-                if ($id == 'postType') {
-                    $query_args['post_type'] = $val;
-                }
-            }
-        }
-
-
-        error_log(serialize($query_args));
 
         $posts = [];
 
@@ -362,6 +383,16 @@ class BlockPostGridRest
                 $post->is_pro = ($post_id % 2 == 0) ? true : false;
 
 
+                $blocks = parse_blocks($rawData);
+
+                $html = '';
+
+                foreach ($blocks as $block) {
+                    //look to see if your block is in the post content -> if yes continue past it if no then render block as normal
+                    $html .= render_block($block);
+                }
+
+                $post->html = $html;
 
                 $posts[]            = $post;
 
