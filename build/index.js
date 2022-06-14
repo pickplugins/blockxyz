@@ -1422,27 +1422,6 @@ background-image: ${props => {
     function MyCustomSelectControl() {
       const [fontSize, setFontSize] = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_5__.useState)(postQueryPresets[0]);
       return (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_5__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_6__.CustomSelectControl, {
-        label: "Font Size",
-        options: postQueryPresets,
-        onChange: _ref => {
-          let {
-            selectedItem
-          } = _ref;
-          setAttributes({
-            queryArgs: {
-              items: selectedItem.value.items
-            }
-          });
-          setFontSize(selectedItem);
-          console.log(selectedItem);
-        },
-        value: postQueryPresets.find(option => option.key === fontSize.key)
-      });
-    }
-
-    function MyCustomSelectControladas() {
-      const [fontSize, setFontSize] = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_5__.useState)(postQueryPresets[0]);
-      return (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_5__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_6__.CustomSelectControl, {
         className: "w-full",
         label: "Query Presets",
         options: postQueryPresets,
@@ -1454,8 +1433,8 @@ background-image: ${props => {
               items: queryArgs.items
             }
           });
-          setFontSize(newVal.selectedItem); // fetchPosts()
-
+          setFontSize(newVal.selectedItem);
+          fetchPosts();
           console.log(postQueryPresets.find(option => option.key === fontSize.key));
         },
         value: postQueryPresets.find(option => option.key === fontSize.key)
@@ -2032,13 +2011,13 @@ background-color: red;
       return (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_5__.createElement)("div", innerBlocksProps);
     }
 
-    function PostTemplateBlockPreview(_ref2) {
+    function PostTemplateBlockPreview(_ref) {
       let {
         blocks,
         blockContextId,
         isHidden,
         setActiveBlockContextId
-      } = _ref2;
+      } = _ref;
       const blockPreviewProps = (0,_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_4__.__experimentalUseBlockPreview)({
         blocks,
         props: {
@@ -3106,10 +3085,10 @@ background-color: red;
       },
       allowedTypes: ALLOWED_MEDIA_TYPES,
       value: container.bgImg,
-      render: _ref3 => {
+      render: _ref2 => {
         let {
           open
-        } = _ref3;
+        } = _ref2;
         return (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_5__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_6__.Button, {
           onClick: open
         }, "Open Media Library");
@@ -3143,10 +3122,10 @@ background-color: red;
       },
       allowedTypes: ALLOWED_MEDIA_TYPES,
       value: lazyLoad.srcId,
-      render: _ref4 => {
+      render: _ref3 => {
         let {
           open
-        } = _ref4;
+        } = _ref3;
         return (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_5__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_6__.Button, {
           onClick: open
         }, "Open Media Library");

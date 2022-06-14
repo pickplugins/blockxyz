@@ -227,25 +227,10 @@ registerBlockType("prefix-blocks/post-grid", {
 
 
 
+
+
+
     function MyCustomSelectControl() {
-      const [fontSize, setFontSize] = useState(postQueryPresets[0]);
-      return (
-        <CustomSelectControl
-          label="Font Size"
-          options={postQueryPresets}
-          onChange={({ selectedItem }) => {
-            setAttributes({ queryArgs: { items: selectedItem.value.items } })
-
-            setFontSize(selectedItem)
-            console.log(selectedItem)
-          }}
-          value={postQueryPresets.find((option) => option.key === fontSize.key)}
-        />
-      );
-    }
-
-
-    function MyCustomSelectControladas() {
 
       const [fontSize, setFontSize] = useState(postQueryPresets[0]);
 
@@ -265,7 +250,7 @@ registerBlockType("prefix-blocks/post-grid", {
             queryArgs.items = newVal.selectedItem.value.items;
             setAttributes({ queryArgs: { items: queryArgs.items } })
             setFontSize(newVal.selectedItem)
-            // fetchPosts()
+            fetchPosts()
 
             console.log(postQueryPresets.find((option) => option.key === fontSize.key))
 
